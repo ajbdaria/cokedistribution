@@ -1,0 +1,1194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GD Coke — My Account</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --red: #CC1B22;
+  --red-h: #E02028;
+  --red-pale: rgba(204,27,34,0.08);
+  --red-border: rgba(204,27,34,0.2);
+  --bg: #F0F2F7;
+  --white: #FFFFFF;
+  --dark: #111827;
+  --slate: #374151;
+  --gray: #6B7280;
+  --muted: #9CA3AF;
+  --light: #D1D5DB;
+  --lighter: #E5E7EB;
+  --surface: #F9FAFB;
+  --green: #10B981;
+  --green-pale: rgba(16,185,129,0.1);
+  --green-border: rgba(16,185,129,0.28);
+  --amber: #F59E0B;
+  --amber-pale: rgba(245,158,11,0.1);
+  --amber-border: rgba(245,158,11,0.28);
+  --blue: #3B82F6;
+  --blue-pale: rgba(59,130,246,0.1);
+  --blue-border: rgba(59,130,246,0.28);
+}
+
+html, body { height: 100%; font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg); color: var(--dark); -webkit-font-smoothing: antialiased; }
+
+/* ══════════════════════════════
+   MOBILE-FIRST LAYOUT
+══════════════════════════════ */
+.app { display: flex; flex-direction: column; min-height: 100vh; }
+
+/* TOP NAV */
+.topnav {
+  background: #0D1117; padding: 10px 16px;
+  display: flex; align-items: center; justify-content: space-between;
+  position: sticky; top: 0; z-index: 200;
+  border-bottom: 1px solid rgba(255,255,255,0.04);
+}
+.tn-left { display: flex; align-items: center; gap: 10px; }
+.tn-logo { width: 34px; height: 34px; border-radius: 10px; background: var(--red); display: flex; align-items: center; justify-content: center; box-shadow: 0 3px 10px rgba(204,27,34,0.4); overflow: hidden; flex-shrink: 0; }
+.tn-logo img { width: 100%; height: 100%; object-fit: contain; padding: 7px; filter: brightness(0) invert(1); }
+.tn-title { font-family: 'Outfit', sans-serif; font-size: 16px; font-weight: 900; color: #fff; }
+.tn-sub { font-size: 10px; color: rgba(255,255,255,0.35); font-weight: 500; margin-top: 1px; }
+
+/* MAIN SCROLL */
+.main-scroll { flex: 1; overflow-y: auto; padding-bottom: 90px; }
+
+/* ══ PROFILE HERO ══ */
+.profile-hero {
+  background: linear-gradient(160deg, #0D1117 0%, #1a0508 55%, #0D1117 100%);
+  padding: 24px 16px 28px; position: relative; overflow: hidden;
+}
+.profile-hero::before {
+  content:''; position:absolute; inset:0;
+  background: repeating-linear-gradient(-45deg, transparent, transparent 24px, rgba(255,255,255,0.012) 24px, rgba(255,255,255,0.012) 25px);
+}
+.profile-hero::after {
+  content:''; position:absolute; width:240px; height:240px; border-radius:50%;
+  background: radial-gradient(circle, rgba(204,27,34,0.18) 0%, transparent 70%);
+  right: -60px; top: -60px; pointer-events:none;
+}
+.ph-glow {
+  position: absolute; width: 180px; height: 180px; border-radius:50%;
+  background: radial-gradient(circle, rgba(204,27,34,0.1) 0%, transparent 70%);
+  left: -50px; bottom: -50px; pointer-events: none;
+}
+
+.ph-top { display: flex; align-items: flex-start; justify-content: space-between; position: relative; z-index: 1; margin-bottom: 18px; }
+.ph-avatar-wrap { position: relative; }
+.ph-avatar {
+  width: 68px; height: 68px; border-radius: 18px;
+  background: linear-gradient(135deg, var(--red) 0%, #FF4B51 100%);
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'Outfit', sans-serif; font-size: 22px; font-weight: 900; color: #fff;
+  border: 3px solid rgba(255,255,255,0.12);
+  box-shadow: 0 8px 24px rgba(204,27,34,0.35);
+}
+.ph-edit-badge {
+  position: absolute; bottom: -4px; right: -4px;
+  width: 22px; height: 22px; border-radius: 7px;
+  background: var(--white); border: 2px solid #0D1117;
+  display: flex; align-items: center; justify-content: center; cursor: pointer;
+}
+.ph-edit-badge svg { width: 10px; height: 10px; stroke: var(--dark); stroke-width: 2.5; }
+
+.ph-status-chip {
+  display: flex; align-items: center; gap: 5px;
+  padding: 5px 10px; background: rgba(16,185,129,0.15);
+  border: 1px solid rgba(16,185,129,0.3); border-radius: 8px;
+  font-size: 11px; font-weight: 700; color: #34D399;
+}
+.ph-status-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--green); animation: pulseDot 1.8s infinite; }
+
+.ph-info { position: relative; z-index: 1; }
+.ph-name { font-family: 'Outfit', sans-serif; font-size: 20px; font-weight: 900; color: #fff; margin-bottom: 3px; letter-spacing: -0.3px; }
+.ph-store-type { font-size: 12px; color: rgba(255,255,255,0.45); font-weight: 600; margin-bottom: 10px; }
+.ph-tags { display: flex; align-items: center; gap: 7px; flex-wrap: wrap; }
+.ph-tag {
+  display: flex; align-items: center; gap: 5px;
+  padding: 4px 10px; background: rgba(255,255,255,0.07);
+  border: 1px solid rgba(255,255,255,0.1); border-radius: 7px;
+  font-size: 11px; font-weight: 700; color: rgba(255,255,255,0.6);
+}
+.ph-tag svg { width: 11px; height: 11px; stroke: rgba(255,255,255,0.4); stroke-width: 2; }
+
+/* ══ STATS ROW ══ */
+.stats-row {
+  display: grid; grid-template-columns: repeat(3, 1fr);
+  gap: 0; margin: 0 16px;
+  background: var(--white); border: 1.5px solid var(--lighter);
+  border-radius: 16px; overflow: hidden;
+  margin-top: -18px; position: relative; z-index: 2;
+  box-shadow: 0 4px 20px rgba(15,25,35,0.08);
+  animation: fadeUp 0.4s ease 0.1s both;
+}
+.stat-cell {
+  padding: 14px 10px; text-align: center;
+  border-right: 1px solid var(--lighter); position: relative;
+}
+.stat-cell:last-child { border-right: none; }
+.stat-val { font-family: 'Outfit', sans-serif; font-size: 20px; font-weight: 900; color: var(--dark); letter-spacing: -0.3px; }
+.stat-val.red { color: var(--red); }
+.stat-lbl { font-size: 10px; font-weight: 700; color: var(--muted); margin-top: 2px; }
+
+/* ══ SECTION BLOCK ══ */
+.section-block { margin: 16px 16px 0; animation: fadeUp 0.4s ease both; }
+.section-label {
+  font-size: 9.5px; font-weight: 700; letter-spacing: 0.14em;
+  text-transform: uppercase; color: var(--muted);
+  margin-bottom: 8px; padding-left: 2px;
+}
+.card-list { background: var(--white); border: 1.5px solid var(--lighter); border-radius: 16px; overflow: hidden; }
+
+/* ══ ROW ITEM ══ */
+.row-item {
+  display: flex; align-items: center; gap: 12px;
+  padding: 13px 14px; border-bottom: 1px solid var(--lighter);
+  cursor: pointer; transition: background 0.15s; position: relative;
+}
+.row-item:last-child { border-bottom: none; }
+.row-item:active { background: var(--surface); }
+.ri-ico {
+  width: 36px; height: 36px; border-radius: 10px;
+  display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+}
+.ri-ico svg { width: 16px; height: 16px; stroke-width: 2; }
+.ri-body { flex: 1; min-width: 0; }
+.ri-title { font-size: 13.5px; font-weight: 700; color: var(--dark); }
+.ri-sub { font-size: 11.5px; color: var(--muted); font-weight: 500; margin-top: 1px; }
+.ri-right { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+.ri-value { font-size: 12.5px; font-weight: 700; color: var(--slate); }
+.ri-arrow { width: 16px; height: 16px; stroke: var(--light); stroke-width: 2.5; flex-shrink: 0; }
+.ri-badge {
+  padding: 2px 8px; border-radius: 6px;
+  font-size: 10.5px; font-weight: 800;
+}
+.ri-badge.green { background: var(--green-pale); color: #065F46; }
+.ri-badge.amber { background: var(--amber-pale); color: #92400E; }
+.ri-badge.blue  { background: var(--blue-pale);  color: #1E40AF; }
+.ri-badge.red   { background: var(--red-pale);   color: var(--red); }
+
+/* Toggle switch */
+.toggle-switch {
+  width: 42px; height: 24px; border-radius: 100px;
+  background: var(--lighter); position: relative; cursor: pointer;
+  transition: background 0.2s; flex-shrink: 0;
+}
+.toggle-switch.on { background: var(--green); }
+.toggle-knob {
+  position: absolute; top: 3px; left: 3px;
+  width: 18px; height: 18px; border-radius: 50%;
+  background: #fff; box-shadow: 0 1px 4px rgba(0,0,0,0.15);
+  transition: transform 0.2s;
+}
+.toggle-switch.on .toggle-knob { transform: translateX(18px); }
+
+/* ══ CREDIT / LOYALTY CARD ══ */
+.loyalty-card {
+  background: linear-gradient(135deg, #0D1117 0%, #1a0508 60%, #0D1117 100%);
+  border-radius: 16px; padding: 18px 18px; position: relative; overflow: hidden;
+  animation: fadeUp 0.4s ease 0.15s both;
+}
+.loyalty-card::before { content:''; position:absolute; inset:0; background:repeating-linear-gradient(-45deg,transparent,transparent 20px,rgba(255,255,255,0.013) 20px,rgba(255,255,255,0.013) 21px); }
+.loyalty-card::after { content:''; position:absolute; width:180px; height:180px; border-radius:50%; background:radial-gradient(circle,rgba(204,27,34,0.2) 0%,transparent 70%); right:-40px; top:-40px; pointer-events:none; }
+.lc-glow { position:absolute; width:140px; height:140px; border-radius:50%; background:radial-gradient(circle,rgba(245,158,11,0.1) 0%,transparent 70%); left:-30px; bottom:-30px; pointer-events:none; }
+.lc-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 18px; position: relative; z-index: 1; }
+.lc-logo { display: flex; align-items: center; gap: 8px; }
+.lc-logo-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--red); }
+.lc-brand { font-family: 'Outfit', sans-serif; font-size: 12px; font-weight: 900; color: rgba(255,255,255,0.6); letter-spacing: 0.1em; text-transform: uppercase; }
+.lc-tier { display: flex; align-items: center; gap: 5px; padding: 4px 10px; background: rgba(245,158,11,0.15); border: 1px solid rgba(245,158,11,0.3); border-radius: 8px; }
+.lc-tier-ico { font-size: 13px; }
+.lc-tier-name { font-size: 11px; font-weight: 800; color: #FCD34D; }
+.lc-points { position: relative; z-index: 1; margin-bottom: 14px; }
+.lc-points-val { font-family: 'Outfit', sans-serif; font-size: 32px; font-weight: 900; color: #fff; letter-spacing: -0.5px; line-height: 1; }
+.lc-points-lbl { font-size: 11px; color: rgba(255,255,255,0.4); font-weight: 600; margin-top: 3px; }
+.lc-bar-wrap { position: relative; z-index: 1; }
+.lc-bar-labels { display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px; }
+.lc-bar-cur { font-size: 11px; font-weight: 700; color: rgba(255,255,255,0.5); }
+.lc-bar-next { font-size: 11px; font-weight: 700; color: rgba(255,255,255,0.4); }
+.lc-bar-track { height: 6px; background: rgba(255,255,255,0.1); border-radius: 100px; overflow: hidden; }
+.lc-bar-fill { height: 100%; border-radius: 100px; background: linear-gradient(90deg, var(--amber) 0%, #FDE68A 100%); width: 68%; transition: width 0.6s ease; }
+
+/* ══ RECENT ACTIVITY ══ */
+.activity-list { display: flex; flex-direction: column; }
+.act-item { display: flex; align-items: center; gap: 12px; padding: 12px 14px; border-bottom: 1px solid var(--lighter); }
+.act-item:last-child { border-bottom: none; }
+.act-ico { width: 36px; height: 36px; border-radius: 10px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-size: 16px; }
+.act-info { flex: 1; }
+.act-title { font-size: 12.5px; font-weight: 700; color: var(--dark); }
+.act-sub { font-size: 11px; color: var(--muted); margin-top: 1px; }
+.act-right { text-align: right; flex-shrink: 0; }
+.act-amount { font-family: 'Outfit', sans-serif; font-size: 13.5px; font-weight: 900; }
+.act-amount.pos { color: var(--green); }
+.act-amount.neg { color: var(--red); }
+.act-date { font-size: 10px; color: var(--muted); font-weight: 600; margin-top: 2px; }
+
+/* ══ CREDIT LIMIT CARD ══ */
+.credit-card {
+  background: var(--white); border: 1.5px solid var(--lighter);
+  border-radius: 16px; padding: 16px;
+  animation: fadeUp 0.4s ease 0.18s both;
+}
+.cc-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
+.cc-title { font-family: 'Outfit', sans-serif; font-size: 14px; font-weight: 800; color: var(--dark); display: flex; align-items: center; gap: 7px; }
+.cc-title svg { width: 15px; height: 15px; stroke: var(--amber); stroke-width: 2; }
+.cc-badge { padding: 3px 9px; background: var(--green-pale); border: 1px solid var(--green-border); border-radius: 7px; font-size: 11px; font-weight: 800; color: #065F46; }
+.cc-row { display: flex; align-items: flex-end; justify-content: space-between; margin-bottom: 10px; }
+.cc-used { font-family: 'Outfit', sans-serif; font-size: 26px; font-weight: 900; color: var(--dark); letter-spacing: -0.5px; line-height: 1; }
+.cc-limit { font-size: 12px; color: var(--muted); font-weight: 600; margin-bottom: 2px; }
+.cc-track { height: 8px; background: var(--lighter); border-radius: 100px; overflow: hidden; margin-bottom: 10px; }
+.cc-fill { height: 100%; border-radius: 100px; background: linear-gradient(90deg, var(--green) 0%, #34D399 100%); width: 22%; transition: width 0.6s ease; }
+.cc-fill.warn { background: linear-gradient(90deg, var(--amber) 0%, #FCD34D 100%); }
+.cc-fill.danger { background: linear-gradient(90deg, var(--red) 0%, #F87171 100%); }
+.cc-meta { display: flex; align-items: center; justify-content: space-between; }
+.cc-meta-item { font-size: 11px; font-weight: 600; color: var(--muted); }
+.cc-meta-val { font-weight: 800; color: var(--slate); }
+
+/* ══ EDIT MODAL / SHEET ══ */
+.sheet-backdrop { position: fixed; inset: 0; background: rgba(10,12,18,0.5); backdrop-filter: blur(3px); z-index: 400; display: none; }
+.sheet-backdrop.show { display: block; }
+.edit-sheet {
+  position: fixed; left: 0; right: 0; bottom: -100%;
+  max-height: 92vh; background: var(--white); border-radius: 20px 20px 0 0;
+  z-index: 450; display: flex; flex-direction: column; overflow: hidden;
+  box-shadow: 0 -8px 40px rgba(0,0,0,0.18);
+  transition: bottom 0.4s cubic-bezier(0.22,1,0.36,1);
+}
+.edit-sheet.open { bottom: 0; }
+.sheet-handle { width: 36px; height: 4px; border-radius: 4px; background: var(--lighter); margin: 10px auto 0; flex-shrink: 0; }
+.sheet-header { padding: 14px 18px; border-bottom: 1px solid var(--lighter); display: flex; align-items: center; justify-content: space-between; flex-shrink: 0; }
+.sheet-title { font-family: 'Outfit', sans-serif; font-size: 17px; font-weight: 900; color: var(--dark); }
+.sheet-close { width: 30px; height: 30px; border-radius: 8px; background: var(--surface); border: 1.5px solid var(--lighter); display: flex; align-items: center; justify-content: center; cursor: pointer; }
+.sheet-close svg { width: 13px; height: 13px; stroke: var(--gray); stroke-width: 2.5; }
+.sheet-body { flex: 1; overflow-y: auto; padding: 18px; -webkit-overflow-scrolling: touch; }
+.field-group { margin-bottom: 16px; }
+.field-label { font-size: 11px; font-weight: 700; color: var(--muted); letter-spacing: 0.06em; text-transform: uppercase; margin-bottom: 6px; }
+.field-input {
+  width: 100%; padding: 12px 14px; background: var(--surface);
+  border: 1.5px solid var(--lighter); border-radius: 11px;
+  font-family: 'Plus Jakarta Sans', sans-serif; font-size: 14px;
+  font-weight: 600; color: var(--dark); outline: none; transition: border-color 0.2s;
+}
+.field-input:focus { border-color: var(--red); }
+.field-input::placeholder { color: var(--light); font-weight: 500; }
+.field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.sheet-footer { padding: 12px 18px max(12px, env(safe-area-inset-bottom)); border-top: 1px solid var(--lighter); display: flex; gap: 8px; flex-shrink: 0; }
+.btn-save { flex: 1; padding: 13px; background: var(--red); border: none; border-radius: 11px; color: #fff; font-family: 'Outfit', sans-serif; font-size: 14px; font-weight: 800; cursor: pointer; }
+.btn-save:active { background: var(--red-h); }
+.btn-cancel { padding: 13px 20px; background: var(--surface); border: 1.5px solid var(--lighter); border-radius: 11px; color: var(--gray); font-family: 'Outfit', sans-serif; font-size: 14px; font-weight: 700; cursor: pointer; }
+
+/* ══ LOGOUT ROW ══ */
+.logout-row { margin: 16px 16px 0; animation: fadeUp 0.4s ease 0.3s both; }
+.logout-btn {
+  width: 100%; padding: 14px; background: var(--white);
+  border: 1.5px solid var(--lighter); border-radius: 14px;
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+  font-family: 'Outfit', sans-serif; font-size: 14px; font-weight: 800;
+  color: var(--red); cursor: pointer; transition: all 0.18s;
+}
+.logout-btn:active { background: var(--red-pale); border-color: var(--red-border); }
+.logout-btn svg { width: 15px; height: 15px; stroke: var(--red); stroke-width: 2.5; }
+
+.version-note { text-align: center; padding: 18px 16px 8px; font-size: 11px; color: var(--light); font-weight: 600; }
+
+/* ══ BOTTOM NAV ══ */
+.bottom-nav {
+  position: fixed; bottom: 0; left: 0; right: 0;
+  background: #0D1117; border-top: 1px solid rgba(255,255,255,0.06);
+  display: flex; align-items: center; justify-content: space-around;
+  padding: 8px 0 max(8px, env(safe-area-inset-bottom)); z-index: 200;
+}
+.bn-item { display: flex; flex-direction: column; align-items: center; gap: 3px; padding: 6px 20px; cursor: pointer; }
+.bn-item svg { width: 21px; height: 21px; stroke: rgba(255,255,255,0.3); stroke-width: 2; }
+.bn-item.active svg { stroke: #fff; }
+.bn-lbl { font-size: 10px; font-weight: 700; color: rgba(255,255,255,0.3); }
+.bn-item.active .bn-lbl { color: rgba(255,255,255,0.85); }
+
+/* ══ TOAST ══ */
+.toast { position: fixed; bottom: 80px; left: 50%; transform: translateX(-50%) translateY(40px); background: var(--dark); color: #fff; padding: 10px 18px; border-radius: 11px; font-size: 13px; font-weight: 600; display: flex; align-items: center; gap: 8px; box-shadow: 0 8px 28px rgba(0,0,0,0.22); z-index: 9999; opacity: 0; transition: all 0.3s cubic-bezier(0.34,1.56,0.64,1); white-space: nowrap; }
+.toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
+.toast svg { width: 14px; height: 14px; stroke: #4ADE80; stroke-width: 2.5; }
+
+/* ══ DESKTOP OVERRIDES ══ */
+@media (min-width: 768px) {
+  body { overflow: hidden; }
+  .app { flex-direction: row; height: 100vh; }
+  .topnav, .bottom-nav { display: none; }
+
+  /* Desktop side nav */
+  .sidenav-desktop {
+    width: 72px; flex-shrink: 0; background: #0D1117;
+    display: flex; flex-direction: column; align-items: center;
+    padding: 16px 0; gap: 6px; position: relative; z-index: 10;
+    border-right: 1px solid rgba(255,255,255,0.04);
+  }
+  .sidenav-desktop::before { content:''; position:absolute; top:-40px; left:-40px; width:160px; height:160px; border-radius:50%; background:radial-gradient(circle,rgba(204,27,34,0.16) 0%,transparent 70%); pointer-events:none; }
+  .sn-logo { width: 42px; height: 42px; border-radius: 12px; background: var(--red); display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 16px rgba(204,27,34,0.45); margin-bottom: 14px; overflow: hidden; }
+  .sn-logo img { width: 100%; height: 100%; object-fit: contain; padding: 8px; filter: brightness(0) invert(1); }
+  .sn-item { width: 46px; height: 46px; border-radius: 12px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.17s; position: relative; border: 1px solid transparent; }
+  .sn-item:hover { background: rgba(255,255,255,0.07); }
+  .sn-item.active { background: rgba(204,27,34,0.18); border-color: rgba(204,27,34,0.3); }
+  .sn-item svg { width: 19px; height: 19px; stroke: rgba(255,255,255,0.38); stroke-width: 2; }
+  .sn-item.active svg { stroke: #fff; }
+  .sn-item:hover svg { stroke: rgba(255,255,255,0.75); }
+  .sn-tip { position: absolute; left: 60px; top: 50%; transform: translateY(-50%); background: rgba(255,255,255,0.95); color: var(--dark); padding: 5px 10px; border-radius: 7px; font-size: 11.5px; font-weight: 700; white-space: nowrap; pointer-events: none; opacity: 0; transition: opacity 0.15s; z-index: 100; box-shadow: 0 4px 14px rgba(0,0,0,0.12); }
+  .sn-item:hover .sn-tip { opacity: 1; }
+  .sn-spacer { flex: 1; }
+  .sn-avatar { width: 36px; height: 36px; border-radius: 50%; background: linear-gradient(135deg, var(--red) 0%, #FF4B51 100%); display: flex; align-items: center; justify-content: center; font-family: 'Outfit', sans-serif; font-size: 12px; font-weight: 900; color: #fff; cursor: pointer; border: 2px solid rgba(255,255,255,0.12); }
+
+  /* Desktop main wrapper */
+  .main-desktop { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+  .desktop-header { background: var(--white); border-bottom: 1px solid var(--lighter); padding: 0 24px; height: 58px; display: flex; align-items: center; justify-content: space-between; flex-shrink: 0; }
+  .dh-left { display: flex; flex-direction: column; }
+  .dh-title { font-family: 'Outfit', sans-serif; font-size: 17px; font-weight: 800; color: var(--dark); letter-spacing: -0.3px; }
+  .dh-sub { font-size: 11.5px; color: var(--muted); font-weight: 500; }
+  .dh-right { display: flex; align-items: center; gap: 10px; }
+  .dh-edit-btn { display: flex; align-items: center; gap: 6px; padding: 7px 14px; background: var(--surface); border: 1.5px solid var(--lighter); border-radius: 9px; font-size: 12.5px; font-weight: 700; color: var(--gray); cursor: pointer; transition: all 0.15s; font-family: 'Plus Jakarta Sans', sans-serif; }
+  .dh-edit-btn:hover { border-color: var(--red); color: var(--red); background: var(--red-pale); }
+  .dh-edit-btn svg { width: 13px; height: 13px; stroke: currentColor; stroke-width: 2.5; }
+
+  /* Desktop content area — two columns */
+  .desktop-scroll { flex: 1; overflow-y: auto; padding: 22px; scrollbar-width: thin; scrollbar-color: var(--lighter) transparent; }
+  .desktop-scroll::-webkit-scrollbar { width: 4px; }
+  .desktop-scroll::-webkit-scrollbar-thumb { background: var(--lighter); border-radius: 10px; }
+  .desktop-grid { display: grid; grid-template-columns: 340px 1fr; gap: 18px; }
+  .desktop-col { display: flex; flex-direction: column; gap: 16px; }
+
+  /* Desktop profile hero — more compact */
+  .profile-hero { border-radius: 16px; padding: 22px 22px 26px; }
+  .stats-row { margin: 0; margin-top: -16px; }
+
+  /* Edit sheet — centered modal on desktop */
+  .edit-sheet { bottom: auto; left: auto; right: -540px; top: 0; width: 480px; height: 100vh; max-height: 100vh; border-radius: 0; transition: right 0.35s cubic-bezier(0.22,1,0.36,1); }
+  .edit-sheet.open { right: 0; bottom: auto; }
+  .sheet-handle { display: none; }
+
+  /* Row items hover on desktop */
+  .row-item:hover { background: var(--surface); }
+
+  .main-scroll { display: none; }
+  .logout-row { display: none; }
+}
+
+/* ══ ANIMATIONS ══ */
+@keyframes fadeUp { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes pulseDot { 0%,100% { box-shadow: 0 0 0 0 rgba(16,185,129,0.4); } 50% { box-shadow: 0 0 0 6px rgba(16,185,129,0); } }
+::-webkit-scrollbar { width: 3px; } ::-webkit-scrollbar-thumb { background: var(--lighter); border-radius: 10px; }
+</style>
+</head>
+<body>
+<div class="app">
+
+  <!-- ══ MOBILE TOP NAV ══ -->
+  <div class="topnav">
+    <div class="tn-left">
+      <div class="tn-logo">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/ce/Coca-Cola_logo.svg/512px-Coca-Cola_logo.svg.png" alt="Coke">
+      </div>
+      <div>
+        <div class="tn-title">My Account</div>
+        <div class="tn-sub">Reyes General Store</div>
+      </div>
+    </div>
+    <button class="btn-save" style="padding:8px 14px;border-radius:9px;font-size:12.5px;background:var(--red);color:#fff;border:none;font-family:'Outfit',sans-serif;font-weight:800;cursor:pointer;" onclick="openSheet('edit-store')">
+      Edit Profile
+    </button>
+  </div>
+
+  <!-- ══ MOBILE MAIN SCROLL ══ -->
+  <div class="main-scroll">
+
+    <!-- Profile Hero -->
+    <div class="profile-hero">
+      <div class="ph-glow"></div>
+      <div class="ph-top">
+        <div class="ph-avatar-wrap">
+          <div class="ph-avatar">RG</div>
+          <div class="ph-edit-badge" onclick="openSheet('edit-store')">
+            <svg viewBox="0 0 24 24" fill="none"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+          </div>
+        </div>
+        <div class="ph-status-chip">
+          <div class="ph-status-dot"></div>
+          Active Account
+        </div>
+      </div>
+      <div class="ph-info">
+        <div class="ph-name">Reyes General Store</div>
+        <div class="ph-store-type">Sari-Sari Store · Regular Customer</div>
+        <div class="ph-tags">
+          <div class="ph-tag">
+            <svg viewBox="0 0 24 24" fill="none"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/><circle cx="12" cy="9" r="2.5"/></svg>
+            Poblacion, San Vicente
+          </div>
+          <div class="ph-tag">
+            <svg viewBox="0 0 24 24" fill="none"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg>
+            +63 917 123 4567
+          </div>
+          <div class="ph-tag">
+            <svg viewBox="0 0 24 24" fill="none"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+            Danilo Reyes
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Stats Row -->
+    <div class="stats-row">
+      <div class="stat-cell">
+        <div class="stat-val red">7</div>
+        <div class="stat-lbl">Total Orders</div>
+      </div>
+      <div class="stat-cell">
+        <div class="stat-val">₱55K</div>
+        <div class="stat-lbl">Total Spent</div>
+      </div>
+      <div class="stat-cell">
+        <div class="stat-val">6 mo</div>
+        <div class="stat-lbl">Member Since</div>
+      </div>
+    </div>
+
+    <!-- Loyalty Card -->
+    <div class="section-block" style="animation-delay:.05s;">
+      <div class="section-label">Loyalty Program</div>
+      <div class="loyalty-card">
+        <div class="lc-glow"></div>
+        <div class="lc-top">
+          <div class="lc-logo">
+            <div class="lc-logo-dot"></div>
+            <div class="lc-brand">GD Rewards</div>
+          </div>
+          <div class="lc-tier">
+            <div class="lc-tier-ico">🥇</div>
+            <div class="lc-tier-name">Gold Tier</div>
+          </div>
+        </div>
+        <div class="lc-points">
+          <div class="lc-points-val">2,840</div>
+          <div class="lc-points-lbl">Reward Points Available</div>
+        </div>
+        <div class="lc-bar-wrap">
+          <div class="lc-bar-labels">
+            <div class="lc-bar-cur">2,840 pts</div>
+            <div class="lc-bar-next">4,000 pts → Platinum</div>
+          </div>
+          <div class="lc-bar-track"><div class="lc-bar-fill"></div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Credit Limit -->
+    <div class="section-block" style="animation-delay:.08s;">
+      <div class="section-label">Credit &amp; Payment</div>
+      <div class="credit-card">
+        <div class="cc-header">
+          <div class="cc-title">
+            <svg viewBox="0 0 24 24" fill="none"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+            Credit Limit
+          </div>
+          <div class="cc-badge">Good Standing</div>
+        </div>
+        <div class="cc-row">
+          <div>
+            <div class="cc-used">₱5,500 <span style="font-size:13px;color:var(--muted);font-weight:600;">used</span></div>
+          </div>
+          <div class="cc-limit">Limit: ₱25,000</div>
+        </div>
+        <div class="cc-track"><div class="cc-fill"></div></div>
+        <div class="cc-meta">
+          <div class="cc-meta-item">Available: <span class="cc-meta-val">₱19,500</span></div>
+          <div class="cc-meta-item">Due: <span class="cc-meta-val">Mar 15, 2026</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Points Activity -->
+    <div class="section-block" style="animation-delay:.10s;">
+      <div class="section-label">Recent Points Activity</div>
+      <div class="card-list">
+        <div class="activity-list">
+          <div class="act-item">
+            <div class="act-ico" style="background:var(--green-pale);">🛒</div>
+            <div class="act-info">
+              <div class="act-title">Order #GD-1052</div>
+              <div class="act-sub">Coke 350ml × 40 · Coke Zero × 10</div>
+            </div>
+            <div class="act-right">
+              <div class="act-amount pos">+122 pts</div>
+              <div class="act-date">Feb 27</div>
+            </div>
+          </div>
+          <div class="act-item">
+            <div class="act-ico" style="background:var(--green-pale);">🛒</div>
+            <div class="act-info">
+              <div class="act-title">Order #GD-1044</div>
+              <div class="act-sub">Coke 350ml × 60 · Sprite × 20</div>
+            </div>
+            <div class="act-right">
+              <div class="act-amount pos">+188 pts</div>
+              <div class="act-date">Feb 24</div>
+            </div>
+          </div>
+          <div class="act-item">
+            <div class="act-ico" style="background:var(--red-pale);">🎁</div>
+            <div class="act-info">
+              <div class="act-title">Points Redeemed</div>
+              <div class="act-sub">Discount on Order #GD-1038</div>
+            </div>
+            <div class="act-right">
+              <div class="act-amount neg">-200 pts</div>
+              <div class="act-date">Feb 20</div>
+            </div>
+          </div>
+          <div class="act-item">
+            <div class="act-ico" style="background:var(--green-pale);">🛒</div>
+            <div class="act-info">
+              <div class="act-title">Order #GD-1038</div>
+              <div class="act-sub">Coke 350ml × 80</div>
+            </div>
+            <div class="act-right">
+              <div class="act-amount pos">+192 pts</div>
+              <div class="act-date">Feb 20</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Store Information -->
+    <div class="section-block" style="animation-delay:.12s;">
+      <div class="section-label">Store Information</div>
+      <div class="card-list">
+        <div class="row-item" onclick="openSheet('edit-store')">
+          <div class="ri-ico" style="background:var(--red-pale);"><svg viewBox="0 0 24 24" fill="none" stroke="var(--red)" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></div>
+          <div class="ri-body">
+            <div class="ri-title">Store Name</div>
+            <div class="ri-sub">Reyes General Store</div>
+          </div>
+          <div class="ri-right">
+            <svg class="ri-arrow" viewBox="0 0 24 24" fill="none"><polyline points="9 18 15 12 9 6"/></svg>
+          </div>
+        </div>
+        <div class="row-item" onclick="openSheet('edit-address')">
+          <div class="ri-ico" style="background:var(--blue-pale);"><svg viewBox="0 0 24 24" fill="none" stroke="var(--blue)" stroke-width="2"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/><circle cx="12" cy="9" r="2.5"/></svg></div>
+          <div class="ri-body">
+            <div class="ri-title">Delivery Address</div>
+            <div class="ri-sub">Poblacion, San Vicente, Palawan</div>
+          </div>
+          <div class="ri-right">
+            <svg class="ri-arrow" viewBox="0 0 24 24" fill="none"><polyline points="9 18 15 12 9 6"/></svg>
+          </div>
+        </div>
+        <div class="row-item" onclick="openSheet('edit-contact')">
+          <div class="ri-ico" style="background:var(--green-pale);"><svg viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="2"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg></div>
+          <div class="ri-body">
+            <div class="ri-title">Contact Number</div>
+            <div class="ri-sub">+63 917 123 4567</div>
+          </div>
+          <div class="ri-right">
+            <svg class="ri-arrow" viewBox="0 0 24 24" fill="none"><polyline points="9 18 15 12 9 6"/></svg>
+          </div>
+        </div>
+        <div class="row-item" onclick="openSheet('edit-contact')">
+          <div class="ri-ico" style="background:var(--amber-pale);"><svg viewBox="0 0 24 24" fill="none" stroke="var(--amber)" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div>
+          <div class="ri-body">
+            <div class="ri-title">Owner / Contact Person</div>
+            <div class="ri-sub">Danilo Reyes</div>
+          </div>
+          <div class="ri-right">
+            <svg class="ri-arrow" viewBox="0 0 24 24" fill="none"><polyline points="9 18 15 12 9 6"/></svg>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Preferences -->
+    <div class="section-block" style="animation-delay:.14s;">
+      <div class="section-label">Preferences</div>
+      <div class="card-list">
+        <div class="row-item">
+          <div class="ri-ico" style="background:var(--blue-pale);"><svg viewBox="0 0 24 24" fill="none" stroke="var(--blue)" stroke-width="2"><path d="M18 8h1a4 4 0 0 1 0 8h-1"/><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"/><line x1="6" y1="1" x2="6" y2="4"/><line x1="10" y1="1" x2="10" y2="4"/><line x1="14" y1="1" x2="14" y2="4"/></svg></div>
+          <div class="ri-body">
+            <div class="ri-title">Order Notifications</div>
+            <div class="ri-sub">Get alerts on order status updates</div>
+          </div>
+          <div class="ri-right">
+            <div class="toggle-switch on" id="toggle-notif" onclick="toggleSwitch('notif')">
+              <div class="toggle-knob"></div>
+            </div>
+          </div>
+        </div>
+        <div class="row-item">
+          <div class="ri-ico" style="background:var(--green-pale);"><svg viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.92 13a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.82 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l.96-.96a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg></div>
+          <div class="ri-body">
+            <div class="ri-title">SMS Alerts</div>
+            <div class="ri-sub">Receive SMS for delivery updates</div>
+          </div>
+          <div class="ri-right">
+            <div class="toggle-switch on" id="toggle-sms" onclick="toggleSwitch('sms')">
+              <div class="toggle-knob"></div>
+            </div>
+          </div>
+        </div>
+        <div class="row-item">
+          <div class="ri-ico" style="background:var(--amber-pale);"><svg viewBox="0 0 24 24" fill="none" stroke="var(--amber)" stroke-width="2"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg></div>
+          <div class="ri-body">
+            <div class="ri-title">Quick Reorder</div>
+            <div class="ri-sub">Show last order shortcut on home</div>
+          </div>
+          <div class="ri-right">
+            <div class="toggle-switch on" id="toggle-reorder" onclick="toggleSwitch('reorder')">
+              <div class="toggle-knob"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Account & Security -->
+    <div class="section-block" style="animation-delay:.16s;">
+      <div class="section-label">Account &amp; Security</div>
+      <div class="card-list">
+        <div class="row-item" onclick="openSheet('edit-password')">
+          <div class="ri-ico" style="background:var(--red-pale);"><svg viewBox="0 0 24 24" fill="none" stroke="var(--red)" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></div>
+          <div class="ri-body">
+            <div class="ri-title">Change Password</div>
+            <div class="ri-sub">Last changed 3 months ago</div>
+          </div>
+          <div class="ri-right">
+            <svg class="ri-arrow" viewBox="0 0 24 24" fill="none"><polyline points="9 18 15 12 9 6"/></svg>
+          </div>
+        </div>
+        <div class="row-item" onclick="showToast('PIN updated','green')">
+          <div class="ri-ico" style="background:var(--blue-pale);"><svg viewBox="0 0 24 24" fill="none" stroke="var(--blue)" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v4m0 4h.01"/></svg></div>
+          <div class="ri-body">
+            <div class="ri-title">Transaction PIN</div>
+            <div class="ri-sub">4-digit PIN for order confirmation</div>
+          </div>
+          <div class="ri-right">
+            <span class="ri-badge green">Set</span>
+            <svg class="ri-arrow" viewBox="0 0 24 24" fill="none"><polyline points="9 18 15 12 9 6"/></svg>
+          </div>
+        </div>
+        <div class="row-item" onclick="showToast('Support team contacted','green')">
+          <div class="ri-ico" style="background:var(--green-pale);"><svg viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></div>
+          <div class="ri-body">
+            <div class="ri-title">Contact Support</div>
+            <div class="ri-sub">GD Coke customer service</div>
+          </div>
+          <div class="ri-right">
+            <svg class="ri-arrow" viewBox="0 0 24 24" fill="none"><polyline points="9 18 15 12 9 6"/></svg>
+          </div>
+        </div>
+        <div class="row-item" onclick="showToast('Opening terms…','green')">
+          <div class="ri-ico" style="background:var(--surface);"><svg viewBox="0 0 24 24" fill="none" stroke="var(--muted)" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div>
+          <div class="ri-body">
+            <div class="ri-title">Terms &amp; Conditions</div>
+            <div class="ri-sub">GD Coke consumer agreement</div>
+          </div>
+          <div class="ri-right">
+            <svg class="ri-arrow" viewBox="0 0 24 24" fill="none"><polyline points="9 18 15 12 9 6"/></svg>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Logout -->
+    <div class="logout-row">
+      <button class="logout-btn" onclick="confirmLogout()">
+        <svg viewBox="0 0 24 24" fill="none"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+        Sign Out
+      </button>
+    </div>
+    <div class="version-note">GD Coke Consumer Portal · v2.1.0</div>
+
+  </div><!-- end main-scroll -->
+
+  <!-- ══ BOTTOM NAV ══ -->
+  <nav class="bottom-nav">
+    <div class="bn-item" onclick="showToast('Go to Order Products','green')">
+      <svg viewBox="0 0 24 24" fill="none"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+      <span class="bn-lbl">Products</span>
+    </div>
+    <div class="bn-item" onclick="showToast('Go to My Orders','green')">
+      <svg viewBox="0 0 24 24" fill="none"><path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="1"/></svg>
+      <span class="bn-lbl">My Orders</span>
+    </div>
+    <div class="bn-item active">
+      <svg viewBox="0 0 24 24" fill="none"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+      <span class="bn-lbl">Account</span>
+    </div>
+  </nav>
+
+  <!-- ══ DESKTOP SIDE NAV ══ -->
+  <nav class="sidenav-desktop">
+    <div class="sn-logo">
+      <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/ce/Coca-Cola_logo.svg/512px-Coca-Cola_logo.svg.png" alt="Coke">
+    </div>
+     <div class="sn-item" onclick="window.location.href='/pages/consumer/cunsomer_dashboard.html'">
+    <svg viewBox="0 0 24 24" fill="none">
+        <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/>
+        <line x1="3" y1="6" x2="21" y2="6"/>
+        <path d="M16 10a4 4 0 0 1-8 0"/>
+    </svg>
+    <div class="sn-tip">Order Products</div>
+    </div>
+   <div class="sn-item" onclick="window.location.href='/pages/consumer/myorder.html'">
+    <svg viewBox="0 0 24 24" fill="none">
+        <path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"/>
+        <rect x="9" y="3" width="6" height="4" rx="1"/>
+        <line x1="9" y1="12" x2="15" y2="12"/>
+        <line x1="9" y1="16" x2="13" y2="16"/>
+    </svg>
+    <div class="sn-pip" id="ordersPip" style="display:none;"></div>
+    <div class="sn-tip">My Orders</div>
+    </div>
+   <div class="sn-item active" onclick="window.location.href='/pages/consumer/account.html'">
+    <svg viewBox="0 0 24 24" fill="none">
+        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+        <circle cx="12" cy="7" r="4"/>
+    </svg>
+    <div class="sn-tip">My Account</div>
+    </div>
+    <div class="sn-spacer"></div>
+    <div class="sn-avatar" onclick="showToast('Logged in as Reyes General Store','green')">RG</div>
+  </nav>
+
+  <!-- ══ DESKTOP MAIN ══ -->
+  <div class="main-desktop">
+    <div class="desktop-header">
+      <div class="dh-left">
+        <div class="dh-title">My Account</div>
+        <div class="dh-sub">Reyes General Store · San Vicente</div>
+      </div>
+      <div class="dh-right">
+        <button class="dh-edit-btn" onclick="openSheet('edit-store')">
+          <svg viewBox="0 0 24 24" fill="none"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+          Edit Profile
+        </button>
+        <button class="logout-btn" style="width:auto;padding:7px 14px;border-radius:9px;font-size:12.5px;background:var(--white);border:1.5px solid var(--lighter);border-radius:9px;" onclick="confirmLogout()">
+          <svg viewBox="0 0 24 24" fill="none" style="width:13px;height:13px;"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+          Sign Out
+        </button>
+      </div>
+    </div>
+
+    <div class="desktop-scroll">
+      <div class="desktop-grid">
+
+        <!-- LEFT COLUMN -->
+        <div class="desktop-col">
+
+          <!-- Profile Hero -->
+          <div>
+            <div class="profile-hero" style="border-radius:16px;padding:22px 22px 30px;">
+              <div class="ph-glow"></div>
+              <div class="ph-top">
+                <div class="ph-avatar-wrap">
+                  <div class="ph-avatar">RG</div>
+                  <div class="ph-edit-badge" onclick="openSheet('edit-store')">
+                    <svg viewBox="0 0 24 24" fill="none"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                  </div>
+                </div>
+                <div class="ph-status-chip">
+                  <div class="ph-status-dot"></div>
+                  Active Account
+                </div>
+              </div>
+              <div class="ph-info">
+                <div class="ph-name">Reyes General Store</div>
+                <div class="ph-store-type">Sari-Sari Store · Regular Customer</div>
+                <div class="ph-tags">
+                  <div class="ph-tag">
+                    <svg viewBox="0 0 24 24" fill="none"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/><circle cx="12" cy="9" r="2.5"/></svg>
+                    Poblacion, San Vicente
+                  </div>
+                  <div class="ph-tag">
+                    <svg viewBox="0 0 24 24" fill="none"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg>
+                    +63 917 123 4567
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="stats-row" style="margin:0;margin-top:-16px;">
+              <div class="stat-cell">
+                <div class="stat-val red">7</div>
+                <div class="stat-lbl">Total Orders</div>
+              </div>
+              <div class="stat-cell">
+                <div class="stat-val">₱55K</div>
+                <div class="stat-lbl">Total Spent</div>
+              </div>
+              <div class="stat-cell">
+                <div class="stat-val">6 mo</div>
+                <div class="stat-lbl">Member Since</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Loyalty -->
+          <div>
+            <div class="section-label">Loyalty Program</div>
+            <div class="loyalty-card">
+              <div class="lc-glow"></div>
+              <div class="lc-top">
+                <div class="lc-logo">
+                  <div class="lc-logo-dot"></div>
+                  <div class="lc-brand">GD Rewards</div>
+                </div>
+                <div class="lc-tier">
+                  <div class="lc-tier-ico">🥇</div>
+                  <div class="lc-tier-name">Gold Tier</div>
+                </div>
+              </div>
+              <div class="lc-points">
+                <div class="lc-points-val">2,840</div>
+                <div class="lc-points-lbl">Reward Points Available</div>
+              </div>
+              <div class="lc-bar-wrap">
+                <div class="lc-bar-labels">
+                  <div class="lc-bar-cur">2,840 pts</div>
+                  <div class="lc-bar-next">4,000 pts → Platinum</div>
+                </div>
+                <div class="lc-bar-track"><div class="lc-bar-fill"></div></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Credit -->
+          <div>
+            <div class="section-label">Credit &amp; Payment</div>
+            <div class="credit-card">
+              <div class="cc-header">
+                <div class="cc-title">
+                  <svg viewBox="0 0 24 24" fill="none"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+                  Credit Limit
+                </div>
+                <div class="cc-badge">Good Standing</div>
+              </div>
+              <div class="cc-row">
+                <div><div class="cc-used">₱5,500 <span style="font-size:13px;color:var(--muted);font-weight:600;">used</span></div></div>
+                <div class="cc-limit">Limit: ₱25,000</div>
+              </div>
+              <div class="cc-track"><div class="cc-fill"></div></div>
+              <div class="cc-meta">
+                <div class="cc-meta-item">Available: <span class="cc-meta-val">₱19,500</span></div>
+                <div class="cc-meta-item">Due: <span class="cc-meta-val">Mar 15, 2026</span></div>
+              </div>
+            </div>
+          </div>
+
+        </div><!-- end left col -->
+
+        <!-- RIGHT COLUMN -->
+        <div class="desktop-col">
+
+          <!-- Store Info -->
+          <div>
+            <div class="section-label">Store Information</div>
+            <div class="card-list">
+              <div class="row-item" onclick="openSheet('edit-store')">
+                <div class="ri-ico" style="background:var(--red-pale);"><svg viewBox="0 0 24 24" fill="none" stroke="var(--red)" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></div>
+                <div class="ri-body"><div class="ri-title">Store Name</div><div class="ri-sub">Reyes General Store</div></div>
+                <div class="ri-right"><svg class="ri-arrow" viewBox="0 0 24 24" fill="none"><polyline points="9 18 15 12 9 6"/></svg></div>
+              </div>
+              <div class="row-item" onclick="openSheet('edit-address')">
+                <div class="ri-ico" style="background:var(--blue-pale);"><svg viewBox="0 0 24 24" fill="none" stroke="var(--blue)" stroke-width="2"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/><circle cx="12" cy="9" r="2.5"/></svg></div>
+                <div class="ri-body"><div class="ri-title">Delivery Address</div><div class="ri-sub">Poblacion, San Vicente, Palawan</div></div>
+                <div class="ri-right"><svg class="ri-arrow" viewBox="0 0 24 24" fill="none"><polyline points="9 18 15 12 9 6"/></svg></div>
+              </div>
+              <div class="row-item" onclick="openSheet('edit-contact')">
+                <div class="ri-ico" style="background:var(--green-pale);"><svg viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="2"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg></div>
+                <div class="ri-body"><div class="ri-title">Contact Number</div><div class="ri-sub">+63 917 123 4567</div></div>
+                <div class="ri-right"><svg class="ri-arrow" viewBox="0 0 24 24" fill="none"><polyline points="9 18 15 12 9 6"/></svg></div>
+              </div>
+              <div class="row-item" onclick="openSheet('edit-contact')">
+                <div class="ri-ico" style="background:var(--amber-pale);"><svg viewBox="0 0 24 24" fill="none" stroke="var(--amber)" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div>
+                <div class="ri-body"><div class="ri-title">Owner / Contact Person</div><div class="ri-sub">Danilo Reyes</div></div>
+                <div class="ri-right"><svg class="ri-arrow" viewBox="0 0 24 24" fill="none"><polyline points="9 18 15 12 9 6"/></svg></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Activity -->
+          <div>
+            <div class="section-label">Recent Points Activity</div>
+            <div class="card-list">
+              <div class="activity-list">
+                <div class="act-item">
+                  <div class="act-ico" style="background:var(--green-pale);">🛒</div>
+                  <div class="act-info"><div class="act-title">Order #GD-1052</div><div class="act-sub">Coke 350ml × 40 · Coke Zero × 10</div></div>
+                  <div class="act-right"><div class="act-amount pos">+122 pts</div><div class="act-date">Feb 27</div></div>
+                </div>
+                <div class="act-item">
+                  <div class="act-ico" style="background:var(--green-pale);">🛒</div>
+                  <div class="act-info"><div class="act-title">Order #GD-1044</div><div class="act-sub">Coke 350ml × 60 · Sprite × 20</div></div>
+                  <div class="act-right"><div class="act-amount pos">+188 pts</div><div class="act-date">Feb 24</div></div>
+                </div>
+                <div class="act-item">
+                  <div class="act-ico" style="background:var(--red-pale);">🎁</div>
+                  <div class="act-info"><div class="act-title">Points Redeemed</div><div class="act-sub">Discount on Order #GD-1038</div></div>
+                  <div class="act-right"><div class="act-amount neg">-200 pts</div><div class="act-date">Feb 20</div></div>
+                </div>
+                <div class="act-item">
+                  <div class="act-ico" style="background:var(--green-pale);">🛒</div>
+                  <div class="act-info"><div class="act-title">Order #GD-1038</div><div class="act-sub">Coke 350ml × 80</div></div>
+                  <div class="act-right"><div class="act-amount pos">+192 pts</div><div class="act-date">Feb 20</div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Preferences -->
+          <div>
+            <div class="section-label">Preferences</div>
+            <div class="card-list">
+              <div class="row-item">
+                <div class="ri-ico" style="background:var(--blue-pale);"><svg viewBox="0 0 24 24" fill="none" stroke="var(--blue)" stroke-width="2"><path d="M18 8h1a4 4 0 0 1 0 8h-1"/><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"/><line x1="6" y1="1" x2="6" y2="4"/><line x1="10" y1="1" x2="10" y2="4"/><line x1="14" y1="1" x2="14" y2="4"/></svg></div>
+                <div class="ri-body"><div class="ri-title">Order Notifications</div><div class="ri-sub">Get alerts on order status updates</div></div>
+                <div class="ri-right"><div class="toggle-switch on" id="toggle-notif-d" onclick="toggleSwitch('notif-d')"><div class="toggle-knob"></div></div></div>
+              </div>
+              <div class="row-item">
+                <div class="ri-ico" style="background:var(--green-pale);"><svg viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.92 13a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.82 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l.96-.96a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg></div>
+                <div class="ri-body"><div class="ri-title">SMS Alerts</div><div class="ri-sub">Receive SMS for delivery updates</div></div>
+                <div class="ri-right"><div class="toggle-switch on" id="toggle-sms-d" onclick="toggleSwitch('sms-d')"><div class="toggle-knob"></div></div></div>
+              </div>
+              <div class="row-item">
+                <div class="ri-ico" style="background:var(--amber-pale);"><svg viewBox="0 0 24 24" fill="none" stroke="var(--amber)" stroke-width="2"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg></div>
+                <div class="ri-body"><div class="ri-title">Quick Reorder</div><div class="ri-sub">Show last order shortcut on home</div></div>
+                <div class="ri-right"><div class="toggle-switch on" id="toggle-reorder-d" onclick="toggleSwitch('reorder-d')"><div class="toggle-knob"></div></div></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Security -->
+          <div>
+            <div class="section-label">Account &amp; Security</div>
+            <div class="card-list">
+              <div class="row-item" onclick="openSheet('edit-password')">
+                <div class="ri-ico" style="background:var(--red-pale);"><svg viewBox="0 0 24 24" fill="none" stroke="var(--red)" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></div>
+                <div class="ri-body"><div class="ri-title">Change Password</div><div class="ri-sub">Last changed 3 months ago</div></div>
+                <div class="ri-right"><svg class="ri-arrow" viewBox="0 0 24 24" fill="none"><polyline points="9 18 15 12 9 6"/></svg></div>
+              </div>
+              <div class="row-item" onclick="showToast('PIN updated','green')">
+                <div class="ri-ico" style="background:var(--blue-pale);"><svg viewBox="0 0 24 24" fill="none" stroke="var(--blue)" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v4m0 4h.01"/></svg></div>
+                <div class="ri-body"><div class="ri-title">Transaction PIN</div><div class="ri-sub">4-digit PIN for order confirmation</div></div>
+                <div class="ri-right"><span class="ri-badge green">Set</span><svg class="ri-arrow" viewBox="0 0 24 24" fill="none"><polyline points="9 18 15 12 9 6"/></svg></div>
+              </div>
+              <div class="row-item" onclick="showToast('Support team contacted','green')">
+                <div class="ri-ico" style="background:var(--green-pale);"><svg viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></div>
+                <div class="ri-body"><div class="ri-title">Contact Support</div><div class="ri-sub">GD Coke customer service</div></div>
+                <div class="ri-right"><svg class="ri-arrow" viewBox="0 0 24 24" fill="none"><polyline points="9 18 15 12 9 6"/></svg></div>
+              </div>
+            </div>
+          </div>
+          <div style="text-align:right;padding:4px 2px;font-size:11px;color:var(--light);font-weight:600;">GD Coke Consumer Portal · v2.1.0</div>
+
+        </div><!-- end right col -->
+      </div><!-- end desktop-grid -->
+    </div><!-- end desktop-scroll -->
+  </div><!-- end main-desktop -->
+
+</div><!-- end app -->
+
+<!-- ══ EDIT SHEETS ══ -->
+<div class="sheet-backdrop" id="sheetBg" onclick="closeSheet()"></div>
+
+<!-- Edit Store -->
+<div class="edit-sheet" id="sheet-edit-store">
+  <div class="sheet-handle"></div>
+  <div class="sheet-header">
+    <div class="sheet-title">Edit Store Info</div>
+    <div class="sheet-close" onclick="closeSheet()"><svg viewBox="0 0 24 24" fill="none"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></div>
+  </div>
+  <div class="sheet-body">
+    <div class="field-group">
+      <div class="field-label">Store Name</div>
+      <input class="field-input" type="text" value="Reyes General Store" placeholder="Store name">
+    </div>
+    <div class="field-group">
+      <div class="field-label">Store Type</div>
+      <input class="field-input" type="text" value="Sari-Sari Store" placeholder="Store type">
+    </div>
+    <div class="field-group">
+      <div class="field-label">Owner / Contact Person</div>
+      <input class="field-input" type="text" value="Danilo Reyes" placeholder="Full name">
+    </div>
+    <div class="field-group">
+      <div class="field-label">Email Address</div>
+      <input class="field-input" type="email" value="danilo.reyes@gdcoke.ph" placeholder="Email">
+    </div>
+  </div>
+  <div class="sheet-footer">
+    <button class="btn-save" onclick="saveSheet('store')">Save Changes</button>
+    <button class="btn-cancel" onclick="closeSheet()">Cancel</button>
+  </div>
+</div>
+
+<!-- Edit Address -->
+<div class="edit-sheet" id="sheet-edit-address">
+  <div class="sheet-handle"></div>
+  <div class="sheet-header">
+    <div class="sheet-title">Delivery Address</div>
+    <div class="sheet-close" onclick="closeSheet()"><svg viewBox="0 0 24 24" fill="none"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></div>
+  </div>
+  <div class="sheet-body">
+    <div class="field-group">
+      <div class="field-label">Street / Purok / Sitio</div>
+      <input class="field-input" type="text" value="Purok 3" placeholder="Street address">
+    </div>
+    <div class="field-group">
+      <div class="field-label">Barangay</div>
+      <input class="field-input" type="text" value="Poblacion" placeholder="Barangay">
+    </div>
+    <div class="field-row">
+      <div class="field-group" style="margin-bottom:0;">
+        <div class="field-label">Municipality</div>
+        <input class="field-input" type="text" value="San Vicente" placeholder="Municipality">
+      </div>
+      <div class="field-group" style="margin-bottom:0;">
+        <div class="field-label">Province</div>
+        <input class="field-input" type="text" value="Palawan" placeholder="Province">
+      </div>
+    </div>
+    <div class="field-group" style="margin-top:16px;">
+      <div class="field-label">Delivery Notes (optional)</div>
+      <input class="field-input" type="text" placeholder="e.g. Near the market, landmark...">
+    </div>
+  </div>
+  <div class="sheet-footer">
+    <button class="btn-save" onclick="saveSheet('address')">Save Address</button>
+    <button class="btn-cancel" onclick="closeSheet()">Cancel</button>
+  </div>
+</div>
+
+<!-- Edit Contact -->
+<div class="edit-sheet" id="sheet-edit-contact">
+  <div class="sheet-handle"></div>
+  <div class="sheet-header">
+    <div class="sheet-title">Contact Details</div>
+    <div class="sheet-close" onclick="closeSheet()"><svg viewBox="0 0 24 24" fill="none"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></div>
+  </div>
+  <div class="sheet-body">
+    <div class="field-group">
+      <div class="field-label">Primary Mobile Number</div>
+      <input class="field-input" type="tel" value="+63 917 123 4567" placeholder="+63 9XX XXX XXXX">
+    </div>
+    <div class="field-group">
+      <div class="field-label">Secondary Number (optional)</div>
+      <input class="field-input" type="tel" placeholder="+63 9XX XXX XXXX">
+    </div>
+    <div class="field-group">
+      <div class="field-label">Owner / Contact Person</div>
+      <input class="field-input" type="text" value="Danilo Reyes" placeholder="Full name">
+    </div>
+  </div>
+  <div class="sheet-footer">
+    <button class="btn-save" onclick="saveSheet('contact')">Save Contact</button>
+    <button class="btn-cancel" onclick="closeSheet()">Cancel</button>
+  </div>
+</div>
+
+<!-- Change Password -->
+<div class="edit-sheet" id="sheet-edit-password">
+  <div class="sheet-handle"></div>
+  <div class="sheet-header">
+    <div class="sheet-title">Change Password</div>
+    <div class="sheet-close" onclick="closeSheet()"><svg viewBox="0 0 24 24" fill="none"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></div>
+  </div>
+  <div class="sheet-body">
+    <div style="display:flex;align-items:center;gap:10px;padding:12px 14px;background:var(--amber-pale);border:1px solid var(--amber-border);border-radius:11px;margin-bottom:16px;">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--amber)" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v4m0 4h.01"/></svg>
+      <span style="font-size:12px;font-weight:600;color:#92400E;">Use a strong password with at least 8 characters.</span>
+    </div>
+    <div class="field-group">
+      <div class="field-label">Current Password</div>
+      <input class="field-input" type="password" placeholder="Enter current password">
+    </div>
+    <div class="field-group">
+      <div class="field-label">New Password</div>
+      <input class="field-input" type="password" placeholder="At least 8 characters">
+    </div>
+    <div class="field-group">
+      <div class="field-label">Confirm New Password</div>
+      <input class="field-input" type="password" placeholder="Repeat new password">
+    </div>
+  </div>
+  <div class="sheet-footer">
+    <button class="btn-save" onclick="saveSheet('password')">Update Password</button>
+    <button class="btn-cancel" onclick="closeSheet()">Cancel</button>
+  </div>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toastEl">
+  <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+  <span id="toastMsg">Done!</span>
+</div>
+
+<script>
+// ══ TOGGLES ══
+function toggleSwitch(id) {
+  const el = document.getElementById('toggle-' + id);
+  if (!el) return;
+  el.classList.toggle('on');
+  const isOn = el.classList.contains('on');
+  showToast(isOn ? 'Notification turned on' : 'Notification turned off');
+}
+
+// ══ SHEETS ══
+let activeSheet = null;
+let swipeStart = 0;
+
+function openSheet(type) {
+  closeSheet();
+  const id = 'sheet-edit-' + type;
+  const el = document.getElementById(id);
+  if (!el) return;
+  activeSheet = el;
+  document.getElementById('sheetBg').classList.add('show');
+  el.classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeSheet() {
+  if (activeSheet) { activeSheet.classList.remove('open'); activeSheet = null; }
+  document.getElementById('sheetBg').classList.remove('show');
+  document.body.style.overflow = '';
+}
+
+function saveSheet(type) {
+  const msgs = { store: 'Store info saved!', address: 'Address updated!', contact: 'Contact saved!', password: 'Password changed!' };
+  closeSheet();
+  showToast(msgs[type] || 'Saved!');
+}
+
+// Swipe down to close sheets
+document.querySelectorAll('.edit-sheet').forEach(sheet => {
+  sheet.addEventListener('touchstart', e => { swipeStart = e.touches[0].clientY; }, { passive: true });
+  sheet.addEventListener('touchend', e => {
+    if (e.changedTouches[0].clientY - swipeStart > 70) closeSheet();
+  }, { passive: true });
+});
+
+// ══ LOGOUT ══
+function confirmLogout() {
+  showToast('Signing out…');
+  setTimeout(() => showToast('See you next time, Danilo! 👋'), 1800);
+}
+
+// ══ TOAST ══
+let tTimer;
+function showToast(msg) {
+  const el = document.getElementById('toastEl');
+  document.getElementById('toastMsg').textContent = msg;
+  el.classList.add('show');
+  clearTimeout(tTimer);
+  tTimer = setTimeout(() => el.classList.remove('show'), 2600);
+}
+</script>
+</body>
+</html>

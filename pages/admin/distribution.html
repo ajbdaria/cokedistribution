@@ -1,0 +1,1118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GD Coke Distributor — Distribution</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --red: #CC1B22;
+  --red-h: #E02028;
+  --red-pale: rgba(204,27,34,0.08);
+  --red-border: rgba(204,27,34,0.2);
+  --sidebar-bg: #0D1117;
+  --bg: #F0F2F7;
+  --white: #FFFFFF;
+  --dark: #111827;
+  --slate: #374151;
+  --gray: #6B7280;
+  --muted: #9CA3AF;
+  --light: #D1D5DB;
+  --lighter: #E5E7EB;
+  --surface: #F9FAFB;
+  --green: #10B981;
+  --green-pale: rgba(16,185,129,0.1);
+  --amber: #F59E0B;
+  --amber-pale: rgba(245,158,11,0.1);
+  --blue: #3B82F6;
+  --blue-pale: rgba(59,130,246,0.1);
+}
+
+html, body {
+  height: 100%; font-family: 'Plus Jakarta Sans', sans-serif;
+  background: var(--bg); color: var(--dark);
+  -webkit-font-smoothing: antialiased; overflow: hidden;
+}
+
+.app { display: flex; height: 100vh; overflow: hidden; }
+
+/* ══ SIDEBAR ══ */
+.sidebar {
+  width: 248px; flex-shrink: 0;
+  background: var(--sidebar-bg);
+  display: flex; flex-direction: column;
+  overflow: hidden; position: relative; z-index: 100;
+}
+.sidebar::before {
+  content: ''; position: absolute; top: -40px; left: -40px;
+  width: 180px; height: 180px; border-radius: 50%;
+  background: radial-gradient(circle, rgba(204,27,34,0.18) 0%, transparent 70%);
+  pointer-events: none;
+}
+.sidebar::after {
+  content: ''; position: absolute; bottom: 40px; right: -60px;
+  width: 140px; height: 140px; border-radius: 50%;
+  background: radial-gradient(circle, rgba(204,27,34,0.07) 0%, transparent 70%);
+  pointer-events: none;
+}
+.sb-logo {
+  padding: 20px 18px 16px;
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+  display: flex; align-items: center; gap: 11px; flex-shrink: 0;
+}
+.sb-logo-icon {
+  width: 38px; height: 38px; border-radius: 10px; background: var(--red);
+  display: flex; align-items: center; justify-content: center;
+  box-shadow: 0 4px 16px rgba(204,27,34,0.45); flex-shrink: 0; overflow: hidden;
+}
+.sb-logo-icon img { width: 100%; height: 100%; object-fit: contain; padding: 7px; filter: brightness(0) invert(1); }
+.sb-logo-txt { font-family: 'Outfit', sans-serif; font-size: 14.5px; font-weight: 700; color: #fff; line-height: 1.1; }
+.sb-logo-txt small { display: block; font-size: 10px; font-weight: 500; color: rgba(255,255,255,0.32); letter-spacing: 0.12em; text-transform: uppercase; margin-top: 2px; }
+.sb-nav { flex: 1; overflow-y: auto; padding: 12px 10px; scrollbar-width: none; }
+.sb-nav::-webkit-scrollbar { display: none; }
+.sb-section-lbl { font-size: 9.5px; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase; color: rgba(255,255,255,0.2); padding: 8px 8px 4px; margin-top: 6px; }
+.sb-item {
+  display: flex; align-items: center; gap: 10px;
+  padding: 9px 10px; border-radius: 9px; cursor: pointer;
+  transition: all 0.17s; margin-bottom: 1px;
+  position: relative; border: 1px solid transparent;
+}
+.sb-item:hover { background: rgba(255,255,255,0.05); }
+.sb-item.active { background: rgba(204,27,34,0.14); border-color: rgba(204,27,34,0.22); }
+.sb-item.active::before {
+  content: ''; position: absolute; left: -10px; top: 50%; transform: translateY(-50%);
+  width: 3px; height: 18px; background: var(--red); border-radius: 0 3px 3px 0;
+}
+.sb-ico { width: 30px; height: 30px; border-radius: 8px; display: flex; align-items: center; justify-content: center; background: rgba(255,255,255,0.06); flex-shrink: 0; transition: background 0.17s; }
+.sb-item.active .sb-ico { background: var(--red); }
+.sb-item:hover:not(.active) .sb-ico { background: rgba(255,255,255,0.09); }
+.sb-ico svg { width: 14px; height: 14px; stroke: rgba(255,255,255,0.45); stroke-width: 2; }
+.sb-item.active .sb-ico svg { stroke: #fff; }
+.sb-lbl { font-size: 12.5px; font-weight: 600; color: rgba(255,255,255,0.45); transition: color 0.17s; }
+.sb-item.active .sb-lbl, .sb-item:hover .sb-lbl { color: rgba(255,255,255,0.88); }
+.sb-badge { margin-left: auto; background: var(--red); color: #fff; font-size: 10px; font-weight: 700; padding: 2px 7px; border-radius: 100px; }
+.sb-user { padding: 12px 14px; border-top: 1px solid rgba(255,255,255,0.05); display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
+.sb-avatar { width: 34px; height: 34px; border-radius: 50%; background: linear-gradient(135deg, var(--red) 0%, #FF4B51 100%); display: flex; align-items: center; justify-content: center; font-family: 'Outfit', sans-serif; font-size: 13px; font-weight: 800; color: #fff; flex-shrink: 0; }
+.sb-user-info { flex: 1; min-width: 0; }
+.sb-user-name { font-size: 12.5px; font-weight: 700; color: rgba(255,255,255,0.82); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.sb-user-role { font-size: 10px; color: rgba(255,255,255,0.3); font-weight: 500; }
+.sb-logout { width: 28px; height: 28px; border-radius: 7px; background: rgba(255,255,255,0.05); border: none; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: background 0.15s; }
+.sb-logout:hover { background: rgba(255,255,255,0.1); }
+.sb-logout svg { width: 13px; height: 13px; stroke: rgba(255,255,255,0.35); stroke-width: 2; }
+
+/* ══ MAIN ══ */
+.main { flex: 1; display: flex; flex-direction: column; overflow: hidden; min-width: 0; }
+
+.topbar {
+  background: var(--white); border-bottom: 1px solid var(--lighter);
+  padding: 0 26px; height: 60px;
+  display: flex; align-items: center; justify-content: space-between;
+  flex-shrink: 0; gap: 14px;
+}
+.topbar-left { display: flex; align-items: center; gap: 14px; }
+.back-btn {
+  display: flex; align-items: center; gap: 6px;
+  padding: 7px 12px; border-radius: 9px;
+  background: var(--surface); border: 1.5px solid var(--lighter);
+  font-size: 12.5px; font-weight: 700; color: var(--gray); cursor: pointer;
+  transition: all 0.15s; font-family: 'Plus Jakarta Sans', sans-serif;
+}
+.back-btn svg { width: 13px; height: 13px; stroke: currentColor; stroke-width: 2.5; }
+.back-btn:hover { border-color: var(--red); color: var(--red); background: var(--red-pale); }
+.tb-divider { width: 1px; height: 22px; background: var(--lighter); }
+.page-title { font-family: 'Outfit', sans-serif; font-size: 18px; font-weight: 800; color: var(--dark); letter-spacing: -0.3px; }
+.page-sub { font-size: 12px; color: var(--muted); font-weight: 500; margin-top: 1px; }
+.topbar-right { display: flex; align-items: center; gap: 10px; }
+
+.tb-search {
+  display: flex; align-items: center; gap: 8px;
+  background: var(--surface); border: 1.5px solid var(--lighter);
+  border-radius: 10px; padding: 8px 13px; width: 240px; transition: border-color 0.2s;
+}
+.tb-search:focus-within { border-color: var(--red); }
+.tb-search svg { width: 13px; height: 13px; stroke: var(--muted); flex-shrink: 0; }
+.tb-search input { background: none; border: none; outline: none; font-family: 'Plus Jakarta Sans', sans-serif; font-size: 12.5px; color: var(--dark); width: 100%; }
+.tb-search input::placeholder { color: var(--light); }
+
+.btn-primary {
+  display: flex; align-items: center; gap: 7px;
+  padding: 9px 18px; background: var(--red); border: none;
+  border-radius: 10px; color: #fff; font-family: 'Outfit', sans-serif;
+  font-size: 14px; font-weight: 700; cursor: pointer; transition: all 0.18s;
+}
+.btn-primary:hover { background: var(--red-h); transform: translateY(-1px); box-shadow: 0 6px 18px rgba(204,27,34,0.28); }
+.btn-primary svg { width: 14px; height: 14px; stroke: #fff; stroke-width: 2.5; }
+
+.icon-btn {
+  width: 34px; height: 34px; border-radius: 8px;
+  background: var(--surface); border: 1.5px solid var(--lighter);
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; transition: all 0.15s;
+}
+.icon-btn:hover { border-color: var(--red); background: var(--red-pale); }
+.icon-btn svg { width: 14px; height: 14px; stroke: var(--gray); stroke-width: 2; }
+.icon-btn:hover svg { stroke: var(--red); }
+
+/* ── DATE BAR ── */
+.date-bar {
+  background: var(--white); border-bottom: 1px solid var(--lighter);
+  padding: 0 26px; height: 46px;
+  display: flex; align-items: center; justify-content: space-between;
+  flex-shrink: 0; gap: 14px;
+}
+.date-bar-left { display: flex; align-items: center; gap: 16px; }
+.date-label {
+  font-family: 'Outfit', sans-serif; font-size: 13px; font-weight: 700;
+  color: var(--dark); display: flex; align-items: center; gap: 7px;
+}
+.date-label svg { width: 14px; height: 14px; stroke: var(--red); stroke-width: 2; }
+.date-nav-btn {
+  width: 28px; height: 28px; border-radius: 7px;
+  background: var(--surface); border: 1.5px solid var(--lighter);
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; transition: all 0.15s;
+}
+.date-nav-btn:hover { border-color: var(--red); background: var(--red-pale); }
+.date-nav-btn svg { width: 12px; height: 12px; stroke: var(--gray); stroke-width: 2.5; }
+.date-nav-btn:hover svg { stroke: var(--red); }
+.date-input {
+  padding: 5px 10px; background: var(--surface); border: 1.5px solid var(--lighter);
+  border-radius: 8px; font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 12px; font-weight: 600; color: var(--slate); outline: none;
+  transition: border-color 0.2s; cursor: pointer;
+}
+.date-input:focus { border-color: var(--red); }
+
+.date-bar-right { display: flex; align-items: center; gap: 10px; }
+.summary-chips { display: flex; align-items: center; gap: 8px; }
+.summary-chip {
+  display: flex; align-items: center; gap: 6px;
+  padding: 5px 12px; border-radius: 8px; border: 1px solid var(--lighter);
+  background: var(--surface); font-size: 12px; font-weight: 700;
+}
+.summary-chip-dot { width: 7px; height: 7px; border-radius: 50%; }
+
+/* ── CONTENT ── */
+.content {
+  flex: 1; overflow-y: auto; padding: 20px 26px 32px;
+  scrollbar-width: thin; scrollbar-color: var(--lighter) transparent;
+}
+.content::-webkit-scrollbar { width: 5px; }
+.content::-webkit-scrollbar-thumb { background: var(--lighter); border-radius: 10px; }
+
+/* ── MUNI SECTION ── */
+.muni-section {
+  margin-bottom: 24px;
+  animation: fadeUp 0.4s ease both;
+}
+.muni-section:nth-child(1) { animation-delay: .04s; }
+.muni-section:nth-child(2) { animation-delay: .08s; }
+.muni-section:nth-child(3) { animation-delay: .12s; }
+.muni-section:nth-child(4) { animation-delay: .16s; }
+
+.muni-header {
+  display: flex; align-items: center; gap: 12px;
+  margin-bottom: 12px;
+}
+.muni-color-bar {
+  width: 4px; height: 32px; border-radius: 2px; flex-shrink: 0;
+}
+.muni-title {
+  font-family: 'Outfit', sans-serif; font-size: 16px; font-weight: 800;
+  color: var(--dark); letter-spacing: -0.2px;
+}
+.muni-count {
+  font-size: 12px; color: var(--muted); font-weight: 600; margin-top: 1px;
+}
+.muni-header-right { margin-left: auto; display: flex; align-items: center; gap: 8px; }
+.muni-total {
+  font-family: 'Outfit', sans-serif; font-size: 14px; font-weight: 800;
+  padding: 5px 14px; border-radius: 8px; border: 1.5px solid;
+}
+
+/* ── DELIVERY TABLE ── */
+.del-table-wrap {
+  background: var(--white); border: 1px solid var(--lighter);
+  border-radius: 14px; overflow: hidden;
+}
+
+table { width: 100%; border-collapse: collapse; }
+
+thead th {
+  padding: 10px 16px; text-align: left;
+  font-size: 10.5px; font-weight: 700; letter-spacing: 0.09em;
+  text-transform: uppercase; color: var(--muted);
+  background: var(--surface); border-bottom: 1px solid var(--lighter);
+  white-space: nowrap;
+}
+
+tbody tr {
+  border-bottom: 1px solid var(--lighter);
+  transition: background 0.12s; cursor: pointer;
+}
+tbody tr:hover { background: #FAFBFF; }
+tbody tr:last-child { border-bottom: none; }
+
+tbody td {
+  padding: 13px 16px; font-size: 13px;
+  color: var(--slate); font-weight: 500; vertical-align: middle;
+}
+
+/* col: # */
+.td-num {
+  width: 40px; text-align: center;
+  font-family: 'Outfit', sans-serif; font-size: 12px;
+  font-weight: 800; color: var(--muted);
+}
+
+/* col: consumer */
+.consumer-cell { display: flex; align-items: center; gap: 10px; }
+.consumer-avatar {
+  width: 34px; height: 34px; border-radius: 9px;
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'Outfit', sans-serif; font-size: 12px; font-weight: 800;
+  color: #fff; flex-shrink: 0;
+}
+.consumer-name { font-weight: 700; color: var(--dark); font-size: 13.5px; line-height: 1.2; }
+.consumer-owner { font-size: 11.5px; color: var(--muted); margin-top: 1px; }
+.consumer-contact {
+  display: flex; align-items: center; gap: 5px;
+  font-size: 11px; color: var(--blue); font-weight: 600; margin-top: 3px;
+}
+.consumer-contact svg { width: 10px; height: 10px; stroke: currentColor; stroke-width: 2.5; flex-shrink: 0; }
+
+/* col: address */
+.address-cell { max-width: 200px; }
+.address-main { font-weight: 600; color: var(--dark); font-size: 13px; line-height: 1.3; }
+.address-brgy { font-size: 11.5px; color: var(--muted); margin-top: 2px; }
+
+/* col: biz type */
+.biz-tag { display: inline-block; padding: 3px 10px; border-radius: 6px; font-size: 10.5px; font-weight: 700; border: 1px solid; }
+.biz-w { background: rgba(59,130,246,0.08); color: #1E40AF; border-color: rgba(59,130,246,0.2); }
+.biz-r { background: rgba(245,158,11,0.08); color: #92400E; border-color: rgba(245,158,11,0.2); }
+.biz-m { background: rgba(16,185,129,0.08); color: #065F46; border-color: rgba(16,185,129,0.2); }
+
+/* col: products */
+.products-cell { min-width: 200px; }
+.product-line {
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 12px; padding: 3px 0;
+}
+.product-name { font-size: 12.5px; font-weight: 600; color: var(--dark); }
+.product-qty {
+  font-family: 'Outfit', sans-serif; font-size: 13px; font-weight: 800;
+  color: var(--red); white-space: nowrap;
+  background: var(--red-pale); padding: 2px 8px; border-radius: 6px;
+}
+
+/* col: total */
+.amount-cell { font-family: 'Outfit', sans-serif; font-weight: 900; color: var(--dark); font-size: 15px; letter-spacing: -0.3px; white-space: nowrap; }
+
+/* col: payment */
+.pay-badge {
+  display: inline-flex; align-items: center; gap: 5px;
+  padding: 4px 10px; border-radius: 8px; font-size: 11px; font-weight: 700;
+}
+.pay-cod  { background: var(--amber-pale); color: #92400E; }
+.pay-bank { background: var(--blue-pale);  color: #1E40AF; }
+.pay-gcash{ background: var(--green-pale); color: #065F46; }
+
+/* col: actions */
+.act-btn {
+  padding: 6px 13px; border-radius: 7px; font-size: 11.5px; font-weight: 700;
+  cursor: pointer; border: 1.5px solid; transition: all 0.15s;
+  font-family: 'Plus Jakarta Sans', sans-serif; white-space: nowrap;
+}
+.act-view { background: var(--surface); border-color: var(--lighter); color: var(--gray); }
+.act-view:hover { border-color: var(--blue); color: var(--blue); background: var(--blue-pale); }
+.act-print { background: var(--red-pale); border-color: var(--red-border); color: var(--red); }
+.act-print:hover { background: var(--red); color: #fff; }
+
+/* ── EMPTY STATE ── */
+.empty-state {
+  text-align: center; padding: 48px 20px;
+  color: var(--muted); font-size: 13px;
+}
+.empty-state svg { width: 40px; height: 40px; stroke: var(--lighter); stroke-width: 1.5; margin-bottom: 12px; }
+
+/* ── DRAWER ── */
+.drawer-backdrop { position: fixed; inset: 0; background: rgba(10,12,18,0.4); backdrop-filter: blur(3px); z-index: 400; display: none; }
+.drawer-backdrop.show { display: block; }
+.drawer {
+  position: fixed; top: 0; right: -500px; width: 480px; height: 100vh;
+  background: var(--white); z-index: 450;
+  box-shadow: -8px 0 40px rgba(0,0,0,0.15);
+  transition: right 0.35s cubic-bezier(0.22,1,0.36,1);
+  display: flex; flex-direction: column; overflow: hidden;
+}
+.drawer.open { right: 0; }
+.drawer-header {
+  padding: 22px 22px 18px; border-bottom: 1px solid var(--lighter);
+  display: flex; align-items: flex-start; justify-content: space-between; flex-shrink: 0;
+}
+.drawer-title { font-family: 'Outfit', sans-serif; font-size: 18px; font-weight: 800; color: var(--dark); }
+.drawer-sub { font-size: 12px; color: var(--muted); margin-top: 3px; }
+.drawer-close {
+  width: 32px; height: 32px; border-radius: 9px;
+  background: var(--surface); border: 1.5px solid var(--lighter);
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; transition: all 0.15s; flex-shrink: 0;
+}
+.drawer-close:hover { background: var(--red-pale); border-color: var(--red-border); }
+.drawer-close svg { width: 14px; height: 14px; stroke: var(--gray); stroke-width: 2.5; }
+.drawer-close:hover svg { stroke: var(--red); }
+.drawer-body { flex: 1; overflow-y: auto; padding: 20px 22px; scrollbar-width: thin; }
+.drawer-body::-webkit-scrollbar { width: 4px; }
+.drawer-body::-webkit-scrollbar-thumb { background: var(--lighter); border-radius: 8px; }
+.drawer-section { margin-bottom: 22px; }
+.drawer-section-lbl { font-size: 10px; font-weight: 700; letter-spacing: 0.15em; text-transform: uppercase; color: var(--muted); margin-bottom: 10px; }
+.info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.info-cell { background: var(--surface); border: 1px solid var(--lighter); border-radius: 10px; padding: 10px 13px; }
+.info-cell.wide { grid-column: 1 / -1; }
+.info-cell-lbl { font-size: 10.5px; font-weight: 700; color: var(--muted); margin-bottom: 3px; }
+.info-cell-val { font-size: 13px; font-weight: 700; color: var(--dark); }
+.info-cell-val.red { color: var(--red); font-family: 'Outfit', sans-serif; font-size: 18px; }
+
+/* product rows in drawer */
+.drawer-product-list { display: flex; flex-direction: column; gap: 8px; }
+.drawer-product-row {
+  display: flex; align-items: center; justify-content: space-between;
+  background: var(--surface); border: 1px solid var(--lighter);
+  border-radius: 11px; padding: 12px 14px; gap: 12px;
+}
+.dp-name { font-weight: 700; color: var(--dark); font-size: 13px; }
+.dp-sku  { font-size: 11px; color: var(--muted); margin-top: 1px; }
+.dp-right { text-align: right; flex-shrink: 0; }
+.dp-qty  { font-family: 'Outfit', sans-serif; font-size: 15px; font-weight: 900; color: var(--dark); }
+.dp-price{ font-size: 11px; color: var(--muted); margin-top: 1px; }
+
+.drawer-total {
+  display: flex; align-items: center; justify-content: space-between;
+  background: var(--dark); border-radius: 12px; padding: 14px 16px; margin-top: 8px;
+}
+.dt-lbl { font-size: 13px; color: rgba(255,255,255,0.55); font-weight: 600; }
+.dt-val { font-family: 'Outfit', sans-serif; font-size: 22px; font-weight: 900; color: #fff; }
+
+/* notes box */
+.notes-box {
+  background: var(--amber-pale); border: 1px solid rgba(245,158,11,0.25);
+  border-radius: 10px; padding: 12px 14px;
+  font-size: 13px; color: #92400E; font-weight: 500; line-height: 1.6;
+}
+
+/* print slip btn */
+.drawer-footer {
+  padding: 16px 22px; border-top: 1px solid var(--lighter);
+  display: flex; gap: 10px; flex-shrink: 0;
+}
+.btn-print {
+  flex: 1; padding: 12px; background: var(--dark); border: none;
+  border-radius: 10px; color: #fff; font-family: 'Outfit', sans-serif;
+  font-size: 14px; font-weight: 700; cursor: pointer; transition: all 0.18s;
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+}
+.btn-print:hover { background: #1a2030; box-shadow: 0 6px 18px rgba(0,0,0,0.2); }
+.btn-print svg { width: 15px; height: 15px; stroke: rgba(255,255,255,0.7); stroke-width: 2; }
+.btn-close-drawer {
+  padding: 12px 18px; background: var(--surface);
+  border: 1.5px solid var(--lighter); border-radius: 10px;
+  font-family: 'Outfit', sans-serif; font-size: 14px; font-weight: 700;
+  color: var(--gray); cursor: pointer; transition: all 0.15s;
+}
+.btn-close-drawer:hover { border-color: var(--light); color: var(--slate); }
+
+/* ── TOAST ── */
+.toast {
+  position: fixed; bottom: 22px; right: 22px;
+  background: var(--dark); color: #fff;
+  padding: 11px 18px; border-radius: 11px;
+  font-size: 13px; font-weight: 600;
+  display: flex; align-items: center; gap: 9px;
+  box-shadow: 0 8px 28px rgba(0,0,0,0.22); z-index: 9999;
+  transform: translateY(70px); opacity: 0;
+  transition: all 0.3s cubic-bezier(0.34,1.56,0.64,1);
+}
+.toast.show { transform: translateY(0); opacity: 1; }
+.toast svg { width: 15px; height: 15px; stroke: #4ADE80; stroke-width: 2.5; }
+
+/* filter row */
+.filter-bar {
+  display: flex; align-items: center; gap: 10px;
+  flex-wrap: wrap; margin-bottom: 18px;
+  animation: fadeUp 0.4s ease 0.02s both;
+}
+.filter-chip {
+  display: flex; align-items: center; gap: 6px;
+  padding: 7px 14px; background: var(--white);
+  border: 1.5px solid var(--lighter); border-radius: 9px;
+  font-size: 12.5px; font-weight: 600; color: var(--gray);
+  cursor: pointer; transition: all 0.17s; white-space: nowrap;
+}
+.filter-chip:hover { border-color: var(--red); color: var(--red); background: var(--red-pale); }
+.filter-chip.active { background: var(--red-pale); border-color: var(--red-border); color: var(--red); }
+.filter-chip-dot { width: 7px; height: 7px; border-radius: 50%; }
+.filter-sep { width: 1px; height: 28px; background: var(--lighter); }
+.sel {
+  padding: 8px 12px; background: var(--white);
+  border: 1.5px solid var(--lighter); border-radius: 9px;
+  font-family: 'Plus Jakarta Sans', sans-serif; font-size: 12.5px;
+  font-weight: 600; color: var(--slate); outline: none; cursor: pointer;
+  transition: border-color 0.2s;
+}
+.sel:focus { border-color: var(--red); }
+.filter-ml { margin-left: auto; }
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+::-webkit-scrollbar { width: 4px; height: 4px; }
+::-webkit-scrollbar-thumb { background: var(--lighter); border-radius: 10px; }
+</style>
+</head>
+<body>
+<div class="app">
+
+<!-- ══ SIDEBAR ══ -->
+<aside class="sidebar">
+  <div class="sb-logo">
+    <div class="sb-logo-icon">
+      <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/ce/Coca-Cola_logo.svg/512px-Coca-Cola_logo.svg.png" alt="Coke">
+    </div>
+    <div class="sb-logo-txt">GD Distributor <small>Admin Portal</small></div>
+  </div>
+
+  <nav class="sb-nav">
+    <div class="sb-section-lbl">Main</div>
+    <div class="sb-item" onclick="toast('Go to Dashboard')">
+      <div class="sb-ico"><svg viewBox="0 0 24 24" fill="none"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg></div>
+      <span class="sb-lbl">Dashboard</span>
+    </div>
+    <div class="sb-item" onclick="toast('Go to Orders')">
+      <div class="sb-ico"><svg viewBox="0 0 24 24" fill="none"><path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="1"/></svg></div>
+      <span class="sb-lbl">Orders</span>
+      <span class="sb-badge" id="pendingBadge">3</span>
+    </div>
+    <div class="sb-item active">
+      <div class="sb-ico"><svg viewBox="0 0 24 24" fill="none"><path d="M1 3h15v13H1z"/><path d="M16 8h4l3 3v5h-7V8z"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg></div>
+      <span class="sb-lbl">Distribution</span>
+    </div>
+    <div class="sb-item" onclick="toast('Inventory page coming soon')">
+      <div class="sb-ico"><svg viewBox="0 0 24 24" fill="none"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg></div>
+      <span class="sb-lbl">Inventory</span>
+    </div>
+    <div class="sb-section-lbl">Municipalities</div>
+    <div class="sb-item" onclick="jumpToMuni('San Vicente')">
+      <div class="sb-ico"><svg viewBox="0 0 24 24" fill="none"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/><circle cx="12" cy="9" r="2.5"/></svg></div>
+      <span class="sb-lbl">San Vicente</span>
+    </div>
+    <div class="sb-item" onclick="jumpToMuni('Mercedes')">
+      <div class="sb-ico"><svg viewBox="0 0 24 24" fill="none"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/><circle cx="12" cy="9" r="2.5"/></svg></div>
+      <span class="sb-lbl">Mercedes</span>
+    </div>
+    <div class="sb-item" onclick="jumpToMuni('San Lorenzo')">
+      <div class="sb-ico"><svg viewBox="0 0 24 24" fill="none"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/><circle cx="12" cy="9" r="2.5"/></svg></div>
+      <span class="sb-lbl">San Lorenzo</span>
+    </div>
+    <div class="sb-item" onclick="jumpToMuni('Basud')">
+      <div class="sb-ico"><svg viewBox="0 0 24 24" fill="none"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/><circle cx="12" cy="9" r="2.5"/></svg></div>
+      <span class="sb-lbl">Basud</span>
+    </div>
+    <div class="sb-section-lbl">System</div>
+    <div class="sb-item" onclick="toast('Consumers coming soon')">
+      <div class="sb-ico"><svg viewBox="0 0 24 24" fill="none"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg></div>
+      <span class="sb-lbl">Consumers</span>
+    </div>
+    <div class="sb-item" onclick="toast('Reports coming soon')">
+      <div class="sb-ico"><svg viewBox="0 0 24 24" fill="none"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg></div>
+      <span class="sb-lbl">Reports</span>
+    </div>
+    <div class="sb-item" onclick="toast('Settings coming soon')">
+      <div class="sb-ico"><svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></div>
+      <span class="sb-lbl">Settings</span>
+    </div>
+  </nav>
+
+  <div class="sb-user">
+    <div class="sb-avatar">AD</div>
+    <div class="sb-user-info">
+      <div class="sb-user-name">GD Admin</div>
+      <div class="sb-user-role">System Administrator</div>
+    </div>
+    <button class="sb-logout" onclick="toast('Logged out')">
+      <svg viewBox="0 0 24 24" fill="none"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+    </button>
+  </div>
+</aside>
+
+<!-- ══ MAIN ══ -->
+<div class="main">
+
+  <!-- TOPBAR -->
+  <div class="topbar">
+    <div class="topbar-left">
+      <button class="back-btn" onclick="toast('Back to Dashboard')">
+        <svg viewBox="0 0 24 24" fill="none"><polyline points="15 18 9 12 15 6"/></svg>
+        Dashboard
+      </button>
+      <div class="tb-divider"></div>
+      <div>
+        <div class="page-title">Distribution Sheet</div>
+        <div class="page-sub">Daily delivery list — consumer info, address &amp; order details</div>
+      </div>
+    </div>
+    <div class="topbar-right">
+      <div class="tb-search">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <input type="text" id="searchInput" placeholder="Search consumer, address, order…" oninput="renderAll()">
+      </div>
+      <div class="icon-btn" onclick="toast('Print full sheet — coming soon')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+      </div>
+      <div class="icon-btn" onclick="toast('Export to PDF — coming soon')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+      </div>
+    </div>
+  </div>
+
+  <!-- DATE BAR -->
+  <div class="date-bar">
+    <div class="date-bar-left">
+      <div class="date-nav-btn" onclick="changeDate(-1)">
+        <svg viewBox="0 0 24 24" fill="none"><polyline points="15 18 9 12 15 6"/></svg>
+      </div>
+      <div class="date-label">
+        <svg viewBox="0 0 24 24" fill="none"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+        <span id="dateLabel">Today</span>
+      </div>
+      <input type="date" class="date-input" id="datePicker" onchange="onDateChange()">
+      <div class="date-nav-btn" onclick="changeDate(1)">
+        <svg viewBox="0 0 24 24" fill="none"><polyline points="9 18 15 12 9 6"/></svg>
+      </div>
+    </div>
+    <div class="date-bar-right">
+      <div class="summary-chips">
+        <div class="summary-chip"><div class="summary-chip-dot" style="background:var(--dark);"></div><span id="sc-total">0 orders</span></div>
+        <div class="summary-chip"><div class="summary-chip-dot" style="background:var(--red);"></div><span id="sc-amount">₱0</span></div>
+        <div class="summary-chip"><div class="summary-chip-dot" style="background:var(--blue);"></div><span id="sc-cases">0 cases</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CONTENT -->
+  <div class="content" id="mainContent">
+
+    <!-- Filter bar -->
+    <div class="filter-bar">
+      <div class="filter-chip active" id="fc-all" onclick="setMuniFilter('', this)">All Municipalities</div>
+      <div class="filter-chip" id="fc-sv" onclick="setMuniFilter('San Vicente', this)">
+        <span class="filter-chip-dot" style="background:#CC1B22;"></span>San Vicente
+      </div>
+      <div class="filter-chip" id="fc-me" onclick="setMuniFilter('Mercedes', this)">
+        <span class="filter-chip-dot" style="background:#3B82F6;"></span>Mercedes
+      </div>
+      <div class="filter-chip" id="fc-sl" onclick="setMuniFilter('San Lorenzo', this)">
+        <span class="filter-chip-dot" style="background:#10B981;"></span>San Lorenzo
+      </div>
+      <div class="filter-chip" id="fc-ba" onclick="setMuniFilter('Basud', this)">
+        <span class="filter-chip-dot" style="background:#F59E0B;"></span>Basud
+      </div>
+      <div class="filter-sep"></div>
+      <select class="sel" id="bizFilter" onchange="renderAll()">
+        <option value="">All Business Types</option>
+        <option>Wholesaler</option>
+        <option>Restaurant</option>
+        <option>Sari-sari</option>
+      </select>
+      <div class="filter-ml">
+        <div class="filter-chip" onclick="clearFilters()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="11" height="11"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+          Clear
+        </div>
+      </div>
+    </div>
+
+    <!-- Muni sections rendered here -->
+    <div id="muniSections"></div>
+
+  </div>
+</div>
+</div>
+
+<!-- DETAIL DRAWER -->
+<div class="drawer-backdrop" id="drawerBg" onclick="closeDrawer()"></div>
+<div class="drawer" id="drawer">
+  <div class="drawer-header">
+    <div>
+      <div class="drawer-title" id="d-title">Consumer Info</div>
+      <div class="drawer-sub" id="d-sub">#GD-0000 · Municipality</div>
+    </div>
+    <div class="drawer-close" onclick="closeDrawer()">
+      <svg viewBox="0 0 24 24" fill="none"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </div>
+  </div>
+  <div class="drawer-body" id="drawerBody"></div>
+  <div class="drawer-footer">
+    <button class="btn-print" onclick="toast('Print slip — coming soon')">
+      <svg viewBox="0 0 24 24" fill="none"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+      Print Delivery Slip
+    </button>
+    <button class="btn-close-drawer" onclick="closeDrawer()">Close</button>
+  </div>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toastEl">
+  <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+  <span id="toastMsg">Done!</span>
+</div>
+
+<script>
+// ══════════════════════════════
+//  DATA
+// ══════════════════════════════
+const MUNI_COLORS = {
+  'San Vicente': '#CC1B22',
+  'Mercedes':    '#3B82F6',
+  'San Lorenzo': '#10B981',
+  'Basud':       '#F59E0B',
+};
+
+const CLIENT_COLORS = ['#CC1B22','#3B82F6','#10B981','#F59E0B','#8B5CF6','#EC4899'];
+
+const ORDERS = [
+  {
+    id:'GD-1052', client:'Reyes General Store', owner:'Danilo Reyes',
+    contact:'0917-234-5678', muni:'San Vicente', biz:'Wholesaler',
+    address:'Poblacion', barangay:'Brgy. 1, San Vicente',
+    items:[{name:'Coca-Cola 350ml',sku:'CK-350',qty:40,price:120},{name:'Coke Zero 350ml',sku:'CZ-350',qty:10,price:130}],
+    pay:'Cash on Delivery', notes:'Call 30 mins before arriving'
+  },
+  {
+    id:'GD-1048', client:'Cruz Mini Mart', owner:'Bong Cruz',
+    contact:'0918-876-5432', muni:'San Vicente', biz:'Sari-sari',
+    address:'Maharlika Highway', barangay:'Brgy. 5, San Vicente',
+    items:[{name:'Coca-Cola 1L',sku:'CK-1L',qty:6,price:240}],
+    pay:'GCash', notes:''
+  },
+  {
+    id:'GD-1043', client:'San Vicente Superstore', owner:'Mario Villafuerte',
+    contact:'0919-555-1234', muni:'San Vicente', biz:'Wholesaler',
+    address:'National Road', barangay:'Brgy. 3, San Vicente',
+    items:[{name:'Coca-Cola 350ml',sku:'CK-350',qty:80,price:120},{name:'Sprite 350ml',sku:'SP-350',qty:20,price:110}],
+    pay:'Bank Transfer', notes:'Deliver to back storage only'
+  },
+  {
+    id:'GD-1051', client:"Lola Rosa's Eatery", owner:'Rosa Magtibay',
+    contact:'0916-321-6543', muni:'Mercedes', biz:'Restaurant',
+    address:'Brgy. Centro', barangay:'Brgy. Centro, Mercedes',
+    items:[{name:'Coca-Cola 1L',sku:'CK-1L',qty:10,price:240}],
+    pay:'GCash', notes:''
+  },
+  {
+    id:'GD-1047', client:'Mercado Wholesale', owner:'Rodel Mercado',
+    contact:'0912-111-2233', muni:'Mercedes', biz:'Wholesaler',
+    address:'Purok Sampaguita', barangay:'Brgy. 2, Mercedes',
+    items:[{name:'Coke Zero 350ml',sku:'CZ-350',qty:60,price:130}],
+    pay:'Bank Transfer', notes:'Large order — bring extra manpower'
+  },
+  {
+    id:'GD-1044', client:'Mercedes Canteen', owner:'Luisa Tan',
+    contact:'0923-444-5566', muni:'Mercedes', biz:'Restaurant',
+    address:'Near Municipal Hall', barangay:'Brgy. Centro, Mercedes',
+    items:[{name:'Coca-Cola 1.5L',sku:'CK-15L',qty:12,price:360}],
+    pay:'Cash on Delivery', notes:''
+  },
+  {
+    id:'GD-1050', client:'Nano Sari-sari Store', owner:'Nano Gonzales',
+    contact:'0921-777-8899', muni:'San Lorenzo', biz:'Sari-sari',
+    address:'Sitio Malaya', barangay:'Brgy. 3, San Lorenzo',
+    items:[{name:'Coca-Cola 350ml',sku:'CK-350',qty:4,price:120}],
+    pay:'Cash on Delivery', notes:''
+  },
+  {
+    id:'GD-1046', client:'SL Canteen', owner:'Tina Buenaflor',
+    contact:'0924-666-0011', muni:'San Lorenzo', biz:'Restaurant',
+    address:'Purok Mabuhay', barangay:'Brgy. 4, San Lorenzo',
+    items:[{name:'Royal Tru-Orange',sku:'RO-350',qty:8,price:110}],
+    pay:'Cash on Delivery', notes:''
+  },
+  {
+    id:'GD-1041', client:'Flores Restaurant', owner:'Jun Flores',
+    contact:'0925-333-7788', muni:'San Lorenzo', biz:'Restaurant',
+    address:'National Highway', barangay:'Brgy. 1, San Lorenzo',
+    items:[{name:'Coca-Cola 1L',sku:'CK-1L',qty:15,price:240},{name:'Coke Zero 350ml',sku:'CZ-350',qty:5,price:130}],
+    pay:'GCash', notes:'Contact first, they have a narrow driveway'
+  },
+  {
+    id:'GD-1049', client:'Basud Food Hub', owner:'Elena Cruz',
+    contact:'0927-999-0022', muni:'Basud', biz:'Restaurant',
+    address:'Poblacion', barangay:'Poblacion, Basud',
+    items:[{name:'Coca-Cola 1.5L',sku:'CK-15L',qty:18,price:360}],
+    pay:'Bank Transfer', notes:''
+  },
+  {
+    id:'GD-1045', client:'Basud Corner Store', owner:'Jun Bautista',
+    contact:'0929-123-4455', muni:'Basud', biz:'Sari-sari',
+    address:'Sitio Uno', barangay:'Brgy. 1, Basud',
+    items:[{name:'Coca-Cola 350ml',sku:'CK-350',qty:3,price:120}],
+    pay:'Cash on Delivery', notes:''
+  },
+  {
+    id:'GD-1042', client:"Nena's Store", owner:'Nena Labrador',
+    contact:'0930-555-7788', muni:'Basud', biz:'Sari-sari',
+    address:'Purok Bagong Silang', barangay:'Brgy. 2, Basud',
+    items:[{name:'Coca-Cola 350ml',sku:'CK-350',qty:2,price:120}],
+    pay:'Cash on Delivery', notes:''
+  },
+];
+
+// ══════════════════════════════
+//  STATE
+// ══════════════════════════════
+let muniFilter  = '';
+let currentDate = new Date();
+let activeOrder = null;
+
+// ══════════════════════════════
+//  HELPERS
+// ══════════════════════════════
+function orderTotal(o) {
+  return o.items.reduce((s, i) => s + i.qty * i.price, 0);
+}
+
+function orderCases(o) {
+  return o.items.reduce((s, i) => s + i.qty, 0);
+}
+
+function fmtDate(d) {
+  return d.toLocaleDateString('en-PH', { weekday:'long', year:'numeric', month:'long', day:'numeric' });
+}
+
+function avatarColor(name) {
+  return CLIENT_COLORS[name.charCodeAt(0) % CLIENT_COLORS.length];
+}
+
+function initials(name) {
+  return name.split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase();
+}
+
+function payClass(pay) {
+  if (pay === 'GCash') return 'pay-gcash';
+  if (pay === 'Bank Transfer') return 'pay-bank';
+  return 'pay-cod';
+}
+
+// ══════════════════════════════
+//  FILTER
+// ══════════════════════════════
+function getFiltered() {
+  const q   = (document.getElementById('searchInput').value || '').toLowerCase();
+  const biz = document.getElementById('bizFilter').value;
+  return ORDERS.filter(o => {
+    if (muniFilter && o.muni !== muniFilter) return false;
+    if (biz && o.biz !== biz) return false;
+    if (q && !o.client.toLowerCase().includes(q)
+          && !o.owner.toLowerCase().includes(q)
+          && !o.id.toLowerCase().includes(q)
+          && !o.address.toLowerCase().includes(q)
+          && !o.barangay.toLowerCase().includes(q)) return false;
+    return true;
+  });
+}
+
+function setMuniFilter(m, el) {
+  muniFilter = m;
+  document.querySelectorAll('[id^="fc-"]').forEach(c => c.classList.remove('active'));
+  el.classList.add('active');
+  renderAll();
+}
+
+function clearFilters() {
+  muniFilter = '';
+  document.getElementById('searchInput').value = '';
+  document.getElementById('bizFilter').value = '';
+  document.querySelectorAll('[id^="fc-"]').forEach(c => c.classList.remove('active'));
+  document.getElementById('fc-all').classList.add('active');
+  renderAll();
+}
+
+function jumpToMuni(m) {
+  setMuniFilter(m, document.getElementById('fc-' + m.toLowerCase().replace(' ','-').replace(' ','').replace('san-vicente','sv').replace('mercedes','me').replace('san-lorenzo','sl').replace('basud','ba')));
+  // scroll to section
+  const el = document.getElementById('sec-' + m.replace(' ','-'));
+  if (el) el.scrollIntoView({ behavior:'smooth', block:'start' });
+}
+
+// ══════════════════════════════
+//  DATE
+// ══════════════════════════════
+function updateDateUI() {
+  const today = new Date();
+  today.setHours(0,0,0,0);
+  const cd = new Date(currentDate);
+  cd.setHours(0,0,0,0);
+  const isToday = cd.getTime() === today.getTime();
+
+  document.getElementById('dateLabel').textContent = isToday ? 'Today — ' + fmtDate(currentDate) : fmtDate(currentDate);
+  document.getElementById('datePicker').value = currentDate.toISOString().split('T')[0];
+}
+
+function changeDate(delta) {
+  currentDate.setDate(currentDate.getDate() + delta);
+  updateDateUI();
+  toast(fmtDate(currentDate));
+}
+
+function onDateChange() {
+  currentDate = new Date(document.getElementById('datePicker').value + 'T00:00:00');
+  updateDateUI();
+}
+
+// ══════════════════════════════
+//  RENDER
+// ══════════════════════════════
+function renderAll() {
+  const filtered = getFiltered();
+  const MUNIS = muniFilter ? [muniFilter] : ['San Vicente','Mercedes','San Lorenzo','Basud'];
+
+  // summary chips
+  const totalAmt   = filtered.reduce((s, o) => s + orderTotal(o), 0);
+  const totalCases = filtered.reduce((s, o) => s + orderCases(o), 0);
+  document.getElementById('sc-total').textContent  = filtered.length + ' order' + (filtered.length !== 1 ? 's' : '');
+  document.getElementById('sc-amount').textContent = '₱' + totalAmt.toLocaleString();
+  document.getElementById('sc-cases').textContent  = totalCases + ' cases';
+
+  const container = document.getElementById('muniSections');
+
+  let html = '';
+  let anyResults = false;
+
+  MUNIS.forEach(muni => {
+    const muniOrders = filtered.filter(o => o.muni === muni);
+    if (!muniOrders.length) return;
+    anyResults = true;
+
+    const color     = MUNI_COLORS[muni];
+    const muniTotal = muniOrders.reduce((s, o) => s + orderTotal(o), 0);
+    const muniCases = muniOrders.reduce((s, o) => s + orderCases(o), 0);
+
+    html += `
+      <div class="muni-section" id="sec-${muni.replace(' ','-')}">
+        <div class="muni-header">
+          <div class="muni-color-bar" style="background:${color};"></div>
+          <div>
+            <div class="muni-title">${muni}</div>
+            <div class="muni-count">${muniOrders.length} consumer${muniOrders.length !== 1 ? 's' : ''} · ${muniCases} total cases</div>
+          </div>
+          <div class="muni-header-right">
+            <div class="muni-total" style="color:${color};border-color:${color}25;background:${color}10;">
+              ₱${muniTotal.toLocaleString()}
+            </div>
+          </div>
+        </div>
+
+        <div class="del-table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th style="width:40px;text-align:center;">#</th>
+                <th>Consumer</th>
+                <th>Delivery Address</th>
+                <th>Type</th>
+                <th>Products to Deliver</th>
+                <th>Total</th>
+                <th>Payment</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${muniOrders.map((o, idx) => renderRow(o, idx + 1, color)).join('')}
+            </tbody>
+          </table>
+        </div>
+      </div>`;
+  });
+
+  if (!anyResults) {
+    html = `<div class="empty-state">
+      <svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg>
+      <div style="font-weight:700;color:var(--slate);margin-bottom:4px;">No deliveries found</div>
+      <div>Try adjusting your filters or search term.</div>
+    </div>`;
+  }
+
+  container.innerHTML = html;
+}
+
+function renderRow(o, num, muniColor) {
+  const color  = avatarColor(o.client);
+  const init   = initials(o.client);
+  const total  = orderTotal(o);
+  const bclass = { Wholesaler:'biz-w', Restaurant:'biz-r', 'Sari-sari':'biz-m' }[o.biz] || '';
+
+  const productsHtml = o.items.map(i =>
+    `<div class="product-line">
+      <span class="product-name">${i.name}</span>
+      <span class="product-qty">${i.qty} cs</span>
+    </div>`
+  ).join('');
+
+  return `
+    <tr onclick="openDrawer('${o.id}')">
+      <td class="td-num">${num}</td>
+      <td>
+        <div class="consumer-cell">
+          <div class="consumer-avatar" style="background:${color};">${init}</div>
+          <div>
+            <div class="consumer-name">${o.client}</div>
+            <div class="consumer-owner">${o.owner}</div>
+            <div class="consumer-contact">
+              <svg viewBox="0 0 24 24" fill="none"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.61 3.35 2 2 0 0 1 3.6 1h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.63a16 16 0 0 0 6 6l.95-.95a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+              ${o.contact}
+            </div>
+          </div>
+        </div>
+      </td>
+      <td class="address-cell">
+        <div class="address-main">${o.address}</div>
+        <div class="address-brgy">${o.barangay}</div>
+      </td>
+      <td><span class="biz-tag ${bclass}">${o.biz}</span></td>
+      <td class="products-cell">${productsHtml}</td>
+      <td><span class="amount-cell">₱${total.toLocaleString()}</span></td>
+      <td><span class="pay-badge ${payClass(o.pay)}">${o.pay}</span></td>
+      <td onclick="event.stopPropagation()">
+        <div style="display:flex;gap:6px;">
+          <button class="act-btn act-view" onclick="openDrawer('${o.id}')">Details</button>
+          <button class="act-btn act-print" onclick="toast('Print slip for ${o.client}')">Print Slip</button>
+        </div>
+      </td>
+    </tr>`;
+}
+
+// ══════════════════════════════
+//  DRAWER
+// ══════════════════════════════
+function openDrawer(id) {
+  const o = ORDERS.find(x => x.id === id);
+  if (!o) return;
+  activeOrder = o;
+  const mColor = MUNI_COLORS[o.muni] || '#9CA3AF';
+  const color  = avatarColor(o.client);
+  const total  = orderTotal(o);
+  const cases  = orderCases(o);
+  const bclass = { Wholesaler:'biz-w', Restaurant:'biz-r', 'Sari-sari':'biz-m' }[o.biz] || '';
+
+  document.getElementById('d-title').textContent = o.client;
+  document.getElementById('d-sub').textContent   = `#${o.id} · ${o.muni}`;
+
+  document.getElementById('drawerBody').innerHTML = `
+
+    <!-- Consumer header card -->
+    <div style="display:flex;align-items:center;gap:14px;background:var(--surface);border:1px solid var(--lighter);border-radius:14px;padding:16px 18px;margin-bottom:20px;">
+      <div style="width:52px;height:52px;border-radius:13px;background:${color};display:flex;align-items:center;justify-content:center;font-family:'Outfit',sans-serif;font-size:18px;font-weight:900;color:#fff;flex-shrink:0;">${initials(o.client)}</div>
+      <div style="flex:1;min-width:0;">
+        <div style="font-family:'Outfit',sans-serif;font-size:17px;font-weight:800;color:var(--dark);letter-spacing:-0.2px;">${o.client}</div>
+        <div style="font-size:12.5px;color:var(--muted);margin-top:2px;">${o.owner}</div>
+        <div style="display:flex;align-items:center;gap:8px;margin-top:6px;flex-wrap:wrap;">
+          <span class="biz-tag ${bclass}">${o.biz}</span>
+          <span style="display:inline-flex;align-items:center;gap:5px;font-size:11.5px;font-weight:600;color:var(--blue);">
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.61 3.35 2 2 0 0 1 3.6 1h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.63a16 16 0 0 0 6 6l.95-.95a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+            ${o.contact}
+          </span>
+        </div>
+      </div>
+      <div style="text-align:right;flex-shrink:0;">
+        <div style="font-family:'Outfit',sans-serif;font-size:20px;font-weight:900;color:var(--red);">₱${total.toLocaleString()}</div>
+        <div style="font-size:11px;color:var(--muted);margin-top:2px;">${cases} total cases</div>
+      </div>
+    </div>
+
+    <div class="drawer-section">
+      <div class="drawer-section-lbl">Delivery Address</div>
+      <div class="info-grid">
+        <div class="info-cell wide">
+          <div class="info-cell-lbl">Full Address</div>
+          <div class="info-cell-val" style="font-size:14px;">${o.address}</div>
+          <div style="font-size:12px;color:var(--muted);margin-top:3px;">${o.barangay}</div>
+        </div>
+        <div class="info-cell">
+          <div class="info-cell-lbl">Municipality</div>
+          <div class="info-cell-val" style="display:flex;align-items:center;gap:7px;">
+            <span style="width:9px;height:9px;border-radius:50%;background:${mColor};flex-shrink:0;display:inline-block;"></span>
+            ${o.muni}
+          </div>
+        </div>
+        <div class="info-cell">
+          <div class="info-cell-lbl">Payment Method</div>
+          <div class="info-cell-val"><span class="pay-badge ${payClass(o.pay)}" style="font-size:12px;">${o.pay}</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="drawer-section">
+      <div class="drawer-section-lbl">Products to Deliver</div>
+      <div class="drawer-product-list">
+        ${o.items.map(i => `
+          <div class="drawer-product-row">
+            <div>
+              <div class="dp-name">${i.name}</div>
+              <div class="dp-sku">SKU: ${i.sku} · ₱${i.price.toLocaleString()}/case</div>
+            </div>
+            <div class="dp-right">
+              <div class="dp-qty">${i.qty} cases</div>
+              <div class="dp-price">₱${(i.qty * i.price).toLocaleString()}</div>
+            </div>
+          </div>
+        `).join('')}
+      </div>
+      <div class="drawer-total">
+        <span class="dt-lbl">Total Amount Due</span>
+        <span class="dt-val">₱${total.toLocaleString()}</span>
+      </div>
+    </div>
+
+    ${o.notes ? `
+    <div class="drawer-section">
+      <div class="drawer-section-lbl">Special Instructions</div>
+      <div class="notes-box">
+        ⚠️ ${o.notes}
+      </div>
+    </div>` : ''}
+  `;
+
+  document.getElementById('drawerBg').classList.add('show');
+  document.getElementById('drawer').classList.add('open');
+}
+
+function closeDrawer() {
+  document.getElementById('drawerBg').classList.remove('show');
+  document.getElementById('drawer').classList.remove('open');
+  activeOrder = null;
+}
+
+// ══════════════════════════════
+//  TOAST
+// ══════════════════════════════
+let tTimer;
+function toast(msg) {
+  const el = document.getElementById('toastEl');
+  document.getElementById('toastMsg').textContent = msg;
+  el.classList.add('show');
+  clearTimeout(tTimer);
+  tTimer = setTimeout(() => el.classList.remove('show'), 2700);
+}
+
+// ══════════════════════════════
+//  INIT
+// ══════════════════════════════
+updateDateUI();
+renderAll();
+</script>
+</body>
+</html>

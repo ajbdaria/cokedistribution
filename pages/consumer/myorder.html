@@ -1,0 +1,1146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GD Coke — My Orders</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --red: #CC1B22;
+  --red-h: #E02028;
+  --red-pale: rgba(204,27,34,0.08);
+  --red-border: rgba(204,27,34,0.2);
+  --bg: #F0F2F7;
+  --white: #FFFFFF;
+  --dark: #111827;
+  --slate: #374151;
+  --gray: #6B7280;
+  --muted: #9CA3AF;
+  --light: #D1D5DB;
+  --lighter: #E5E7EB;
+  --surface: #F9FAFB;
+  --green: #10B981;
+  --green-pale: rgba(16,185,129,0.1);
+  --green-border: rgba(16,185,129,0.28);
+  --amber: #F59E0B;
+  --amber-pale: rgba(245,158,11,0.1);
+  --amber-border: rgba(245,158,11,0.28);
+  --blue: #3B82F6;
+  --blue-pale: rgba(59,130,246,0.1);
+  --blue-border: rgba(59,130,246,0.28);
+  --purple: #8B5CF6;
+  --purple-pale: rgba(139,92,246,0.1);
+  --danger: #EF4444;
+  --danger-pale: rgba(239,68,68,0.09);
+}
+
+html, body { height: 100%; font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg); color: var(--dark); -webkit-font-smoothing: antialiased; }
+
+/* ══ MOBILE-FIRST LAYOUT ══ */
+.app { display: flex; min-height: 100vh; flex-direction: column; }
+
+/* ══ TOP NAV (mobile) ══ */
+.topnav {
+  background: #0D1117;
+  padding: 10px 16px;
+  display: flex; align-items: center; justify-content: space-between;
+  position: sticky; top: 0; z-index: 100;
+  border-bottom: 1px solid rgba(255,255,255,0.04);
+}
+.tn-left { display: flex; align-items: center; gap: 10px; }
+.tn-logo { width: 34px; height: 34px; border-radius: 10px; background: var(--red); display: flex; align-items: center; justify-content: center; box-shadow: 0 3px 10px rgba(204,27,34,0.4); overflow: hidden; flex-shrink: 0; }
+.tn-logo img { width: 100%; height: 100%; object-fit: contain; padding: 7px; filter: brightness(0) invert(1); }
+.tn-title { font-family: 'Outfit', sans-serif; font-size: 16px; font-weight: 900; color: #fff; letter-spacing: -0.3px; }
+.tn-sub { font-size: 10px; color: rgba(255,255,255,0.35); font-weight: 500; margin-top: 1px; }
+.tn-right { display: flex; align-items: center; gap: 8px; }
+.tn-avatar { width: 32px; height: 32px; border-radius: 50%; background: linear-gradient(135deg, var(--red) 0%, #FF4B51 100%); display: flex; align-items: center; justify-content: center; font-family: 'Outfit', sans-serif; font-size: 11px; font-weight: 900; color: #fff; cursor: pointer; border: 2px solid rgba(255,255,255,0.12); }
+.tn-btn { padding: 7px 12px; background: var(--red); border: none; border-radius: 8px; color: #fff; font-family: 'Outfit', sans-serif; font-size: 12px; font-weight: 800; cursor: pointer; display: flex; align-items: center; gap: 5px; }
+.tn-btn svg { width: 12px; height: 12px; stroke: #fff; stroke-width: 2.5; }
+
+/* ══ SEARCH BAR (mobile) ══ */
+.search-bar-wrap { background: var(--white); border-bottom: 1px solid var(--lighter); padding: 10px 16px; }
+.h-search { display: flex; align-items: center; gap: 8px; background: var(--surface); border: 1.5px solid var(--lighter); border-radius: 10px; padding: 9px 12px; transition: border-color 0.2s; }
+.h-search:focus-within { border-color: var(--red); }
+.h-search svg { width: 14px; height: 14px; stroke: var(--muted); flex-shrink: 0; }
+.h-search input { background: none; border: none; outline: none; font-family: 'Plus Jakarta Sans', sans-serif; font-size: 14px; color: var(--dark); width: 100%; }
+.h-search input::placeholder { color: var(--light); }
+
+/* ══ CONTENT ══ */
+.content { flex: 1; overflow-y: auto; padding: 14px 14px 100px; }
+
+/* ══ SUMMARY STRIP ══ */
+.summary-strip { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-bottom: 14px; }
+.sum-card { background: var(--white); border: 1px solid var(--lighter); border-radius: 14px; padding: 12px 14px; display: flex; align-items: center; gap: 10px; transition: transform 0.18s; animation: fadeUp 0.4s ease both; position: relative; overflow: hidden; }
+.sum-card:hover { transform: translateY(-2px); }
+.sum-card::before { content:''; position:absolute; left:0; top:0; bottom:0; width:3px; border-radius:3px 0 0 3px; }
+.sum-card.c-red::before { background: var(--red); }
+.sum-card.c-amber::before { background: var(--amber); }
+.sum-card.c-green::before { background: var(--green); }
+.sum-card.c-blue::before { background: var(--blue); }
+.sum-card:nth-child(1){animation-delay:.04s} .sum-card:nth-child(2){animation-delay:.07s} .sum-card:nth-child(3){animation-delay:.10s} .sum-card:nth-child(4){animation-delay:.13s}
+.sum-ico { width: 36px; height: 36px; border-radius: 10px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.sum-ico svg { width: 16px; height: 16px; stroke-width: 2; }
+.sum-val { font-family: 'Outfit', sans-serif; font-size: 20px; font-weight: 900; color: var(--dark); letter-spacing: -0.4px; line-height: 1; }
+.sum-lbl { font-size: 10.5px; color: var(--muted); font-weight: 600; margin-top: 3px; }
+
+/* ══ ACTIVE ORDER BANNER ══ */
+.active-order-wrap { margin-bottom: 14px; animation: fadeUp 0.4s ease 0.15s both; }
+.active-order-card {
+  background: linear-gradient(135deg, #0D1117 0%, #1e0809 60%, #220a0b 100%);
+  border-radius: 14px; padding: 16px;
+  position: relative; overflow: hidden; cursor: pointer; transition: transform 0.18s;
+}
+.active-order-card:hover { transform: translateY(-1px); }
+.active-order-card::before { content:''; position:absolute; inset:0; background:repeating-linear-gradient(-45deg,transparent,transparent 20px,rgba(255,255,255,0.013) 20px,rgba(255,255,255,0.013) 21px); }
+.active-order-card::after { content:''; position:absolute; width:160px; height:160px; border-radius:50%; background:radial-gradient(circle,rgba(204,27,34,0.2) 0%,transparent 70%); right:-30px; top:-40px; pointer-events:none; }
+.ao-top-row { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; position: relative; z-index: 1; }
+.ao-pulse { width: 10px; height: 10px; border-radius: 50%; background: var(--amber); flex-shrink: 0; animation: pulseDot 1.8s infinite; }
+.ao-info { flex: 1; position: relative; z-index: 1; }
+.ao-eyebrow { font-size: 9.5px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: rgba(255,255,255,0.35); margin-bottom: 3px; }
+.ao-title { font-family: 'Outfit', sans-serif; font-size: 14px; font-weight: 800; color: #fff; margin-bottom: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.ao-sub { font-size: 11px; color: rgba(255,255,255,0.4); }
+.ao-amount-inline { font-family: 'Outfit', sans-serif; font-size: 18px; font-weight: 900; color: #fff; position: relative; z-index: 1; white-space: nowrap; }
+.ao-amount-lbl { font-size: 9.5px; color: rgba(255,255,255,0.35); font-weight: 600; margin-top: 2px; text-align: right; }
+
+/* Tracker in banner */
+.ao-tracker { display: flex; align-items: flex-start; position: relative; z-index: 1; }
+.ao-step { display: flex; flex-direction: column; align-items: center; flex: 1; gap: 5px; }
+.ao-step-dot { width: 26px; height: 26px; border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 2px solid; }
+.ao-step-dot svg { width: 11px; height: 11px; stroke-width: 2.5; }
+.ao-step-dot.done { background: var(--green); border-color: var(--green); }
+.ao-step-dot.done svg { stroke: #fff; }
+.ao-step-dot.active { background: rgba(245,158,11,0.2); border-color: var(--amber); animation: pulseBorder 1.5s infinite; }
+.ao-step-dot.active svg { stroke: var(--amber); }
+.ao-step-dot.idle { background: rgba(255,255,255,0.06); border-color: rgba(255,255,255,0.12); }
+.ao-step-dot.idle svg { stroke: rgba(255,255,255,0.25); }
+.ao-step-lbl { font-size: 9px; font-weight: 700; color: rgba(255,255,255,0.35); text-align: center; line-height: 1.2; max-width: 52px; }
+.ao-step-lbl.active-lbl { color: var(--amber); }
+.ao-step-lbl.done-lbl { color: rgba(16,185,129,0.7); }
+.ao-line { flex: 1; height: 2px; margin-bottom: 18px; }
+.ao-line.done { background: var(--green); }
+.ao-line.idle { background: rgba(255,255,255,0.08); }
+
+/* ══ FILTER BAR ══ */
+.filter-bar { display: flex; align-items: center; gap: 7px; margin-bottom: 12px; overflow-x: auto; padding-bottom: 4px; animation: fadeUp 0.4s ease 0.2s both; scrollbar-width: none; }
+.filter-bar::-webkit-scrollbar { display: none; }
+.f-chip { padding: 7px 13px; border-radius: 9px; font-size: 12.5px; font-weight: 700; border: 1.5px solid var(--lighter); background: var(--white); color: var(--gray); cursor: pointer; transition: all 0.16s; white-space: nowrap; display: flex; align-items: center; gap: 5px; flex-shrink: 0; }
+.f-chip:active { transform: scale(0.97); }
+.f-chip.active { background: var(--red-pale); border-color: var(--red-border); color: var(--red); }
+.f-chip.green-chip:active, .f-chip.green-chip.active { border-color: var(--green-border); color: #065F46; background: var(--green-pale); }
+.f-chip.amber-chip:active, .f-chip.amber-chip.active { border-color: var(--amber-border); color: #92400E; background: var(--amber-pale); }
+.f-chip.blue-chip:active, .f-chip.blue-chip.active { border-color: var(--blue-border); color: #1E40AF; background: var(--blue-pale); }
+
+/* Sort row */
+.sort-row { display: flex; align-items: center; gap: 8px; margin-bottom: 12px; }
+.sel { flex: 1; padding: 9px 12px; background: var(--white); border: 1.5px solid var(--lighter); border-radius: 9px; font-family: 'Plus Jakarta Sans', sans-serif; font-size: 13px; font-weight: 600; color: var(--slate); outline: none; cursor: pointer; -webkit-appearance: none; }
+.sel:focus { border-color: var(--red); }
+.clear-btn { padding: 9px 13px; border-radius: 9px; font-size: 12.5px; font-weight: 700; border: 1.5px solid var(--lighter); background: var(--white); color: var(--gray); cursor: pointer; display: flex; align-items: center; gap: 5px; flex-shrink: 0; }
+
+/* ══ ORDERS LIST ══ */
+.orders-list { display: flex; flex-direction: column; gap: 10px; }
+
+.order-card {
+  background: var(--white); border: 1.5px solid var(--lighter);
+  border-radius: 14px; overflow: hidden;
+  cursor: pointer; transition: all 0.2s;
+  animation: fadeUp 0.4s ease both;
+}
+.order-card:active { transform: scale(0.99); }
+.order-card.pending  { border-left: 4px solid var(--amber); }
+.order-card.processing { border-left: 4px solid var(--blue); }
+.order-card.delivered { border-left: 4px solid var(--green); }
+.order-card.cancelled { border-left: 4px solid var(--light); }
+
+.oc-main { display: flex; align-items: flex-start; gap: 12px; padding: 13px 14px; }
+.oc-status-ico { width: 40px; height: 40px; border-radius: 11px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.oc-status-ico svg { width: 18px; height: 18px; stroke-width: 2; }
+.si-delivered { background: var(--green-pale); } .si-delivered svg { stroke: var(--green); }
+.si-pending   { background: var(--amber-pale); } .si-pending svg { stroke: var(--amber); }
+.si-processing{ background: var(--blue-pale);  } .si-processing svg { stroke: var(--blue); }
+.si-cancelled { background: var(--surface);    } .si-cancelled svg { stroke: var(--muted); }
+
+.oc-info { flex: 1; min-width: 0; }
+.oc-top { display: flex; align-items: center; gap: 8px; margin-bottom: 3px; flex-wrap: wrap; }
+.oc-id { font-family: 'Outfit', sans-serif; font-size: 14px; font-weight: 800; color: var(--dark); }
+.oc-date { font-size: 11px; color: var(--muted); font-weight: 600; }
+.oc-items-txt { font-size: 12px; color: var(--slate); font-weight: 500; line-height: 1.4; overflow: hidden; text-overflow: ellipsis; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; margin-bottom: 6px; }
+.oc-tags { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+
+.oc-right { text-align: right; flex-shrink: 0; }
+.oc-amount { font-family: 'Outfit', sans-serif; font-size: 16px; font-weight: 900; color: var(--dark); }
+.oc-cases { font-size: 10.5px; color: var(--muted); font-weight: 600; margin-top: 2px; }
+
+/* Progress mini-bar inside card */
+.oc-progress { padding: 0 14px 12px; display: flex; align-items: flex-start; }
+.op-step { display: flex; align-items: center; flex: 1; }
+.op-dot { width: 10px; height: 10px; border-radius: 50%; border: 2px solid var(--lighter); background: var(--lighter); flex-shrink: 0; }
+.op-dot.done { background: var(--green); border-color: var(--green); }
+.op-dot.active { background: #fff; border-color: var(--amber); box-shadow: 0 0 0 3px rgba(245,158,11,0.2); animation: pulseDotSmall 1.5s infinite; }
+.op-line { flex: 1; height: 2px; background: var(--lighter); }
+.op-line.done { background: var(--green); }
+
+/* badges */
+.badge { display: inline-flex; align-items: center; gap: 4px; padding: 3px 8px; border-radius: 100px; font-size: 11px; font-weight: 700; }
+.bdot { width: 5px; height: 5px; border-radius: 50%; flex-shrink: 0; }
+.b-delivered  { background: var(--green-pale); color: #065F46; } .b-delivered .bdot  { background: var(--green); }
+.b-pending    { background: var(--amber-pale); color: #92400E; } .b-pending .bdot    { background: var(--amber); animation: blink 1.5s infinite; }
+.b-processing { background: var(--blue-pale);  color: #1E40AF; } .b-processing .bdot { background: var(--blue); }
+.b-cancelled  { background: var(--surface);    color: var(--muted); border: 1px solid var(--lighter); } .b-cancelled .bdot { background: var(--muted); }
+
+.pay-badge { display: inline-flex; align-items: center; gap: 4px; padding: 3px 8px; border-radius: 7px; font-size: 10px; font-weight: 700; }
+.pay-cod   { background: var(--amber-pale); color: #92400E; }
+.pay-bank  { background: var(--blue-pale);  color: #1E40AF; }
+.pay-gcash { background: var(--green-pale); color: #065F46; }
+
+/* ══ BOTTOM NAV (mobile) ══ */
+.bottom-nav {
+  position: fixed; bottom: 0; left: 0; right: 0;
+  background: #0D1117; border-top: 1px solid rgba(255,255,255,0.06);
+  display: flex; align-items: center; justify-content: space-around;
+  padding: 8px 0 max(8px, env(safe-area-inset-bottom));
+  z-index: 100;
+}
+.bn-item { display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 6px 16px; border-radius: 10px; cursor: pointer; transition: all 0.15s; }
+.bn-item.active { background: rgba(204,27,34,0.15); }
+.bn-item svg { width: 20px; height: 20px; stroke: rgba(255,255,255,0.35); stroke-width: 2; }
+.bn-item.active svg { stroke: #fff; }
+.bn-lbl { font-size: 10px; font-weight: 700; color: rgba(255,255,255,0.3); }
+.bn-item.active .bn-lbl { color: rgba(255,255,255,0.8); }
+
+/* ══ DRAWER ══ */
+.drawer-backdrop { position: fixed; inset: 0; background: rgba(10,12,18,0.5); backdrop-filter: blur(3px); z-index: 400; display: none; }
+.drawer-backdrop.show { display: block; }
+.drawer {
+  position: fixed; bottom: -100%; left: 0; right: 0;
+  max-height: 92vh;
+  background: var(--white); z-index: 450;
+  box-shadow: 0 -8px 40px rgba(0,0,0,0.18);
+  transition: bottom 0.4s cubic-bezier(0.22,1,0.36,1);
+  display: flex; flex-direction: column; overflow: hidden;
+  border-radius: 20px 20px 0 0;
+}
+.drawer.open { bottom: 0; }
+.drawer-handle { width: 36px; height: 4px; border-radius: 4px; background: var(--lighter); margin: 10px auto 0; flex-shrink: 0; }
+
+.drawer-header { padding: 14px 18px 14px; border-bottom: 1px solid var(--lighter); display: flex; align-items: flex-start; justify-content: space-between; flex-shrink: 0; }
+.dh-left { flex: 1; }
+.dh-eyebrow { font-size: 9.5px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted); margin-bottom: 3px; }
+.dh-title { font-family: 'Outfit', sans-serif; font-size: 20px; font-weight: 900; color: var(--dark); }
+.dh-sub { font-size: 11.5px; color: var(--muted); margin-top: 3px; }
+.drawer-close { width: 30px; height: 30px; border-radius: 9px; background: var(--surface); border: 1.5px solid var(--lighter); display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.15s; flex-shrink: 0; }
+.drawer-close svg { width: 13px; height: 13px; stroke: var(--gray); stroke-width: 2.5; }
+
+.drawer-body { flex: 1; overflow-y: auto; padding: 16px 18px; -webkit-overflow-scrolling: touch; }
+.drawer-body::-webkit-scrollbar { width: 3px; }
+.drawer-body::-webkit-scrollbar-thumb { background: var(--lighter); border-radius: 8px; }
+
+/* Drawer sections */
+.d-section { margin-bottom: 20px; }
+.d-section-lbl { font-size: 9.5px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted); margin-bottom: 10px; }
+
+/* Delivery tracker in drawer */
+.d-tracker { display: flex; align-items: flex-start; gap: 0; margin-bottom: 6px; }
+.dt-step { display: flex; flex-direction: column; align-items: center; flex: 1; }
+.dt-dot { width: 34px; height: 34px; border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 2.5px solid; position: relative; z-index: 1; }
+.dt-dot svg { width: 14px; height: 14px; stroke-width: 2.5; }
+.dt-dot.done   { background: var(--green); border-color: var(--green); } .dt-dot.done svg { stroke: #fff; }
+.dt-dot.active { background: rgba(245,158,11,0.12); border-color: var(--amber); animation: pulseBorder 1.5s infinite; } .dt-dot.active svg { stroke: var(--amber); }
+.dt-dot.idle   { background: var(--surface); border-color: var(--lighter); } .dt-dot.idle svg { stroke: var(--light); }
+.dt-lbl { font-size: 10px; font-weight: 700; color: var(--muted); text-align: center; margin-top: 5px; line-height: 1.3; }
+.dt-lbl.done-lbl { color: var(--green); }
+.dt-lbl.active-lbl { color: var(--amber); }
+.dt-line { flex: 1; height: 2.5px; margin-top: 15px; border-radius: 2px; }
+.dt-line.done { background: var(--green); }
+.dt-line.idle { background: var(--lighter); }
+
+/* ETA box */
+.eta-box { display: flex; align-items: center; gap: 10px; padding: 11px 14px; background: var(--amber-pale); border: 1px solid var(--amber-border); border-radius: 11px; margin-top: 12px; }
+.eta-box svg { width: 17px; height: 17px; stroke: var(--amber); stroke-width: 2; flex-shrink: 0; }
+.eta-title { font-size: 11.5px; font-weight: 800; color: #92400E; }
+.eta-sub { font-size: 11px; color: #78350F; font-weight: 500; margin-top: 1px; }
+
+/* Items */
+.d-item-list { display: flex; flex-direction: column; gap: 8px; }
+.d-item-row { display: flex; align-items: center; gap: 10px; padding: 10px 12px; background: var(--surface); border: 1px solid var(--lighter); border-radius: 11px; }
+.d-item-emoji { font-size: 20px; flex-shrink: 0; }
+.d-item-info { flex: 1; }
+.d-item-name  { font-size: 12.5px; font-weight: 700; color: var(--dark); }
+.d-item-sku   { font-size: 10.5px; color: var(--muted); margin-top: 1px; }
+.d-item-right { text-align: right; flex-shrink: 0; }
+.d-item-qty   { font-family: 'Outfit', sans-serif; font-size: 14px; font-weight: 900; color: var(--dark); }
+.d-item-sub   { font-size: 10.5px; color: var(--muted); margin-top: 2px; }
+.d-total-row  { display: flex; align-items: center; justify-content: space-between; background: var(--dark); border-radius: 11px; padding: 12px 15px; margin-top: 8px; }
+.d-total-lbl  { font-size: 12.5px; color: rgba(255,255,255,0.55); font-weight: 600; }
+.d-total-val  { font-family: 'Outfit', sans-serif; font-size: 20px; font-weight: 900; color: #fff; }
+
+/* Info grid */
+.d-info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.d-info-cell { background: var(--surface); border: 1px solid var(--lighter); border-radius: 10px; padding: 10px 12px; }
+.d-info-cell.wide { grid-column: 1 / -1; }
+.d-info-lbl { font-size: 10px; font-weight: 700; color: var(--muted); margin-bottom: 3px; }
+.d-info-val { font-size: 12.5px; font-weight: 700; color: var(--dark); }
+
+/* Timeline */
+.d-timeline { display: flex; flex-direction: column; }
+.d-tl-item { display: flex; gap: 11px; }
+.d-tl-left { display: flex; flex-direction: column; align-items: center; flex-shrink: 0; }
+.d-tl-dot { width: 26px; height: 26px; border-radius: 8px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; z-index: 1; }
+.d-tl-dot svg { width: 11px; height: 11px; stroke-width: 2.5; }
+.d-tl-line { width: 2px; background: var(--lighter); flex: 1; margin: 3px 0; min-height: 12px; }
+.d-tl-item:last-child .d-tl-line { display: none; }
+.d-tl-content { padding: 2px 0 14px; flex: 1; }
+.d-tl-title { font-size: 12.5px; font-weight: 700; color: var(--dark); }
+.d-tl-sub   { font-size: 11px; color: var(--muted); margin-top: 2px; }
+.d-tl-time  { font-size: 10px; font-weight: 700; color: var(--muted); margin-top: 4px; background: var(--surface); border: 1px solid var(--lighter); padding: 2px 7px; border-radius: 5px; display: inline-block; }
+
+/* Drawer footer */
+.drawer-footer { padding: 12px 18px max(12px, env(safe-area-inset-bottom)); border-top: 1px solid var(--lighter); display: flex; gap: 8px; flex-shrink: 0; }
+.df-btn { flex: 1; padding: 13px; border-radius: 12px; font-family: 'Outfit', sans-serif; font-size: 14px; font-weight: 800; cursor: pointer; transition: all 0.18s; display: flex; align-items: center; justify-content: center; gap: 7px; border: none; }
+.df-btn svg { width: 14px; height: 14px; stroke: currentColor; stroke-width: 2.5; }
+.df-reorder { background: var(--red); color: #fff; }
+.df-reorder:active { background: var(--red-h); }
+.df-close { background: var(--surface); color: var(--gray); border: 1.5px solid var(--lighter) !important; }
+
+/* ══ EMPTY STATE ══ */
+.empty-state { text-align: center; padding: 50px 20px; color: var(--muted); }
+.empty-state-ico { font-size: 48px; margin-bottom: 12px; opacity: 0.7; }
+.empty-state-title { font-family: 'Outfit', sans-serif; font-size: 16px; font-weight: 800; color: var(--slate); margin-bottom: 5px; }
+.empty-state-sub { font-size: 13px; color: var(--muted); }
+
+/* ══ TOAST ══ */
+.toast { position: fixed; bottom: 80px; left: 50%; transform: translateX(-50%) translateY(40px); background: var(--dark); color: #fff; padding: 10px 18px; border-radius: 11px; font-size: 13px; font-weight: 600; display: flex; align-items: center; gap: 8px; box-shadow: 0 8px 28px rgba(0,0,0,0.22); z-index: 9999; opacity: 0; transition: all 0.3s cubic-bezier(0.34,1.56,0.64,1); white-space: nowrap; }
+.toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
+.toast svg { width: 13px; height: 13px; stroke: #4ADE80; stroke-width: 2.5; }
+
+/* ══ DESKTOP OVERRIDES (≥768px) ══ */
+@media (min-width: 768px) {
+  body { overflow: hidden; }
+  .app { flex-direction: row; height: 100vh; overflow: hidden; }
+
+  /* Restore side nav on desktop */
+  .topnav, .bottom-nav, .search-bar-wrap { display: none; }
+
+  .sidenav-desktop {
+    width: 72px; flex-shrink: 0; background: #0D1117;
+    display: flex; flex-direction: column; align-items: center;
+    padding: 16px 0; gap: 6px; position: relative; z-index: 10;
+    border-right: 1px solid rgba(255,255,255,0.04);
+  }
+  .sidenav-desktop::before { content:''; position:absolute; top:-40px; left:-40px; width:160px; height:160px; border-radius:50%; background:radial-gradient(circle,rgba(204,27,34,0.16) 0%,transparent 70%); pointer-events:none; }
+  .sn-logo { width: 42px; height: 42px; border-radius: 12px; background: var(--red); display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 16px rgba(204,27,34,0.45); margin-bottom: 14px; overflow: hidden; }
+  .sn-logo img { width: 100%; height: 100%; object-fit: contain; padding: 8px; filter: brightness(0) invert(1); }
+  .sn-item { width: 46px; height: 46px; border-radius: 12px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.17s; position: relative; border: 1px solid transparent; }
+  .sn-item:hover { background: rgba(255,255,255,0.07); }
+  .sn-item.active { background: rgba(204,27,34,0.18); border-color: rgba(204,27,34,0.3); }
+  .sn-item svg { width: 19px; height: 19px; stroke: rgba(255,255,255,0.38); stroke-width: 2; }
+  .sn-item.active svg { stroke: #fff; }
+  .sn-item:hover svg { stroke: rgba(255,255,255,0.75); }
+  .sn-tip { position: absolute; left: 60px; top: 50%; transform: translateY(-50%); background: rgba(255,255,255,0.95); color: var(--dark); padding: 5px 10px; border-radius: 7px; font-size: 11.5px; font-weight: 700; white-space: nowrap; pointer-events: none; opacity: 0; transition: opacity 0.15s; z-index: 100; box-shadow: 0 4px 14px rgba(0,0,0,0.12); }
+  .sn-item:hover .sn-tip { opacity: 1; }
+  .sn-spacer { flex: 1; }
+  .sn-avatar { width: 36px; height: 36px; border-radius: 50%; background: linear-gradient(135deg, var(--red) 0%, #FF4B51 100%); display: flex; align-items: center; justify-content: center; font-family: 'Outfit', sans-serif; font-size: 12px; font-weight: 900; color: #fff; cursor: pointer; border: 2px solid rgba(255,255,255,0.12); }
+
+  .main-desktop { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+
+  /* Desktop header */
+  .desktop-header { background: var(--white); border-bottom: 1px solid var(--lighter); padding: 0 24px; height: 58px; display: flex; align-items: center; justify-content: space-between; flex-shrink: 0; gap: 12px; }
+  .dh-left-bar { display: flex; align-items: center; gap: 14px; }
+  .back-btn { display: flex; align-items: center; gap: 6px; padding: 7px 12px; border-radius: 9px; background: var(--surface); border: 1.5px solid var(--lighter); font-size: 12.5px; font-weight: 700; color: var(--gray); cursor: pointer; transition: all 0.15s; font-family: 'Plus Jakarta Sans', sans-serif; }
+  .back-btn svg { width: 13px; height: 13px; stroke: currentColor; stroke-width: 2.5; }
+  .back-btn:hover { border-color: var(--red); color: var(--red); background: var(--red-pale); }
+  .tb-divider { width: 1px; height: 22px; background: var(--lighter); }
+  .page-title { font-family: 'Outfit', sans-serif; font-size: 17px; font-weight: 800; color: var(--dark); letter-spacing: -0.3px; }
+  .page-sub { font-size: 11.5px; color: var(--muted); font-weight: 500; margin-top: 1px; }
+  .dh-right-bar { display: flex; align-items: center; gap: 10px; }
+  .dh-search { display: flex; align-items: center; gap: 8px; background: var(--surface); border: 1.5px solid var(--lighter); border-radius: 10px; padding: 7px 12px; width: 200px; transition: border-color 0.2s; }
+  .dh-search:focus-within { border-color: var(--red); }
+  .dh-search svg { width: 13px; height: 13px; stroke: var(--muted); flex-shrink: 0; }
+  .dh-search input { background: none; border: none; outline: none; font-family: 'Plus Jakarta Sans', sans-serif; font-size: 12.5px; color: var(--dark); width: 100%; }
+  .dh-search input::placeholder { color: var(--light); }
+  .btn-new-order { display: flex; align-items: center; gap: 7px; padding: 8px 16px; background: var(--red); border: none; border-radius: 10px; color: #fff; font-family: 'Outfit', sans-serif; font-size: 13.5px; font-weight: 700; cursor: pointer; transition: all 0.18s; }
+  .btn-new-order:hover { background: var(--red-h); transform: translateY(-1px); box-shadow: 0 5px 16px rgba(204,27,34,0.3); }
+  .btn-new-order svg { width: 13px; height: 13px; stroke: #fff; stroke-width: 2.5; }
+
+  .desktop-content { flex: 1; overflow-y: auto; padding: 18px 22px 32px; }
+
+  .summary-strip { grid-template-columns: repeat(4, 1fr); }
+
+  /* Restore desktop drawer as side panel */
+  .drawer { bottom: auto; left: auto; right: -520px; top: 0; width: 500px; height: 100vh; border-radius: 0; transition: right 0.35s cubic-bezier(0.22,1,0.36,1); }
+  .drawer.open { right: 0; bottom: auto; }
+  .drawer-handle { display: none; }
+  .drawer-footer { padding: 14px 22px; }
+  .toast { bottom: 22px; }
+}
+
+/* ══ ANIMATIONS ══ */
+@keyframes fadeUp { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes blink { 0%,100% { opacity:1; } 50% { opacity:0.2; } }
+@keyframes pulseDot { 0%,100% { box-shadow:0 0 0 0 rgba(245,158,11,0.4); } 50% { box-shadow:0 0 0 8px rgba(245,158,11,0); } }
+@keyframes pulseDotSmall { 0%,100% { box-shadow:0 0 0 0 rgba(245,158,11,0.4); } 50% { box-shadow:0 0 0 5px rgba(245,158,11,0); } }
+@keyframes pulseBorder { 0%,100% { box-shadow:0 0 0 0 rgba(245,158,11,0.3); } 50% { box-shadow:0 0 0 6px rgba(245,158,11,0); } }
+::-webkit-scrollbar { width: 3px; } ::-webkit-scrollbar-thumb { background: var(--lighter); border-radius: 10px; }
+</style>
+</head>
+<body>
+<div class="app">
+
+  <!-- ══ MOBILE TOP NAV ══ -->
+  <div class="topnav">
+    <div class="tn-left">
+      <div class="tn-logo">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/ce/Coca-Cola_logo.svg/512px-Coca-Cola_logo.svg.png" alt="Coke">
+      </div>
+      <div>
+        <div class="tn-title">My Orders</div>
+        <div class="tn-sub">Reyes General Store</div>
+      </div>
+    </div>
+    <div class="tn-right">
+      <button class="tn-btn" onclick="showToast('Go to Order Products to place a new order')">
+        <svg viewBox="0 0 24 24" fill="none"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        New Order
+      </button>
+      <div class="tn-avatar" onclick="showToast('Logged in as Reyes General Store')">RG</div>
+    </div>
+  </div>
+
+  <!-- MOBILE SEARCH BAR -->
+  <div class="search-bar-wrap">
+    <div class="h-search">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      <input type="text" id="searchInput" placeholder="Search orders, products…" oninput="renderAll()">
+    </div>
+  </div>
+
+  <!-- ══ DESKTOP SIDE NAV ══ -->
+  <nav class="sidenav-desktop">
+    <div class="sn-logo">
+      <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/ce/Coca-Cola_logo.svg/512px-Coca-Cola_logo.svg.png" alt="Coke">
+    </div>
+    <div class="sn-item" onclick="window.location.href='/pages/consumer/cunsomer_dashboard.html'">
+    <svg viewBox="0 0 24 24" fill="none">
+        <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/>
+        <line x1="3" y1="6" x2="21" y2="6"/>
+        <path d="M16 10a4 4 0 0 1-8 0"/>
+    </svg>
+    <div class="sn-tip">Order Products</div>
+    </div>
+   <div class="sn-item active" onclick="window.location.href='/pages/consumer/myorder.html'">
+    <svg viewBox="0 0 24 24" fill="none">
+        <path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"/>
+        <rect x="9" y="3" width="6" height="4" rx="1"/>
+        <line x1="9" y1="12" x2="15" y2="12"/>
+        <line x1="9" y1="16" x2="13" y2="16"/>
+    </svg>
+    <div class="sn-pip" id="ordersPip" style="display:none;"></div>
+    <div class="sn-tip">My Orders</div>
+    </div>
+   <div class="sn-item" onclick="window.location.href='/pages/consumer/account.html'">
+    <svg viewBox="0 0 24 24" fill="none">
+        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+        <circle cx="12" cy="7" r="4"/>
+    </svg>
+    <div class="sn-tip">My Account</div>
+    </div>
+    <div class="sn-spacer"></div>
+    <div class="sn-avatar" onclick="showToast('Logged in as Reyes General Store')">RG</div>
+  </nav>
+
+  <!-- ══ DESKTOP MAIN ══ -->
+  <div class="main-desktop">
+    <!-- Desktop Header -->
+    <div class="desktop-header">
+      <div class="dh-left-bar">
+        <button class="back-btn" onclick="showToast('Go back to Order Products')">
+          <svg viewBox="0 0 24 24" fill="none"><polyline points="15 18 9 12 15 6"/></svg>
+          Back
+        </button>
+        <div class="tb-divider"></div>
+        <div>
+          <div class="page-title">My Orders</div>
+          <div class="page-sub">Reyes General Store · San Vicente</div>
+        </div>
+      </div>
+      <div class="dh-right-bar">
+        <div class="dh-search">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          <input type="text" id="searchInputDesktop" placeholder="Search orders, products…" oninput="syncSearch(this)">
+        </div>
+        <button class="btn-new-order" onclick="showToast('Go to Order Products to place a new order')">
+          <svg viewBox="0 0 24 24" fill="none"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          New Order
+        </button>
+      </div>
+    </div>
+
+    <!-- Desktop Content -->
+    <div class="desktop-content" id="desktopContent" style="display:none">
+      <div class="summary-strip" id="summaryStripDesktop"></div>
+      <div class="active-order-wrap" id="activeOrderWrapDesktop"></div>
+      <div class="filter-bar" id="filterBarDesktop">
+        <div class="f-chip active" id="fc-all-d"       onclick="setFilter('all',this,'d')">All Orders</div>
+        <div class="f-chip amber-chip" id="fc-pending-d"   onclick="setFilter('pending',this,'d')">🟡 Pending</div>
+        <div class="f-chip blue-chip"  id="fc-processing-d" onclick="setFilter('processing',this,'d')">🔵 Processing</div>
+        <div class="f-chip green-chip" id="fc-delivered-d"  onclick="setFilter('delivered',this,'d')">🟢 Delivered</div>
+        <div class="f-chip" id="fc-cancelled-d"  onclick="setFilter('cancelled',this,'d')">⚫ Cancelled</div>
+        <div style="margin-left:auto;display:flex;gap:8px;align-items:center;">
+          <select class="sel" id="sortSelDesktop" onchange="renderAll()">
+            <option value="newest">Newest First</option>
+            <option value="oldest">Oldest First</option>
+            <option value="amount-high">Highest Amount</option>
+            <option value="amount-low">Lowest Amount</option>
+          </select>
+          <div class="f-chip" onclick="clearFilters()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="11" height="11"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            Clear
+          </div>
+        </div>
+      </div>
+      <div class="orders-list" id="ordersListDesktop"></div>
+    </div>
+  </div>
+
+  <!-- ══ MOBILE CONTENT ══ -->
+  <div class="content" id="mobileContent">
+    <div class="summary-strip" id="summaryStrip"></div>
+    <div class="active-order-wrap" id="activeOrderWrap"></div>
+
+    <!-- Mobile Filter Chips -->
+    <div class="filter-bar">
+      <div class="f-chip active" id="fc-all"       onclick="setFilter('all',this,'m')">All</div>
+      <div class="f-chip amber-chip" id="fc-pending"   onclick="setFilter('pending',this,'m')">🟡 Pending</div>
+      <div class="f-chip blue-chip"  id="fc-processing" onclick="setFilter('processing',this,'m')">🔵 Processing</div>
+      <div class="f-chip green-chip" id="fc-delivered"  onclick="setFilter('delivered',this,'m')">🟢 Delivered</div>
+      <div class="f-chip" id="fc-cancelled"  onclick="setFilter('cancelled',this,'m')">⚫ Cancelled</div>
+    </div>
+
+    <!-- Mobile Sort + Clear Row -->
+    <div class="sort-row">
+      <select class="sel" id="sortSel" onchange="renderAll()">
+        <option value="newest">Newest First</option>
+        <option value="oldest">Oldest First</option>
+        <option value="amount-high">Highest Amount</option>
+        <option value="amount-low">Lowest Amount</option>
+      </select>
+      <div class="clear-btn" onclick="clearFilters()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="11" height="11"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        Clear
+      </div>
+    </div>
+
+    <div class="orders-list" id="ordersList"></div>
+  </div>
+
+  <!-- ══ MOBILE BOTTOM NAV ══ -->
+  <nav class="bottom-nav">
+    <div class="bn-item" onclick="showToast('Go to Order Products')">
+      <svg viewBox="0 0 24 24" fill="none"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+      <span class="bn-lbl">Products</span>
+    </div>
+    <div class="bn-item active">
+      <svg viewBox="0 0 24 24" fill="none"><path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="1"/><line x1="9" y1="12" x2="15" y2="12"/><line x1="9" y1="16" x2="13" y2="16"/></svg>
+      <span class="bn-lbl">Orders</span>
+    </div>
+    <div class="bn-item" onclick="showToast('Account settings — coming soon')">
+      <svg viewBox="0 0 24 24" fill="none"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+      <span class="bn-lbl">Account</span>
+    </div>
+  </nav>
+
+</div>
+
+<!-- ══ DETAIL DRAWER ══ -->
+<div class="drawer-backdrop" id="drawerBg" onclick="closeDrawer()"></div>
+<div class="drawer" id="drawer">
+  <div class="drawer-handle"></div>
+  <div class="drawer-header">
+    <div class="dh-left">
+      <div class="dh-eyebrow">Order Details</div>
+      <div class="dh-title" id="d-title">#GD-1000</div>
+      <div class="dh-sub" id="d-sub">Loading…</div>
+    </div>
+    <div class="drawer-close" onclick="closeDrawer()">
+      <svg viewBox="0 0 24 24" fill="none"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </div>
+  </div>
+  <div class="drawer-body" id="drawerBody"></div>
+  <div class="drawer-footer">
+    <button class="df-btn df-reorder" id="df-reorder-btn" onclick="reorderFromDrawer()">
+      <svg viewBox="0 0 24 24" fill="none"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
+      Reorder This
+    </button>
+    <button class="df-btn df-close" onclick="closeDrawer()">Close</button>
+  </div>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toastEl">
+  <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+  <span id="toastMsg">Done!</span>
+</div>
+
+<script>
+// ══════════════════════════════════════════
+//  DATA — 4 steps (route removed)
+// ══════════════════════════════════════════
+const ORDERS = [
+  {
+    id: 'GD-1052', date: 'Feb 27, 2026', dateObj: new Date('2026-02-27'), time: '8:00 AM',
+    status: 'pending', pay: 'Cash on Delivery', amount: 6100, cases: 50,
+    address: 'Poblacion, San Vicente', driver: null,
+    items: [
+      { name:'Coca-Cola 350ml', sku:'CK-350', emoji:'🥤', qty:40, price:120 },
+      { name:'Coke Zero 350ml', sku:'CZ-350', emoji:'⬛', qty:10, price:130 },
+    ],
+    eta: 'Today, between 10AM–12PM',
+    timeline: [
+      { type:'plus',  color:'#CC1B22', bg:'rgba(204,27,34,0.1)',  title:'Order Placed',    sub:'via Consumer Portal',           time:'Today, 8:00 AM' },
+      { type:'check', color:'#3B82F6', bg:'rgba(59,130,246,0.1)', title:'Order Confirmed', sub:'GD Admin accepted your order',  time:'Today, 8:05 AM' },
+    ],
+    steps: ['ordered','confirmed','preparing','delivered'],
+    currentStep: 1,
+  },
+  {
+    id: 'GD-1044', date: 'Feb 24, 2026', dateObj: new Date('2026-02-24'), time: '7:45 AM',
+    status: 'delivered', pay: 'Cash on Delivery', amount: 9400, cases: 80,
+    address: 'Poblacion, San Vicente', driver: 'Juan Dela Cruz',
+    items: [
+      { name:'Coca-Cola 350ml', sku:'CK-350', emoji:'🥤', qty:60, price:120 },
+      { name:'Sprite 350ml',    sku:'SP-350', emoji:'🟢', qty:20, price:110 },
+    ],
+    eta: null,
+    timeline: [
+      { type:'plus',   color:'#CC1B22', bg:'rgba(204,27,34,0.1)',   title:'Order Placed',          sub:'via Consumer Portal',             time:'Feb 24, 7:45 AM' },
+      { type:'check',  color:'#3B82F6', bg:'rgba(59,130,246,0.1)',  title:'Order Confirmed',       sub:'GD Admin accepted your order',    time:'Feb 24, 7:52 AM' },
+      { type:'box',    color:'#F59E0B', bg:'rgba(245,158,11,0.1)',  title:'Preparing for Delivery', sub:'Being packed at GD warehouse',   time:'Feb 24, 8:30 AM' },
+      { type:'mappin', color:'#10B981', bg:'rgba(16,185,129,0.1)',  title:'Delivered',             sub:'Signed by: Danilo Reyes',         time:'Feb 24, 10:22 AM' },
+    ],
+    steps: ['ordered','confirmed','preparing','delivered'],
+    currentStep: 3,
+  },
+  {
+    id: 'GD-1038', date: 'Feb 20, 2026', dateObj: new Date('2026-02-20'), time: '9:15 AM',
+    status: 'delivered', pay: 'Cash on Delivery', amount: 9600, cases: 80,
+    address: 'Poblacion, San Vicente', driver: 'Pedro Santos',
+    items: [
+      { name:'Coca-Cola 350ml', sku:'CK-350', emoji:'🥤', qty:80, price:120 },
+    ],
+    eta: null,
+    timeline: [
+      { type:'plus',   color:'#CC1B22', bg:'rgba(204,27,34,0.1)',   title:'Order Placed',          sub:'via Consumer Portal',             time:'Feb 20, 9:15 AM' },
+      { type:'check',  color:'#3B82F6', bg:'rgba(59,130,246,0.1)',  title:'Order Confirmed',       sub:'GD Admin accepted your order',    time:'Feb 20, 9:20 AM' },
+      { type:'box',    color:'#F59E0B', bg:'rgba(245,158,11,0.1)',  title:'Preparing for Delivery', sub:'Being packed at GD warehouse',   time:'Feb 20, 10:00 AM' },
+      { type:'mappin', color:'#10B981', bg:'rgba(16,185,129,0.1)',  title:'Delivered',             sub:'Signed by: Danilo Reyes',         time:'Feb 20, 11:45 AM' },
+    ],
+    steps: ['ordered','confirmed','preparing','delivered'],
+    currentStep: 3,
+  },
+  {
+    id: 'GD-1031', date: 'Feb 17, 2026', dateObj: new Date('2026-02-17'), time: '8:30 AM',
+    status: 'delivered', pay: 'Cash on Delivery', amount: 7200, cases: 50,
+    address: 'Poblacion, San Vicente', driver: 'Juan Dela Cruz',
+    items: [
+      { name:'Coca-Cola 350ml', sku:'CK-350', emoji:'🥤', qty:40, price:120 },
+      { name:'Coca-Cola 1L',    sku:'CK-1L',  emoji:'🥤', qty:10, price:240 },
+    ],
+    eta: null,
+    timeline: [
+      { type:'plus',   color:'#CC1B22', bg:'rgba(204,27,34,0.1)',   title:'Order Placed',          sub:'via Consumer Portal',             time:'Feb 17, 8:30 AM' },
+      { type:'check',  color:'#3B82F6', bg:'rgba(59,130,246,0.1)',  title:'Order Confirmed',       sub:'GD Admin accepted your order',    time:'Feb 17, 8:38 AM' },
+      { type:'box',    color:'#F59E0B', bg:'rgba(245,158,11,0.1)',  title:'Preparing for Delivery', sub:'Being packed at GD warehouse',   time:'Feb 17, 9:15 AM' },
+      { type:'mappin', color:'#10B981', bg:'rgba(16,185,129,0.1)',  title:'Delivered',             sub:'Signed by: Danilo Reyes',         time:'Feb 17, 11:00 AM' },
+    ],
+    steps: ['ordered','confirmed','preparing','delivered'],
+    currentStep: 3,
+  },
+  {
+    id: 'GD-1025', date: 'Feb 14, 2026', dateObj: new Date('2026-02-14'), time: '9:00 AM',
+    status: 'delivered', pay: 'Bank Transfer', amount: 5550, cases: 45,
+    address: 'Poblacion, San Vicente', driver: 'Maria Santos',
+    items: [
+      { name:'Coke Zero 350ml', sku:'CZ-350', emoji:'⬛', qty:30, price:130 },
+      { name:'Sprite 350ml',    sku:'SP-350', emoji:'🟢', qty:15, price:110 },
+    ],
+    eta: null,
+    timeline: [
+      { type:'plus',   color:'#CC1B22', bg:'rgba(204,27,34,0.1)',   title:'Order Placed',          sub:'via Consumer Portal',             time:'Feb 14, 9:00 AM' },
+      { type:'check',  color:'#3B82F6', bg:'rgba(59,130,246,0.1)',  title:'Order Confirmed',       sub:'GD Admin accepted your order',    time:'Feb 14, 9:07 AM' },
+      { type:'box',    color:'#F59E0B', bg:'rgba(245,158,11,0.1)',  title:'Preparing for Delivery', sub:'Being packed at GD warehouse',   time:'Feb 14, 9:50 AM' },
+      { type:'mappin', color:'#10B981', bg:'rgba(16,185,129,0.1)',  title:'Delivered',             sub:'Signed by: Danilo Reyes',         time:'Feb 14, 11:30 AM' },
+    ],
+    steps: ['ordered','confirmed','preparing','delivered'],
+    currentStep: 3,
+  },
+  {
+    id: 'GD-1018', date: 'Feb 10, 2026', dateObj: new Date('2026-02-10'), time: '10:00 AM',
+    status: 'delivered', pay: 'Cash on Delivery', amount: 8160, cases: 60,
+    address: 'Poblacion, San Vicente', driver: 'Juan Dela Cruz',
+    items: [
+      { name:'Coca-Cola 350ml', sku:'CK-350', emoji:'🥤', qty:48, price:120 },
+      { name:'Royal Tru-Orange 350ml', sku:'RO-350', emoji:'🟠', qty:12, price:110 },
+    ],
+    eta: null,
+    timeline: [
+      { type:'plus',   color:'#CC1B22', bg:'rgba(204,27,34,0.1)',   title:'Order Placed',          sub:'via Consumer Portal',             time:'Feb 10, 10:00 AM' },
+      { type:'check',  color:'#3B82F6', bg:'rgba(59,130,246,0.1)',  title:'Order Confirmed',       sub:'GD Admin accepted your order',    time:'Feb 10, 10:08 AM' },
+      { type:'box',    color:'#F59E0B', bg:'rgba(245,158,11,0.1)',  title:'Preparing for Delivery', sub:'Being packed at GD warehouse',   time:'Feb 10, 11:00 AM' },
+      { type:'mappin', color:'#10B981', bg:'rgba(16,185,129,0.1)',  title:'Delivered',             sub:'Signed by: Danilo Reyes',         time:'Feb 10, 12:45 PM' },
+    ],
+    steps: ['ordered','confirmed','preparing','delivered'],
+    currentStep: 3,
+  },
+  {
+    id: 'GD-1011', date: 'Feb 03, 2026', dateObj: new Date('2026-02-03'), time: '8:00 AM',
+    status: 'cancelled', pay: 'Cash on Delivery', amount: 3600, cases: 30,
+    address: 'Poblacion, San Vicente', driver: null,
+    items: [
+      { name:'Coca-Cola 1.5L', sku:'CK-15L', emoji:'🥤', qty:10, price:360 },
+    ],
+    eta: null,
+    timeline: [
+      { type:'plus',   color:'#CC1B22', bg:'rgba(204,27,34,0.1)', title:'Order Placed',    sub:'via Consumer Portal',              time:'Feb 03, 8:00 AM' },
+      { type:'cancel', color:'#EF4444', bg:'rgba(239,68,68,0.1)', title:'Order Cancelled', sub:'Cancelled — out of stock at time', time:'Feb 03, 8:30 AM' },
+    ],
+    steps: ['ordered','confirmed','preparing','delivered'],
+    currentStep: -1,
+  },
+];
+
+// 4-step labels and icons (route removed)
+const STEP_LABELS = ['Ordered','Confirmed','Preparing','Delivered'];
+const STEP_ICONS  = [
+  '<path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="1"/>',
+  '<polyline points="20 6 9 17 4 12"/>',
+  '<path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/>',
+  '<path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/><circle cx="12" cy="9" r="2.5"/>',
+];
+
+function tlIconPath(type) {
+  const m = {
+    plus:   '<line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>',
+    check:  '<polyline points="20 6 9 17 4 12"/>',
+    box:    '<path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/>',
+    mappin: '<path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/><circle cx="12" cy="9" r="2.5"/>',
+    cancel: '<line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>',
+  };
+  return m[type] || m.plus;
+}
+
+// ══ STATE ══
+let statusFilter = 'all';
+let activeOrderId = null;
+
+// ══ HELPERS ══
+function fmtMoney(n) { return '₱' + n.toLocaleString(); }
+function payClass(p) { return p === 'GCash' ? 'pay-gcash' : p === 'Bank Transfer' ? 'pay-bank' : 'pay-cod'; }
+function statusBadge(s) {
+  const map = {
+    delivered:  `<span class="badge b-delivered"><span class="bdot"></span>Delivered</span>`,
+    pending:    `<span class="badge b-pending"><span class="bdot"></span>Pending</span>`,
+    processing: `<span class="badge b-processing"><span class="bdot"></span>Processing</span>`,
+    cancelled:  `<span class="badge b-cancelled"><span class="bdot"></span>Cancelled</span>`,
+  };
+  return map[s] || '';
+}
+function statusIcoClass(s) {
+  return { delivered:'si-delivered', pending:'si-pending', processing:'si-processing', cancelled:'si-cancelled' }[s] || 'si-cancelled';
+}
+function statusIcoPath(s) {
+  const m = {
+    delivered:  '<polyline points="20 6 9 17 4 12"/>',
+    pending:    '<circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>',
+    processing: '<path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/>',
+    cancelled:  '<line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>',
+  };
+  return m[s] || m.cancelled;
+}
+
+// ══ DETECT DESKTOP ══
+function isDesktop() { return window.innerWidth >= 768; }
+
+function syncSearch(el) {
+  document.getElementById('searchInput').value = el.value;
+  renderAll();
+}
+
+// ══ SUMMARY ══
+function renderSummary() {
+  const total      = ORDERS.length;
+  const pending    = ORDERS.filter(o => o.status === 'pending' || o.status === 'processing').length;
+  const delivered  = ORDERS.filter(o => o.status === 'delivered').length;
+  const totalSpend = ORDERS.filter(o => o.status !== 'cancelled').reduce((s, o) => s + o.amount, 0);
+  const html = `
+    <div class="sum-card c-red">
+      <div class="sum-ico" style="background:var(--red-pale);"><svg viewBox="0 0 24 24" fill="none" stroke="var(--red)" stroke-width="2"><path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="1"/></svg></div>
+      <div><div class="sum-val">${total}</div><div class="sum-lbl">Total Orders</div></div>
+    </div>
+    <div class="sum-card c-amber">
+      <div class="sum-ico" style="background:var(--amber-pale);"><svg viewBox="0 0 24 24" fill="none" stroke="var(--amber)" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div>
+      <div><div class="sum-val">${pending}</div><div class="sum-lbl">Active Orders</div></div>
+    </div>
+    <div class="sum-card c-green">
+      <div class="sum-ico" style="background:var(--green-pale);"><svg viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg></div>
+      <div><div class="sum-val">${delivered}</div><div class="sum-lbl">Delivered</div></div>
+    </div>
+    <div class="sum-card c-blue">
+      <div class="sum-ico" style="background:var(--blue-pale);"><svg viewBox="0 0 24 24" fill="none" stroke="var(--blue)" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></div>
+      <div><div class="sum-val">${fmtMoney(totalSpend)}</div><div class="sum-lbl">Total Spent</div></div>
+    </div>
+  `;
+  document.getElementById('summaryStrip').innerHTML = html;
+  if (document.getElementById('summaryStripDesktop')) document.getElementById('summaryStripDesktop').innerHTML = html;
+}
+
+// ══ ACTIVE ORDER BANNER ══
+function renderActiveOrderBanner() {
+  const active = ORDERS.find(o => o.status === 'pending' || o.status === 'processing');
+
+  function buildBanner(wrapId) {
+    const wrap = document.getElementById(wrapId);
+    if (!wrap) return;
+    if (!active) { wrap.innerHTML = ''; return; }
+    const cs = active.currentStep;
+    wrap.innerHTML = `
+      <div class="active-order-card" onclick="openDrawer('${active.id}')">
+        <div class="ao-top-row">
+          <div class="ao-pulse"></div>
+          <div class="ao-info">
+            <div class="ao-eyebrow">Active Order</div>
+            <div class="ao-title">#${active.id} — ${active.items.map(i=>i.name+' ×'+i.qty).join(', ')}</div>
+            <div class="ao-sub">${active.date} · ${active.time} · ${active.pay}</div>
+          </div>
+          <div style="flex-shrink:0;text-align:right;">
+            <div class="ao-amount-inline">${fmtMoney(active.amount)}</div>
+            <div class="ao-amount-lbl">${active.cases} cases</div>
+          </div>
+        </div>
+        <div class="ao-tracker">
+          ${active.steps.map((step, i) => {
+            const isDone   = i <= cs;
+            const isActive = i === cs + 1;
+            const dotClass = isDone ? 'done' : isActive ? 'active' : 'idle';
+            const lblClass = isDone ? 'done-lbl' : isActive ? 'active-lbl' : '';
+            return `
+              <div class="ao-step">
+                <div class="ao-step-dot ${dotClass}">
+                  <svg viewBox="0 0 24 24" fill="none" stroke-width="2.5">${STEP_ICONS[i]}</svg>
+                </div>
+                <div class="ao-step-lbl ${lblClass}">${STEP_LABELS[i]}</div>
+              </div>
+              ${i < active.steps.length - 1 ? `<div class="ao-line ${i < cs ? 'done' : 'idle'}"></div>` : ''}
+            `;
+          }).join('')}
+        </div>
+        ${active.eta ? `<div style="margin-top:10px;display:flex;align-items:center;gap:7px;background:rgba(245,158,11,0.12);border:1px solid rgba(245,158,11,0.25);border-radius:9px;padding:8px 11px;position:relative;z-index:1;">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--amber)" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          <span style="font-size:11.5px;font-weight:700;color:#D97706;">${active.eta}</span>
+        </div>` : ''}
+      </div>
+    `;
+  }
+  buildBanner('activeOrderWrap');
+  buildBanner('activeOrderWrapDesktop');
+}
+
+// ══ ORDERS LIST ══
+function getFiltered() {
+  const q    = (document.getElementById('searchInput').value || '').toLowerCase();
+  const sort = (document.getElementById('sortSel') || document.getElementById('sortSelDesktop')).value;
+  let list = ORDERS.filter(o => {
+    if (statusFilter !== 'all' && o.status !== statusFilter) return false;
+    if (q && !o.id.toLowerCase().includes(q)
+          && !o.items.some(i => i.name.toLowerCase().includes(q))
+          && !o.date.toLowerCase().includes(q)) return false;
+    return true;
+  });
+  list.sort((a, b) => {
+    if (sort === 'newest')      return b.dateObj - a.dateObj;
+    if (sort === 'oldest')      return a.dateObj - b.dateObj;
+    if (sort === 'amount-high') return b.amount - a.amount;
+    if (sort === 'amount-low')  return a.amount - b.amount;
+    return 0;
+  });
+  return list;
+}
+
+function renderOrders() {
+  const list = getFiltered();
+  const html = list.length
+    ? list.map((o, idx) => renderOrderCard(o, idx)).join('')
+    : `<div class="empty-state">
+        <div class="empty-state-ico">📋</div>
+        <div class="empty-state-title">No orders found</div>
+        <div class="empty-state-sub">Try adjusting your filters or search term.</div>
+      </div>`;
+  document.getElementById('ordersList').innerHTML = html;
+  if (document.getElementById('ordersListDesktop')) document.getElementById('ordersListDesktop').innerHTML = html;
+}
+
+function renderOrderCard(o, idx) {
+  const cs = o.currentStep;
+  const isCancelled = o.status === 'cancelled';
+  const delay = `animation-delay:${idx * 0.04}s`;
+
+  let progressHtml = '';
+  if (!isCancelled) {
+    progressHtml = `<div class="oc-progress">
+      ${STEP_LABELS.map((lbl, i) => {
+        const isDone   = i <= cs;
+        const isActive = i === cs + 1 && (o.status === 'pending' || o.status === 'processing');
+        const dotClass = isDone ? 'done' : isActive ? 'active' : '';
+        return `
+          <div class="op-step" style="flex:${i < STEP_LABELS.length - 1 ? '1' : '0'};">
+            <div class="op-dot ${dotClass}" title="${lbl}"></div>
+            ${i < STEP_LABELS.length - 1 ? `<div class="op-line ${isDone && (i + 1 <= cs) ? 'done' : ''}"></div>` : ''}
+          </div>
+        `;
+      }).join('')}
+    </div>`;
+  }
+
+  const itemsText = o.items.map(i => `${i.name} ×${i.qty}`).join(' · ');
+  return `
+    <div class="order-card ${o.status}" style="${delay}" onclick="openDrawer('${o.id}')">
+      <div class="oc-main">
+        <div class="oc-status-ico ${statusIcoClass(o.status)}">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="2">${statusIcoPath(o.status)}</svg>
+        </div>
+        <div class="oc-info">
+          <div class="oc-top">
+            <div class="oc-id">#${o.id}</div>
+            ${statusBadge(o.status)}
+            <div class="oc-date">${o.date}</div>
+          </div>
+          <div class="oc-items-txt">${itemsText}</div>
+          <div class="oc-tags">
+            <span class="pay-badge ${payClass(o.pay)}">${o.pay}</span>
+            <span style="font-size:10.5px;color:var(--muted);font-weight:600;">${o.cases} cases</span>
+            ${o.driver ? `<span style="font-size:10.5px;color:var(--muted);font-weight:600;">🚚 ${o.driver}</span>` : ''}
+          </div>
+        </div>
+        <div class="oc-right">
+          <div class="oc-amount">${fmtMoney(o.amount)}</div>
+          <div class="oc-cases">${o.cases} cases</div>
+        </div>
+      </div>
+      ${progressHtml}
+    </div>
+  `;
+}
+
+// ══ DRAWER ══
+function openDrawer(id) {
+  const o = ORDERS.find(x => x.id === id);
+  if (!o) return;
+  activeOrderId = id;
+  document.getElementById('d-title').textContent = '#' + o.id;
+  document.getElementById('d-sub').textContent   = `${o.date} · ${o.time} · ${o.cases} cases`;
+
+  const isCancelled = o.status === 'cancelled';
+  const cs = o.currentStep;
+
+  // Tracker
+  let trackerHtml = '';
+  if (!isCancelled) {
+    trackerHtml = `
+      <div class="d-section">
+        <div class="d-section-lbl">Delivery Status</div>
+        <div class="d-tracker">
+          ${o.steps.map((step, i) => {
+            const isDone   = i <= cs;
+            const isActive = i === cs + 1;
+            const dotClass = isDone ? 'done' : isActive ? 'active' : 'idle';
+            const lblClass = isDone ? 'done-lbl' : isActive ? 'active-lbl' : '';
+            return `
+              <div class="dt-step">
+                <div class="dt-dot ${dotClass}">
+                  <svg viewBox="0 0 24 24" fill="none" stroke-width="2.5">${STEP_ICONS[i]}</svg>
+                </div>
+                <div class="dt-lbl ${lblClass}">${STEP_LABELS[i]}</div>
+              </div>
+              ${i < o.steps.length - 1 ? `<div class="dt-line ${i < cs ? 'done' : 'idle'}"></div>` : ''}
+            `;
+          }).join('')}
+        </div>
+        ${o.eta ? `<div class="eta-box">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          <div><div class="eta-title">Estimated Delivery</div><div class="eta-sub">${o.eta}</div></div>
+        </div>` : ''}
+      </div>`;
+  }
+
+  // Items
+  const itemsHtml = `
+    <div class="d-section">
+      <div class="d-section-lbl">Items Ordered</div>
+      <div class="d-item-list">
+        ${o.items.map(item => `
+          <div class="d-item-row">
+            <div class="d-item-emoji">${item.emoji}</div>
+            <div class="d-item-info">
+              <div class="d-item-name">${item.name}</div>
+              <div class="d-item-sku">SKU: ${item.sku} · ${fmtMoney(item.price)}/case</div>
+            </div>
+            <div class="d-item-right">
+              <div class="d-item-qty">${item.qty} cases</div>
+              <div class="d-item-sub">${fmtMoney(item.qty * item.price)}</div>
+            </div>
+          </div>`).join('')}
+      </div>
+      <div class="d-total-row">
+        <span class="d-total-lbl">Total Amount Due</span>
+        <span class="d-total-val">${fmtMoney(o.amount)}</span>
+      </div>
+    </div>`;
+
+  // Info
+  const infoHtml = `
+    <div class="d-section">
+      <div class="d-section-lbl">Order Information</div>
+      <div class="d-info-grid">
+        <div class="d-info-cell"><div class="d-info-lbl">Order ID</div><div class="d-info-val" style="color:var(--red);font-family:'Outfit',sans-serif;">#${o.id}</div></div>
+        <div class="d-info-cell"><div class="d-info-lbl">Order Date</div><div class="d-info-val">${o.date}, ${o.time}</div></div>
+        <div class="d-info-cell"><div class="d-info-lbl">Payment Method</div><div class="d-info-val"><span class="pay-badge ${payClass(o.pay)}">${o.pay}</span></div></div>
+        <div class="d-info-cell"><div class="d-info-lbl">Status</div><div class="d-info-val">${statusBadge(o.status)}</div></div>
+        <div class="d-info-cell wide"><div class="d-info-lbl">Delivery Address</div><div class="d-info-val">${o.address}</div></div>
+        ${o.driver ? `<div class="d-info-cell wide"><div class="d-info-lbl">Assigned Driver</div><div class="d-info-val">🚚 ${o.driver}</div></div>` : ''}
+      </div>
+    </div>`;
+
+  // Timeline
+  const timelineHtml = `
+    <div class="d-section">
+      <div class="d-section-lbl">Activity Timeline</div>
+      <div class="d-timeline">
+        ${o.timeline.map(t => `
+          <div class="d-tl-item">
+            <div class="d-tl-left">
+              <div class="d-tl-dot" style="background:${t.bg};">
+                <svg viewBox="0 0 24 24" fill="none" stroke="${t.color}" stroke-width="2.5">${tlIconPath(t.type)}</svg>
+              </div>
+              <div class="d-tl-line"></div>
+            </div>
+            <div class="d-tl-content">
+              <div class="d-tl-title">${t.title}</div>
+              <div class="d-tl-sub">${t.sub}</div>
+              <div class="d-tl-time">${t.time}</div>
+            </div>
+          </div>`).join('')}
+      </div>
+    </div>`;
+
+  document.getElementById('drawerBody').innerHTML = trackerHtml + itemsHtml + infoHtml + timelineHtml;
+  document.getElementById('drawerBg').classList.add('show');
+  document.getElementById('drawer').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeDrawer() {
+  document.getElementById('drawerBg').classList.remove('show');
+  document.getElementById('drawer').classList.remove('open');
+  document.body.style.overflow = '';
+  activeOrderId = null;
+}
+
+function reorderFromDrawer() {
+  const o = ORDERS.find(x => x.id === activeOrderId);
+  if (!o) return;
+  closeDrawer();
+  showToast(`Reordering: ${o.items.map(i=>i.name+' ×'+i.qty).join(', ')}`);
+}
+
+// Swipe down to close drawer on mobile
+let touchStartY = 0;
+document.getElementById('drawer').addEventListener('touchstart', e => { touchStartY = e.touches[0].clientY; }, { passive: true });
+document.getElementById('drawer').addEventListener('touchend', e => {
+  const diff = e.changedTouches[0].clientY - touchStartY;
+  if (diff > 60) closeDrawer();
+}, { passive: true });
+
+// ══ FILTER ══
+function setFilter(f, el, mode) {
+  statusFilter = f;
+  const prefix = mode === 'd' ? 'fc-' : 'fc-';
+  // Clear all chips in both mobile and desktop
+  document.querySelectorAll('[id^="fc-"]').forEach(c => c.classList.remove('active'));
+  el.classList.add('active');
+  // Also activate the mirrored chip
+  const key = el.id.replace(/-d$/, '').replace(/^fc-/, '');
+  const mirror = document.getElementById(mode === 'd' ? `fc-${key}` : `fc-${key}-d`);
+  if (mirror) mirror.classList.add('active');
+  renderOrders();
+}
+
+function clearFilters() {
+  statusFilter = 'all';
+  document.getElementById('searchInput').value = '';
+  const dSearch = document.getElementById('searchInputDesktop');
+  if (dSearch) dSearch.value = '';
+  document.getElementById('sortSel').value = 'newest';
+  const dSort = document.getElementById('sortSelDesktop');
+  if (dSort) dSort.value = 'newest';
+  document.querySelectorAll('[id^="fc-"]').forEach(c => c.classList.remove('active'));
+  document.getElementById('fc-all').classList.add('active');
+  const fcAllD = document.getElementById('fc-all-d');
+  if (fcAllD) fcAllD.classList.add('active');
+  renderOrders();
+}
+
+function renderAll() { renderOrders(); }
+
+// ══ RESPONSIVE LAYOUT SWITCH ══
+function applyLayout() {
+  const desktop = isDesktop();
+  const mc = document.getElementById('mobileContent');
+  const dc = document.getElementById('desktopContent');
+  const topnav = document.querySelector('.topnav');
+  const searchBar = document.querySelector('.search-bar-wrap');
+  const bottomNav = document.querySelector('.bottom-nav');
+  const sideNav = document.querySelector('.sidenav-desktop');
+  const mainDesktop = document.querySelector('.main-desktop');
+  const desktopHeader = document.querySelector('.desktop-header');
+
+  if (desktop) {
+    mc.style.display = 'none';
+    dc.style.display = 'block';
+    topnav.style.display = 'none';
+    searchBar.style.display = 'none';
+    bottomNav.style.display = 'none';
+    sideNav.style.display = 'flex';
+    mainDesktop.style.display = 'flex';
+    desktopHeader.style.display = 'flex';
+  } else {
+    mc.style.display = 'block';
+    dc.style.display = 'none';
+    topnav.style.display = 'flex';
+    searchBar.style.display = 'block';
+    bottomNav.style.display = 'flex';
+    sideNav.style.display = 'none';
+    mainDesktop.style.display = 'none';
+    desktopHeader.style.display = 'none';
+  }
+}
+
+// ══ TOAST ══
+let tTimer;
+function showToast(msg) {
+  const el = document.getElementById('toastEl');
+  document.getElementById('toastMsg').textContent = msg;
+  el.classList.add('show');
+  clearTimeout(tTimer);
+  tTimer = setTimeout(() => el.classList.remove('show'), 2700);
+}
+
+// ══ INIT ══
+applyLayout();
+renderSummary();
+renderActiveOrderBanner();
+renderOrders();
+window.addEventListener('resize', () => { applyLayout(); renderSummary(); renderActiveOrderBanner(); renderOrders(); });
+</script>
+</body>
+</html>

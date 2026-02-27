@@ -1,0 +1,1063 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GD Coke — Order Portal</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --red: #CC1B22;
+  --red-h: #E02028;
+  --red-pale: rgba(204,27,34,0.08);
+  --red-border: rgba(204,27,34,0.2);
+  --bg: #F0F2F7;
+  --white: #FFFFFF;
+  --dark: #111827;
+  --slate: #374151;
+  --gray: #6B7280;
+  --muted: #9CA3AF;
+  --light: #D1D5DB;
+  --lighter: #E5E7EB;
+  --surface: #F9FAFB;
+  --green: #10B981;
+  --green-pale: rgba(16,185,129,0.1);
+  --green-border: rgba(16,185,129,0.25);
+  --amber: #F59E0B;
+  --amber-pale: rgba(245,158,11,0.1);
+  --amber-border: rgba(245,158,11,0.25);
+  --blue: #3B82F6;
+  --blue-pale: rgba(59,130,246,0.1);
+  --blue-border: rgba(59,130,246,0.25);
+}
+
+html, body { height: 100%; font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg); color: var(--dark); -webkit-font-smoothing: antialiased; }
+
+/* ══════════════════════════════
+   MOBILE LAYOUT (default)
+══════════════════════════════ */
+.app { display: flex; flex-direction: column; min-height: 100vh; }
+
+/* TOP NAV */
+.topnav {
+  background: #0D1117; padding: 10px 16px;
+  display: flex; align-items: center; justify-content: space-between;
+  position: sticky; top: 0; z-index: 200;
+  border-bottom: 1px solid rgba(255,255,255,0.04);
+}
+.tn-left { display: flex; align-items: center; gap: 10px; }
+.tn-logo { width: 34px; height: 34px; border-radius: 10px; background: var(--red); display: flex; align-items: center; justify-content: center; box-shadow: 0 3px 10px rgba(204,27,34,0.4); overflow: hidden; flex-shrink: 0; }
+.tn-logo img { width: 100%; height: 100%; object-fit: contain; padding: 7px; filter: brightness(0) invert(1); }
+.tn-titles { line-height: 1.2; }
+.tn-title { font-family: 'Outfit', sans-serif; font-size: 15px; font-weight: 900; color: #fff; }
+.tn-sub { font-size: 10px; color: rgba(255,255,255,0.35); font-weight: 500; }
+.tn-right { display: flex; align-items: center; gap: 8px; }
+.tn-avatar { width: 32px; height: 32px; border-radius: 50%; background: linear-gradient(135deg, var(--red) 0%, #FF4B51 100%); display: flex; align-items: center; justify-content: center; font-family: 'Outfit', sans-serif; font-size: 11px; font-weight: 900; color: #fff; border: 2px solid rgba(255,255,255,0.12); cursor: pointer; }
+.tn-location { display: flex; align-items: center; gap: 5px; padding: 5px 10px; background: var(--red-pale); border: 1px solid var(--red-border); border-radius: 8px; font-size: 11px; font-weight: 700; color: var(--red); }
+.tn-location svg { width: 11px; height: 11px; stroke: var(--red); stroke-width: 2.5; }
+
+/* MOBILE SEARCH */
+.search-wrap { background: var(--white); border-bottom: 1px solid var(--lighter); padding: 10px 14px; position: sticky; top: 54px; z-index: 190; }
+.h-search { display: flex; align-items: center; gap: 8px; background: var(--surface); border: 1.5px solid var(--lighter); border-radius: 10px; padding: 9px 12px; transition: border-color 0.2s; }
+.h-search:focus-within { border-color: var(--red); }
+.h-search svg { width: 14px; height: 14px; stroke: var(--muted); flex-shrink: 0; }
+.h-search input { background: none; border: none; outline: none; font-family: 'Plus Jakarta Sans', sans-serif; font-size: 14px; color: var(--dark); width: 100%; }
+.h-search input::placeholder { color: var(--light); }
+
+/* MAIN SCROLL AREA */
+.main-scroll { flex: 1; overflow-y: auto; padding: 14px 14px 160px; -webkit-overflow-scrolling: touch; }
+
+/* Category filter */
+.cat-row { display: flex; align-items: center; gap: 8px; margin-bottom: 14px; overflow-x: auto; padding-bottom: 4px; scrollbar-width: none; }
+.cat-row::-webkit-scrollbar { display: none; }
+.cat-chip { padding: 7px 14px; border-radius: 9px; font-size: 12.5px; font-weight: 700; border: 1.5px solid var(--lighter); background: var(--white); color: var(--gray); cursor: pointer; transition: all 0.16s; white-space: nowrap; display: flex; align-items: center; gap: 6px; flex-shrink: 0; }
+.cat-chip:active { transform: scale(0.97); }
+.cat-chip.active { background: var(--red); border-color: var(--red); color: #fff; }
+
+/* Quick reorder banner */
+.reorder-banner {
+  background: linear-gradient(135deg, #0D1117 0%, #1e0809 60%, #220a0b 100%);
+  border-radius: 14px; padding: 14px 16px;
+  margin-bottom: 16px; position: relative; overflow: hidden;
+  animation: fadeUp 0.4s ease both;
+}
+.reorder-banner::before { content:''; position:absolute; inset:0; background:repeating-linear-gradient(-45deg,transparent,transparent 20px,rgba(255,255,255,0.013) 20px,rgba(255,255,255,0.013) 21px); }
+.reorder-banner::after { content:''; position:absolute; right:-30px; top:-30px; width:130px; height:130px; border-radius:50%; background:radial-gradient(circle,rgba(204,27,34,0.22) 0%,transparent 70%); pointer-events:none; }
+.rb-top { display: flex; align-items: center; gap: 12px; margin-bottom: 10px; position: relative; z-index: 1; }
+.rb-ico { width: 36px; height: 36px; border-radius: 10px; background: rgba(204,27,34,0.2); border: 1.5px solid rgba(204,27,34,0.3); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.rb-ico svg { width: 16px; height: 16px; stroke: #FCA5A5; stroke-width: 2; }
+.rb-title { font-family: 'Outfit', sans-serif; font-size: 14px; font-weight: 800; color: #fff; }
+.rb-sub { font-size: 11px; color: rgba(255,255,255,0.4); margin-top: 2px; }
+.rb-items { display: flex; gap: 7px; flex-wrap: wrap; position: relative; z-index: 1; }
+.rb-item { display: flex; align-items: center; gap: 6px; padding: 7px 11px; background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; font-size: 12px; font-weight: 700; color: rgba(255,255,255,0.8); cursor: pointer; transition: all 0.15s; }
+.rb-item:active { background: rgba(204,27,34,0.25); }
+.rb-item span { font-size: 14px; }
+
+/* Section heading */
+.section-heading { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+.section-title { font-family: 'Outfit', sans-serif; font-size: 14px; font-weight: 800; color: var(--dark); }
+.section-count { font-size: 11px; color: var(--muted); font-weight: 600; }
+
+/* Product Grid — 2 cols on mobile */
+.product-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-bottom: 20px; }
+
+.prod-card {
+  background: var(--white); border: 1.5px solid var(--lighter);
+  border-radius: 14px; overflow: hidden;
+  cursor: pointer; transition: all 0.2s;
+  animation: fadeUp 0.4s ease both;
+  display: flex; flex-direction: column;
+}
+.prod-card:active { transform: scale(0.98); }
+.prod-card.in-cart { border-color: var(--red); box-shadow: 0 0 0 3px var(--red-pale); }
+
+.prod-img-wrap { height: 80px; background: var(--surface); display: flex; align-items: center; justify-content: center; font-size: 40px; position: relative; border-bottom: 1px solid var(--lighter); }
+.prod-badge { position: absolute; top: 6px; right: 6px; padding: 2px 7px; border-radius: 6px; font-size: 9.5px; font-weight: 800; background: var(--red); color: #fff; }
+.prod-badge.new { background: var(--green); }
+.prod-badge.hot { background: var(--amber); color: #fff; }
+
+.prod-body { padding: 10px 10px 6px; flex: 1; display: flex; flex-direction: column; }
+.prod-name { font-family: 'Outfit', sans-serif; font-size: 12.5px; font-weight: 800; color: var(--dark); line-height: 1.2; margin-bottom: 2px; }
+.prod-sku { font-size: 10px; color: var(--muted); font-weight: 600; margin-bottom: 6px; }
+.prod-price { font-family: 'Outfit', sans-serif; font-size: 16px; font-weight: 900; color: var(--red); }
+.prod-price-sub { font-size: 10px; color: var(--muted); font-weight: 500; }
+
+.prod-footer { padding: 6px 10px 10px; display: flex; align-items: center; gap: 6px; }
+.qty-ctrl { display: flex; align-items: center; gap: 4px; }
+.qty-btn { width: 26px; height: 26px; border-radius: 7px; border: 1.5px solid var(--lighter); background: var(--surface); display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.13s; flex-shrink: 0; }
+.qty-btn:active { border-color: var(--red); background: var(--red-pale); }
+.qty-btn svg { width: 11px; height: 11px; stroke: var(--gray); stroke-width: 2.5; }
+.qty-num { font-family: 'Outfit', sans-serif; font-size: 14px; font-weight: 900; color: var(--dark); min-width: 20px; text-align: center; }
+.add-btn { flex: 1; padding: 7px 6px; border-radius: 8px; border: none; background: var(--red); color: #fff; font-family: 'Outfit', sans-serif; font-size: 12px; font-weight: 800; cursor: pointer; transition: all 0.15s; display: flex; align-items: center; justify-content: center; gap: 4px; }
+.add-btn:active { background: var(--red-h); }
+.add-btn.added { background: var(--green); }
+.add-btn svg { width: 11px; height: 11px; stroke: #fff; stroke-width: 2.5; }
+
+/* ══ FLOATING CART BUTTON (mobile) ══ */
+.floating-cart {
+  position: fixed; bottom: 74px; left: 14px; right: 14px;
+  background: var(--dark); border-radius: 14px; padding: 13px 16px;
+  display: flex; align-items: center; gap: 12px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.25);
+  cursor: pointer; z-index: 150; transition: all 0.2s;
+  animation: slideUp 0.3s cubic-bezier(0.34,1.56,0.64,1) both;
+}
+.floating-cart.hidden { display: none; }
+.floating-cart:active { transform: scale(0.98); }
+.fc-count { width: 28px; height: 28px; border-radius: 8px; background: var(--red); display: flex; align-items: center; justify-content: center; font-family: 'Outfit', sans-serif; font-size: 13px; font-weight: 900; color: #fff; flex-shrink: 0; }
+.fc-info { flex: 1; }
+.fc-label { font-size: 11px; color: rgba(255,255,255,0.5); font-weight: 600; }
+.fc-items { font-family: 'Outfit', sans-serif; font-size: 13.5px; font-weight: 800; color: #fff; }
+.fc-total { font-family: 'Outfit', sans-serif; font-size: 16px; font-weight: 900; color: #fff; }
+.fc-arrow { color: rgba(255,255,255,0.4); flex-shrink: 0; }
+.fc-arrow svg { width: 16px; height: 16px; stroke: rgba(255,255,255,0.5); stroke-width: 2.5; }
+
+/* ══ CART SHEET (mobile bottom sheet) ══ */
+.sheet-backdrop { position: fixed; inset: 0; background: rgba(10,12,18,0.5); backdrop-filter: blur(3px); z-index: 300; display: none; }
+.sheet-backdrop.show { display: block; }
+.cart-sheet {
+  position: fixed; left: 0; right: 0; bottom: -100%;
+  max-height: 90vh; background: var(--white); border-radius: 20px 20px 0 0;
+  z-index: 350; display: flex; flex-direction: column; overflow: hidden;
+  box-shadow: 0 -8px 40px rgba(0,0,0,0.18);
+  transition: bottom 0.4s cubic-bezier(0.22,1,0.36,1);
+}
+.cart-sheet.open { bottom: 0; }
+.sheet-handle { width: 36px; height: 4px; border-radius: 4px; background: var(--lighter); margin: 10px auto 0; flex-shrink: 0; }
+.sheet-header { padding: 12px 18px 12px; border-bottom: 1px solid var(--lighter); display: flex; align-items: center; justify-content: space-between; flex-shrink: 0; }
+.sheet-title { font-family: 'Outfit', sans-serif; font-size: 16px; font-weight: 900; color: var(--dark); display: flex; align-items: center; gap: 8px; }
+.cart-count-badge { width: 22px; height: 22px; border-radius: 6px; background: var(--red); color: #fff; font-size: 11px; font-weight: 900; display: flex; align-items: center; justify-content: center; font-family: 'Outfit', sans-serif; }
+.sheet-close { width: 30px; height: 30px; border-radius: 8px; background: var(--surface); border: 1.5px solid var(--lighter); display: flex; align-items: center; justify-content: center; cursor: pointer; }
+.sheet-close svg { width: 13px; height: 13px; stroke: var(--gray); stroke-width: 2.5; }
+.sheet-clear { font-size: 12px; font-weight: 700; color: var(--muted); cursor: pointer; padding: 4px 8px; border-radius: 6px; }
+.sheet-clear:active { background: var(--red-pale); color: var(--red); }
+
+.cart-items { flex: 1; overflow-y: auto; padding: 10px 14px; -webkit-overflow-scrolling: touch; }
+.cart-empty { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 160px; gap: 8px; }
+.cart-empty-ico { font-size: 44px; opacity: 0.5; }
+.cart-empty-txt { font-size: 13px; font-weight: 700; color: var(--muted); }
+.cart-empty-sub { font-size: 12px; color: var(--light); text-align: center; line-height: 1.5; }
+
+.cart-item { display: flex; align-items: center; gap: 10px; padding: 10px; border-radius: 11px; border: 1px solid var(--lighter); background: var(--surface); margin-bottom: 8px; }
+.ci-emoji { font-size: 22px; flex-shrink: 0; }
+.ci-info { flex: 1; min-width: 0; }
+.ci-name { font-size: 12.5px; font-weight: 700; color: var(--dark); line-height: 1.2; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.ci-price { font-size: 11px; color: var(--muted); font-weight: 600; margin-top: 2px; }
+.ci-right { display: flex; flex-direction: column; align-items: flex-end; gap: 5px; flex-shrink: 0; }
+.ci-total { font-family: 'Outfit', sans-serif; font-size: 13px; font-weight: 900; color: var(--dark); }
+.ci-ctrl { display: flex; align-items: center; gap: 4px; }
+.ci-btn { width: 24px; height: 24px; border-radius: 7px; border: 1.5px solid var(--lighter); background: var(--white); display: flex; align-items: center; justify-content: center; cursor: pointer; }
+.ci-btn:active { border-color: var(--red); background: var(--red-pale); }
+.ci-btn svg { width: 9px; height: 9px; stroke: var(--gray); stroke-width: 2.5; }
+.ci-qty { font-family: 'Outfit', sans-serif; font-size: 13px; font-weight: 900; color: var(--dark); min-width: 18px; text-align: center; }
+.ci-remove { width: 22px; height: 22px; border-radius: 6px; border: none; background: none; display: flex; align-items: center; justify-content: center; cursor: pointer; }
+.ci-remove:active { background: var(--red-pale); }
+.ci-remove svg { width: 11px; height: 11px; stroke: var(--muted); stroke-width: 2.5; }
+
+/* Cart footer */
+.cart-footer { padding: 12px 16px max(12px, env(safe-area-inset-bottom)); border-top: 1px solid var(--lighter); flex-shrink: 0; }
+.cart-summary { margin-bottom: 10px; display: flex; flex-direction: column; gap: 5px; }
+.cs-row { display: flex; align-items: center; justify-content: space-between; font-size: 12.5px; }
+.cs-lbl { color: var(--muted); font-weight: 600; }
+.cs-val { font-weight: 700; color: var(--dark); }
+.cs-total-row { display: flex; align-items: center; justify-content: space-between; padding: 10px 14px; background: var(--dark); border-radius: 11px; margin-bottom: 10px; }
+.cs-total-lbl { font-size: 13px; color: rgba(255,255,255,0.55); font-weight: 600; }
+.cs-total-val { font-family: 'Outfit', sans-serif; font-size: 20px; font-weight: 900; color: #fff; }
+
+.pay-label { font-size: 10.5px; font-weight: 700; color: var(--muted); margin-bottom: 6px; letter-spacing: 0.08em; text-transform: uppercase; }
+.pay-selector { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 6px; margin-bottom: 10px; }
+.pay-opt { padding: 8px 6px; border-radius: 9px; border: 1.5px solid var(--lighter); background: var(--surface); text-align: center; cursor: pointer; transition: all 0.15s; font-size: 11px; font-weight: 700; color: var(--gray); }
+.pay-opt:active { border-color: var(--red-border); }
+.pay-opt.selected { border-color: var(--red); background: var(--red-pale); color: var(--red); }
+.pay-opt .po-ico { font-size: 16px; margin-bottom: 3px; }
+
+.checkout-btn { width: 100%; padding: 14px; background: var(--red); border: none; border-radius: 11px; color: #fff; font-family: 'Outfit', sans-serif; font-size: 15px; font-weight: 800; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; justify-content: center; gap: 8px; }
+.checkout-btn:active { background: var(--red-h); }
+.checkout-btn:disabled { background: var(--lighter); color: var(--muted); cursor: not-allowed; }
+.checkout-btn svg { width: 16px; height: 16px; stroke: #fff; stroke-width: 2.5; }
+
+/* BOTTOM NAV */
+.bottom-nav {
+  position: fixed; bottom: 0; left: 0; right: 0;
+  background: #0D1117; border-top: 1px solid rgba(255,255,255,0.06);
+  display: flex; align-items: center; justify-content: space-around;
+  padding: 8px 0 max(8px, env(safe-area-inset-bottom));
+  z-index: 200;
+}
+.bn-item { display: flex; flex-direction: column; align-items: center; gap: 3px; padding: 6px 20px; cursor: pointer; position: relative; }
+.bn-item svg { width: 21px; height: 21px; stroke: rgba(255,255,255,0.3); stroke-width: 2; }
+.bn-item.active svg { stroke: #fff; }
+.bn-lbl { font-size: 10px; font-weight: 700; color: rgba(255,255,255,0.3); }
+.bn-item.active .bn-lbl { color: rgba(255,255,255,0.8); }
+.bn-pip { position: absolute; top: 5px; right: 12px; width: 8px; height: 8px; border-radius: 50%; background: var(--red); border: 2px solid #0D1117; display: none; }
+
+/* Orders list (mobile) */
+.order-card { background: var(--white); border: 1.5px solid var(--lighter); border-radius: 12px; padding: 12px 14px; margin-bottom: 10px; cursor: pointer; transition: all 0.15s; animation: fadeUp 0.4s ease both; }
+.order-card:active { border-color: var(--red-border); background: var(--red-pale); }
+.oc-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px; }
+.oc-id { font-family: 'Outfit', sans-serif; font-size: 13px; font-weight: 800; color: var(--dark); }
+.oc-date { font-size: 11px; color: var(--muted); font-weight: 600; }
+.oc-items { font-size: 12px; color: var(--slate); line-height: 1.5; margin-bottom: 8px; }
+.oc-foot { display: flex; align-items: center; justify-content: space-between; }
+.oc-amount { font-family: 'Outfit', sans-serif; font-size: 15px; font-weight: 900; color: var(--dark); }
+.badge { display: inline-flex; align-items: center; gap: 5px; padding: 3px 9px; border-radius: 100px; font-size: 11px; font-weight: 700; }
+.bdot { width: 5px; height: 5px; border-radius: 50%; flex-shrink: 0; }
+.b-delivered { background: var(--green-pale); color: #065F46; } .b-delivered .bdot { background: var(--green); }
+.b-pending   { background: var(--amber-pale); color: #92400E; } .b-pending .bdot   { background: var(--amber); animation: blink 1.5s infinite; }
+.b-processing{ background: var(--blue-pale);  color: #1E40AF; } .b-processing .bdot{ background: var(--blue); }
+
+/* ══ ORDER CONFIRM MODAL ══ */
+.modal-backdrop { position: fixed; inset: 0; background: rgba(10,12,18,0.55); backdrop-filter: blur(4px); z-index: 500; display: none; align-items: flex-end; justify-content: center; padding: 0; }
+.modal-backdrop.show { display: flex; }
+.modal { background: var(--white); border-radius: 20px 20px 0 0; width: 100%; max-height: 92vh; overflow-y: auto; box-shadow: 0 -12px 60px rgba(0,0,0,0.2); animation: slideUp 0.35s cubic-bezier(0.34,1.56,0.64,1) both; }
+.modal-hero { background: linear-gradient(135deg, #0D1117 0%, #1a0508 100%); padding: 28px 24px 22px; text-align: center; position: relative; overflow: hidden; }
+.modal-hero::after { content:''; position:absolute; width:160px; height:160px; border-radius:50%; background:radial-gradient(circle,rgba(204,27,34,0.25) 0%,transparent 70%); right:-30px; top:-30px; pointer-events:none; }
+.modal-check { width: 56px; height: 56px; border-radius: 16px; background: rgba(16,185,129,0.2); border: 2px solid rgba(16,185,129,0.4); display: flex; align-items: center; justify-content: center; margin: 0 auto 12px; position: relative; z-index: 1; }
+.modal-check svg { width: 26px; height: 26px; stroke: var(--green); stroke-width: 2.5; }
+.modal-h-title { font-family: 'Outfit', sans-serif; font-size: 20px; font-weight: 900; color: #fff; position: relative; z-index: 1; }
+.modal-h-sub { font-size: 12.5px; color: rgba(255,255,255,0.45); margin-top: 4px; position: relative; z-index: 1; }
+.modal-body { padding: 20px 20px max(20px, env(safe-area-inset-bottom)); }
+.modal-order-id { font-family: 'Outfit', sans-serif; font-size: 18px; font-weight: 900; color: var(--red); text-align: center; letter-spacing: 0.5px; margin-bottom: 14px; }
+.modal-rows { display: flex; flex-direction: column; gap: 9px; margin-bottom: 16px; }
+.modal-row { display: flex; justify-content: space-between; font-size: 13px; padding-bottom: 9px; border-bottom: 1px solid var(--lighter); }
+.modal-row:last-child { border-bottom: none; padding-bottom: 0; }
+.mr-lbl { color: var(--muted); font-weight: 600; }
+.mr-val { font-weight: 700; color: var(--dark); text-align: right; max-width: 60%; }
+.modal-total { display: flex; align-items: center; justify-content: space-between; background: var(--dark); border-radius: 11px; padding: 14px 16px; margin-bottom: 14px; }
+.mt-lbl { font-size: 13px; color: rgba(255,255,255,0.55); font-weight: 600; }
+.mt-val { font-family: 'Outfit', sans-serif; font-size: 22px; font-weight: 900; color: #fff; }
+.modal-ok { width: 100%; padding: 13px; background: var(--red); border: none; border-radius: 11px; color: #fff; font-family: 'Outfit', sans-serif; font-size: 14px; font-weight: 800; cursor: pointer; }
+.modal-ok:active { background: var(--red-h); }
+
+/* ══ TOAST ══ */
+.toast { position: fixed; bottom: 80px; left: 50%; transform: translateX(-50%) translateY(40px); background: var(--dark); color: #fff; padding: 10px 18px; border-radius: 11px; font-size: 13px; font-weight: 600; display: flex; align-items: center; gap: 8px; box-shadow: 0 8px 28px rgba(0,0,0,0.22); z-index: 9999; opacity: 0; transition: all 0.3s cubic-bezier(0.34,1.56,0.64,1); white-space: nowrap; }
+.toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
+.toast.green svg { stroke: #4ADE80; }
+.toast.red svg { stroke: #FCA5A5; }
+.toast svg { width: 14px; height: 14px; stroke-width: 2.5; }
+
+/* ══ HIDE DESKTOP ELEMENTS ON MOBILE BY DEFAULT ══ */
+.sidenav-desktop { display: none; }
+.main-desktop { display: none; }
+
+/* ══ DESKTOP OVERRIDES (≥768px) ══ */
+@media (min-width: 768px) {
+  body { overflow: hidden; }
+  .app { flex-direction: row; height: 100vh; }
+
+  .topnav, .search-wrap, .bottom-nav, .floating-cart { display: none !important; }
+
+  /* Desktop side nav */
+  .sidenav-desktop {
+    display: flex; flex-direction: column; align-items: center;
+    width: 72px; flex-shrink: 0; background: #0D1117;
+    padding: 16px 0; gap: 6px; position: relative; z-index: 10;
+    border-right: 1px solid rgba(255,255,255,0.04);
+  }
+  .sidenav-desktop::before { content:''; position:absolute; top:-40px; left:-40px; width:160px; height:160px; border-radius:50%; background:radial-gradient(circle,rgba(204,27,34,0.16) 0%,transparent 70%); pointer-events:none; }
+  .sn-logo { width: 42px; height: 42px; border-radius: 12px; background: var(--red); display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 16px rgba(204,27,34,0.45); margin-bottom: 14px; overflow: hidden; }
+  .sn-logo img { width: 100%; height: 100%; object-fit: contain; padding: 8px; filter: brightness(0) invert(1); }
+  .sn-item { width: 46px; height: 46px; border-radius: 12px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.17s; position: relative; border: 1px solid transparent; }
+  .sn-item:hover { background: rgba(255,255,255,0.07); }
+  .sn-item.active { background: rgba(204,27,34,0.18); border-color: rgba(204,27,34,0.3); }
+  .sn-item svg { width: 19px; height: 19px; stroke: rgba(255,255,255,0.38); stroke-width: 2; }
+  .sn-item.active svg { stroke: #fff; }
+  .sn-item:hover svg { stroke: rgba(255,255,255,0.75); }
+  .sn-pip { position: absolute; top: 7px; right: 7px; width: 8px; height: 8px; border-radius: 50%; background: var(--red); border: 2px solid #0D1117; }
+  .sn-tip { position: absolute; left: 60px; top: 50%; transform: translateY(-50%); background: rgba(255,255,255,0.95); color: var(--dark); padding: 5px 10px; border-radius: 7px; font-size: 11.5px; font-weight: 700; white-space: nowrap; pointer-events: none; opacity: 0; transition: opacity 0.15s; z-index: 100; box-shadow: 0 4px 14px rgba(0,0,0,0.12); }
+  .sn-item:hover .sn-tip { opacity: 1; }
+  .sn-spacer { flex: 1; }
+  .sn-avatar { width: 36px; height: 36px; border-radius: 50%; background: linear-gradient(135deg, var(--red) 0%, #FF4B51 100%); display: flex; align-items: center; justify-content: center; font-family: 'Outfit', sans-serif; font-size: 12px; font-weight: 900; color: #fff; cursor: pointer; border: 2px solid rgba(255,255,255,0.12); }
+
+  .main-desktop { display: flex; flex: 1; flex-direction: column; overflow: hidden; }
+
+  /* Desktop header */
+  .desktop-header { background: var(--white); border-bottom: 1px solid var(--lighter); padding: 0 24px; height: 58px; display: flex; align-items: center; justify-content: space-between; flex-shrink: 0; gap: 12px; }
+  .dh-left { display: flex; flex-direction: column; }
+  .dh-title { font-family: 'Outfit', sans-serif; font-size: 17px; font-weight: 800; color: var(--dark); letter-spacing: -0.3px; }
+  .dh-sub { font-size: 11.5px; color: var(--muted); font-weight: 500; }
+  .dh-right { display: flex; align-items: center; gap: 10px; }
+  .dh-search { display: flex; align-items: center; gap: 8px; background: var(--surface); border: 1.5px solid var(--lighter); border-radius: 10px; padding: 7px 12px; width: 200px; transition: border-color 0.2s; }
+  .dh-search:focus-within { border-color: var(--red); }
+  .dh-search svg { width: 13px; height: 13px; stroke: var(--muted); flex-shrink: 0; }
+  .dh-search input { background: none; border: none; outline: none; font-family: 'Plus Jakarta Sans', sans-serif; font-size: 12.5px; color: var(--dark); width: 100%; }
+  .dh-search input::placeholder { color: var(--light); }
+  .h-tag { display: flex; align-items: center; gap: 6px; padding: 6px 12px; background: var(--red-pale); border: 1.5px solid var(--red-border); border-radius: 9px; font-size: 12px; font-weight: 700; color: var(--red); white-space: nowrap; }
+  .h-tag svg { width: 12px; height: 12px; stroke: var(--red); stroke-width: 2.5; }
+
+  /* Desktop body split */
+  .body-split-desktop { flex: 1; display: flex; overflow: hidden; }
+
+  .products-panel-desktop { flex: 1; overflow-y: auto; padding: 18px 20px 24px; scrollbar-width: thin; scrollbar-color: var(--lighter) transparent; }
+  .products-panel-desktop::-webkit-scrollbar { width: 4px; }
+  .products-panel-desktop::-webkit-scrollbar-thumb { background: var(--lighter); border-radius: 10px; }
+
+  /* Desktop product grid — more cols */
+  .products-panel-desktop .product-grid { grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 12px; }
+  .products-panel-desktop .prod-img-wrap { height: 100px; font-size: 48px; }
+  .products-panel-desktop .prod-body { padding: 11px 12px 8px; }
+  .products-panel-desktop .prod-name { font-size: 13.5px; }
+  .products-panel-desktop .prod-footer { padding: 6px 12px 12px; }
+
+  /* Desktop cart (side panel) */
+  .cart-panel-desktop { width: 320px; flex-shrink: 0; background: var(--white); border-left: 1px solid var(--lighter); display: flex; flex-direction: column; overflow: hidden; }
+  .cart-panel-header { padding: 16px 18px 14px; border-bottom: 1px solid var(--lighter); display: flex; align-items: center; justify-content: space-between; flex-shrink: 0; }
+  .cart-panel-title { font-family: 'Outfit', sans-serif; font-size: 15px; font-weight: 800; color: var(--dark); display: flex; align-items: center; gap: 8px; }
+  .cart-panel-items { flex: 1; overflow-y: auto; padding: 10px 14px; }
+  .cart-panel-footer { padding: 14px 16px; border-top: 1px solid var(--lighter); flex-shrink: 0; }
+  .cart-clear-btn { font-size: 11.5px; font-weight: 700; color: var(--muted); cursor: pointer; padding: 4px 9px; border-radius: 6px; }
+  .cart-clear-btn:hover { background: var(--red-pale); color: var(--red); }
+
+  /* Desktop modal centered */
+  .modal-backdrop { align-items: center; padding: 20px; }
+  .modal { border-radius: 20px; max-width: 420px; width: 100%; max-height: 90vh; animation: popIn 0.3s cubic-bezier(0.34,1.56,0.64,1) both; }
+
+  /* Hide mobile-only in desktop */
+  .main-mobile { display: none !important; }
+  .sheet-backdrop, .cart-sheet { display: none !important; }
+  .modal-backdrop { display: none; }
+  .modal-backdrop.show { display: flex; }
+
+  .product-grid { grid-template-columns: repeat(2, 1fr); }
+}
+
+/* ══ ANIMATIONS ══ */
+@keyframes fadeUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes popIn { from { opacity: 0; transform: scale(0.88); } to { opacity: 1; transform: scale(1); } }
+@keyframes slideUp { from { opacity: 0; transform: translateY(40px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes blink { 0%,100% { opacity: 1; } 50% { opacity: 0.2; } }
+::-webkit-scrollbar { width: 3px; } ::-webkit-scrollbar-thumb { background: var(--lighter); border-radius: 10px; }
+</style>
+</head>
+<body>
+<div class="app">
+
+  <!-- ══ MOBILE TOP NAV ══ -->
+  <div class="topnav">
+    <div class="tn-left">
+      <div class="tn-logo">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/ce/Coca-Cola_logo.svg/512px-Coca-Cola_logo.svg.png" alt="Coke">
+      </div>
+      <div class="tn-titles">
+        <div class="tn-title" id="mobileHeaderTitle">Order Products</div>
+        <div class="tn-sub">Reyes General Store</div>
+      </div>
+    </div>
+    <div class="tn-right">
+      <div class="tn-location">
+        <svg viewBox="0 0 24 24" fill="none"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/><circle cx="12" cy="9" r="2.5"/></svg>
+        San Vicente
+      </div>
+      <div class="tn-avatar" onclick="showToast('Logged in as Reyes General Store','green')">RG</div>
+    </div>
+  </div>
+
+  <!-- MOBILE SEARCH -->
+  <div class="search-wrap" id="mobileSearchWrap">
+    <div class="h-search">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      <input type="text" id="searchInput" placeholder="Search products…" oninput="renderProducts()">
+    </div>
+  </div>
+
+  <!-- MOBILE MAIN SCROLL -->
+  <div class="main-scroll main-mobile" id="mobileMain">
+    <!-- ORDER VIEW -->
+    <div id="mobileOrderView">
+      <div class="cat-row" id="catRow"></div>
+      <div class="reorder-banner">
+        <div class="rb-top">
+          <div class="rb-ico"><svg viewBox="0 0 24 24" fill="none"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg></div>
+          <div>
+            <div class="rb-title">Quick Reorder</div>
+            <div class="rb-sub">Repeat from your last order</div>
+          </div>
+        </div>
+        <div class="rb-items">
+          <div class="rb-item" onclick="quickReorder('P001',40)"><span>🥤</span>Coke 350ml ×40</div>
+          <div class="rb-item" onclick="quickReorder('P004',10)"><span>⬛</span>Coke Zero ×10</div>
+        </div>
+      </div>
+      <div id="productSections"></div>
+    </div>
+    <!-- ORDERS VIEW -->
+    <div id="mobileOrdersView" style="display:none;">
+      <div id="ordersTab"></div>
+    </div>
+  </div>
+
+  <!-- FLOATING CART BUTTON -->
+  <div class="floating-cart hidden" id="floatingCart" onclick="openCartSheet()">
+    <div class="fc-count" id="fcCount">0</div>
+    <div class="fc-info">
+      <div class="fc-label">My Order</div>
+      <div class="fc-items" id="fcItems">No items yet</div>
+    </div>
+    <div class="fc-total" id="fcTotal">₱0</div>
+    <div class="fc-arrow"><svg viewBox="0 0 24 24" fill="none"><polyline points="9 18 15 12 9 6"/></svg></div>
+  </div>
+
+  <!-- BOTTOM NAV -->
+  <nav class="bottom-nav">
+    <div class="bn-item active" id="bnOrder" onclick="setMobileView('order')">
+      <svg viewBox="0 0 24 24" fill="none"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+      <span class="bn-lbl">Products</span>
+    </div>
+    <div class="bn-item" id="bnOrders" onclick="setMobileView('orders')">
+      <svg viewBox="0 0 24 24" fill="none"><path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="1"/><line x1="9" y1="12" x2="15" y2="12"/><line x1="9" y1="16" x2="13" y2="16"/></svg>
+      <div class="bn-pip" id="ordersPipMobile"></div>
+      <span class="bn-lbl">My Orders</span>
+    </div>
+    <div class="bn-item" onclick="showToast('Account settings — coming soon','green')">
+      <svg viewBox="0 0 24 24" fill="none"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+      <span class="bn-lbl">Account</span>
+    </div>
+  </nav>
+
+  <!-- CART BOTTOM SHEET -->
+  <div class="sheet-backdrop" id="sheetBg" onclick="closeCartSheet()"></div>
+  <div class="cart-sheet" id="cartSheet">
+    <div class="sheet-handle"></div>
+    <div class="sheet-header">
+      <div class="sheet-title">
+        My Order
+        <div class="cart-count-badge" id="sheetCartCount">0</div>
+      </div>
+      <div style="display:flex;align-items:center;gap:8px;">
+        <div class="sheet-clear" onclick="clearCart()">Clear all</div>
+        <div class="sheet-close" onclick="closeCartSheet()">
+          <svg viewBox="0 0 24 24" fill="none"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </div>
+      </div>
+    </div>
+    <div class="cart-items" id="sheetCartItems">
+      <div class="cart-empty">
+        <div class="cart-empty-ico">🛒</div>
+        <div class="cart-empty-txt">Your order is empty</div>
+        <div class="cart-empty-sub">Browse products and<br>add items to your order</div>
+      </div>
+    </div>
+    <div class="cart-footer" id="sheetCartFooter" style="display:none;">
+      <div class="cart-summary">
+        <div class="cs-row"><span class="cs-lbl">Items</span><span class="cs-val" id="sf-items">—</span></div>
+        <div class="cs-row"><span class="cs-lbl">Total Cases</span><span class="cs-val" id="sf-cases">—</span></div>
+      </div>
+      <div class="cs-total-row">
+        <span class="cs-total-lbl">Order Total</span>
+        <span class="cs-total-val" id="sf-total">₱0</span>
+      </div>
+      <div class="pay-label">Payment Method</div>
+      <div class="pay-selector" id="sheetPaySelector">
+        <div class="pay-opt selected" onclick="selectPay(this,'Cash on Delivery','sheet')"><div class="po-ico">💵</div>COD</div>
+        <div class="pay-opt" onclick="selectPay(this,'Bank Transfer','sheet')"><div class="po-ico">🏦</div>Bank</div>
+        <div class="pay-opt" onclick="selectPay(this,'GCash','sheet')"><div class="po-ico">📱</div>GCash</div>
+      </div>
+      <button class="checkout-btn" onclick="placeOrder()">
+        <svg viewBox="0 0 24 24" fill="none"><polyline points="20 6 9 17 4 12"/></svg>
+        Place Order
+      </button>
+    </div>
+  </div>
+
+  <!-- ══ DESKTOP SIDE NAV ══ -->
+  <nav class="sidenav-desktop">
+    <div class="sn-logo">
+      <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/ce/Coca-Cola_logo.svg/512px-Coca-Cola_logo.svg.png" alt="Coke">
+    </div>
+    <div class="sn-item active" onclick="window.location.href='/pages/consumer/cunsomer_dashboard.html'">
+    <svg viewBox="0 0 24 24" fill="none">
+        <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/>
+        <line x1="3" y1="6" x2="21" y2="6"/>
+        <path d="M16 10a4 4 0 0 1-8 0"/>
+    </svg>
+    <div class="sn-tip">Order Products</div>
+    </div>
+   <div class="sn-item" onclick="window.location.href='/pages/consumer/myorder.html'">
+    <svg viewBox="0 0 24 24" fill="none">
+        <path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"/>
+        <rect x="9" y="3" width="6" height="4" rx="1"/>
+        <line x1="9" y1="12" x2="15" y2="12"/>
+        <line x1="9" y1="16" x2="13" y2="16"/>
+    </svg>
+    <div class="sn-pip" id="ordersPip" style="display:none;"></div>
+    <div class="sn-tip">My Orders</div>
+    </div>
+   <div class="sn-item" onclick="window.location.href='/pages/consumer/account.html'">
+    <svg viewBox="0 0 24 24" fill="none">
+        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+        <circle cx="12" cy="7" r="4"/>
+    </svg>
+    <div class="sn-tip">My Account</div>
+    </div>
+    <div class="sn-spacer"></div>
+    <div class="sn-avatar" onclick="showToast('Logged in as Reyes General Store','green')">RG</div>
+  </nav>
+
+  <!-- DESKTOP MAIN -->
+  <div class="main-desktop">
+    <div class="desktop-header">
+      <div class="dh-left">
+        <div class="dh-title" id="desktopHeaderTitle">Order Products</div>
+        <div class="dh-sub" id="desktopHeaderSub">Reyes General Store · San Vicente</div>
+      </div>
+      <div class="dh-right">
+        <div class="dh-search">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          <input type="text" id="searchInputDesktop" placeholder="Search products…" oninput="syncSearch(this)">
+        </div>
+        <div class="h-tag">
+          <svg viewBox="0 0 24 24" fill="none"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/><circle cx="12" cy="9" r="2.5"/></svg>
+          San Vicente
+        </div>
+      </div>
+    </div>
+
+    <div class="body-split-desktop">
+      <!-- Products panel desktop -->
+      <div class="products-panel-desktop" id="desktopProductsPanel">
+        <div class="cat-row" id="catRowDesktop"></div>
+        <div class="reorder-banner">
+          <div class="rb-top">
+            <div class="rb-ico"><svg viewBox="0 0 24 24" fill="none"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg></div>
+            <div>
+              <div class="rb-title">Quick Reorder</div>
+              <div class="rb-sub">Repeat from your last order</div>
+            </div>
+          </div>
+          <div class="rb-items">
+            <div class="rb-item" onclick="quickReorder('P001',40)"><span>🥤</span>Coke 350ml ×40</div>
+            <div class="rb-item" onclick="quickReorder('P004',10)"><span>⬛</span>Coke Zero ×10</div>
+          </div>
+        </div>
+        <div id="productSectionsDesktop"></div>
+      </div>
+
+      <!-- Orders panel desktop -->
+      <div class="products-panel-desktop" id="desktopOrdersPanel" style="display:none;">
+        <div id="ordersTabDesktop" style="padding-top:4px;"></div>
+      </div>
+
+      <!-- Desktop Cart Panel -->
+      <div class="cart-panel-desktop">
+        <div class="cart-panel-header">
+          <div class="cart-panel-title">
+            My Order
+            <div class="cart-count-badge" id="desktopCartCount">0</div>
+          </div>
+          <div class="cart-clear-btn" onclick="clearCart()">Clear all</div>
+        </div>
+        <div class="cart-panel-items" id="desktopCartItems">
+          <div class="cart-empty">
+            <div class="cart-empty-ico">🛒</div>
+            <div class="cart-empty-txt">Your order is empty</div>
+            <div class="cart-empty-sub">Browse products and<br>add items to your order</div>
+          </div>
+        </div>
+        <div class="cart-panel-footer" id="desktopCartFooter" style="display:none;">
+          <div class="cart-summary">
+            <div class="cs-row"><span class="cs-lbl">Items</span><span class="cs-val" id="df-items">—</span></div>
+            <div class="cs-row"><span class="cs-lbl">Total Cases</span><span class="cs-val" id="df-cases">—</span></div>
+          </div>
+          <div class="cs-total-row">
+            <span class="cs-total-lbl">Order Total</span>
+            <span class="cs-total-val" id="df-total">₱0</span>
+          </div>
+          <div class="pay-label">Payment Method</div>
+          <div class="pay-selector" id="desktopPaySelector">
+            <div class="pay-opt selected" onclick="selectPay(this,'Cash on Delivery','desktop')"><div class="po-ico">💵</div>COD</div>
+            <div class="pay-opt" onclick="selectPay(this,'Bank Transfer','desktop')"><div class="po-ico">🏦</div>Bank</div>
+            <div class="pay-opt" onclick="selectPay(this,'GCash','desktop')"><div class="po-ico">📱</div>GCash</div>
+          </div>
+          <button class="checkout-btn" onclick="placeOrder()">
+            <svg viewBox="0 0 24 24" fill="none"><polyline points="20 6 9 17 4 12"/></svg>
+            Place Order
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- ORDER CONFIRM MODAL -->
+<div class="modal-backdrop" id="modalBg" onclick="closeModal(event)">
+  <div class="modal" onclick="event.stopPropagation()">
+    <div class="modal-hero">
+      <div class="modal-check"><svg viewBox="0 0 24 24" fill="none"><polyline points="20 6 9 17 4 12"/></svg></div>
+      <div class="modal-h-title">Order Placed! 🎉</div>
+      <div class="modal-h-sub">Your GD driver will deliver soon.</div>
+    </div>
+    <div class="modal-body">
+      <div class="modal-order-id" id="m-oid">#GD-1060</div>
+      <div class="modal-rows" id="m-rows"></div>
+      <div class="modal-total">
+        <span class="mt-lbl">Total Amount Due</span>
+        <span class="mt-val" id="m-total">₱0</span>
+      </div>
+      <button class="modal-ok" onclick="closeModal()">Done — Track my order →</button>
+    </div>
+  </div>
+</div>
+
+<!-- Toast -->
+<div class="toast green" id="toastEl">
+  <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+  <span id="toastMsg">Done!</span>
+</div>
+
+<script>
+// ══════════════════════════════════════════
+//  DATA
+// ══════════════════════════════════════════
+const PRODUCTS = [
+  { id:'P001', name:'Coca-Cola 350ml', sku:'CK-350', emoji:'🥤', cat:'Coca-Cola', price:120, badge:'hot' },
+  { id:'P002', name:'Coca-Cola 1L',    sku:'CK-1L',  emoji:'🥤', cat:'Coca-Cola', price:240, badge:'' },
+  { id:'P003', name:'Coca-Cola 1.5L',  sku:'CK-15L', emoji:'🥤', cat:'Coca-Cola', price:360, badge:'' },
+  { id:'P004', name:'Coke Zero 350ml', sku:'CZ-350', emoji:'⬛', cat:'Zero Sugar', price:130, badge:'' },
+  { id:'P005', name:'Sprite 350ml',    sku:'SP-350', emoji:'🟢', cat:'Sprite',    price:110, badge:'' },
+  { id:'P006', name:'Sprite 1L',       sku:'SP-1L',  emoji:'🟢', cat:'Sprite',    price:220, badge:'new' },
+  { id:'P007', name:'Royal Tru-Orange 350ml', sku:'RO-350', emoji:'🟠', cat:'Royal', price:110, badge:'' },
+  { id:'P008', name:'Royal Tru-Orange 1L',    sku:'RO-1L',  emoji:'🟠', cat:'Royal', price:210, badge:'' },
+  { id:'P009', name:'Wilkins 500ml',   sku:'WK-500', emoji:'💧', cat:'Water',     price:45,  badge:'' },
+  { id:'P010', name:'Absolute Pure 350ml', sku:'AB-350', emoji:'💧', cat:'Water', price:38,  badge:'new' },
+];
+
+const CATEGORIES = ['All', 'Coca-Cola', 'Zero Sugar', 'Sprite', 'Royal', 'Water'];
+
+const PAST_ORDERS = [
+  { id:'GD-1052', date:'Feb 27, 2026', items:'Coke 350ml ×40 · Coke Zero ×10', amount:6100, status:'pending',   pay:'Cash on Delivery' },
+  { id:'GD-1044', date:'Feb 24, 2026', items:'Coke 350ml ×60 · Sprite ×20',    amount:9400, status:'delivered', pay:'Cash on Delivery' },
+  { id:'GD-1038', date:'Feb 20, 2026', items:'Coke 350ml ×80',                 amount:9600, status:'delivered', pay:'Cash on Delivery' },
+  { id:'GD-1031', date:'Feb 17, 2026', items:'Coke 350ml ×40 · Coke 1L ×10',  amount:7200, status:'delivered', pay:'Cash on Delivery' },
+  { id:'GD-1025', date:'Feb 14, 2026', items:'Coke Zero ×30 · Sprite ×15',    amount:5550, status:'delivered', pay:'Cash on Delivery' },
+];
+
+// ══ STATE ══
+let cart = {};
+let catFilter = 'All';
+let payMethod = 'Cash on Delivery';
+let orderCounter = 1053;
+let activeViewMobile = 'order';
+let activeViewDesktop = 'order';
+
+// ══ HELPERS ══
+function isDesktop() { return window.innerWidth >= 768; }
+
+function syncSearch(el) {
+  document.getElementById('searchInput').value = el.value;
+  renderProducts();
+}
+
+// ══ CATEGORIES ══
+function renderCats() {
+  const html = CATEGORIES.map(c => `
+    <div class="cat-chip ${c === catFilter ? 'active' : ''}" onclick="setCat('${c}')">
+      ${{ All:'🍺', 'Coca-Cola':'🥤', 'Zero Sugar':'⬛', Sprite:'🟢', Royal:'🟠', Water:'💧' }[c]}
+      ${c}
+    </div>
+  `).join('');
+  document.getElementById('catRow').innerHTML = html;
+  if (document.getElementById('catRowDesktop')) document.getElementById('catRowDesktop').innerHTML = html;
+}
+
+function setCat(c) {
+  catFilter = c;
+  renderCats();
+  renderProducts();
+}
+
+// ══ PRODUCTS ══
+function getFiltered() {
+  const q = (document.getElementById('searchInput').value || '').toLowerCase();
+  return PRODUCTS.filter(p => {
+    if (catFilter !== 'All' && p.cat !== catFilter) return false;
+    if (q && !p.name.toLowerCase().includes(q) && !p.sku.toLowerCase().includes(q)) return false;
+    return true;
+  });
+}
+
+function renderProducts() {
+  const filtered = getFiltered();
+  const grouped = {};
+  filtered.forEach(p => {
+    if (!grouped[p.cat]) grouped[p.cat] = [];
+    grouped[p.cat].push(p);
+  });
+
+  let html = '';
+  Object.keys(grouped).forEach(cat => {
+    html += `
+      <div class="section-heading">
+        <div class="section-title">${cat}</div>
+        <div class="section-count">${grouped[cat].length} product${grouped[cat].length !== 1 ? 's' : ''}</div>
+      </div>
+      <div class="product-grid">
+        ${grouped[cat].map((p, i) => renderProductCard(p, i)).join('')}
+      </div>
+    `;
+  });
+
+  if (!html) {
+    html = `<div style="text-align:center;padding:50px 20px;color:var(--muted);">
+      <div style="font-size:38px;margin-bottom:10px;">🔍</div>
+      <div style="font-weight:700;font-size:14px;color:var(--slate);margin-bottom:4px;">No products found</div>
+      <div style="font-size:12.5px;">Try a different search or category</div>
+    </div>`;
+  }
+
+  document.getElementById('productSections').innerHTML = html;
+  if (document.getElementById('productSectionsDesktop'))
+    document.getElementById('productSectionsDesktop').innerHTML = html;
+}
+
+function renderProductCard(p, i) {
+  const qty    = cart[p.id] || 0;
+  const inCart = qty > 0;
+  const delay  = `animation-delay:${i * 0.04}s`;
+  return `
+    <div class="prod-card ${inCart ? 'in-cart' : ''}" id="card-${p.id}" style="${delay}">
+      <div class="prod-img-wrap">
+        <span>${p.emoji}</span>
+        ${p.badge ? `<div class="prod-badge ${p.badge === 'new' ? 'new' : p.badge === 'hot' ? 'hot' : ''}">${p.badge.toUpperCase()}</div>` : ''}
+      </div>
+      <div class="prod-body">
+        <div class="prod-name">${p.name}</div>
+        <div class="prod-sku">SKU: ${p.sku}</div>
+        <div class="prod-price">₱${p.price.toLocaleString()} <span class="prod-price-sub">/ case</span></div>
+      </div>
+      <div class="prod-footer">
+        <div class="qty-ctrl">
+          <div class="qty-btn" onclick="changeQty('${p.id}',-1)">
+            <svg viewBox="0 0 24 24" fill="none"><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          </div>
+          <div class="qty-num" id="pqty-${p.id}">${qty || '0'}</div>
+          <div class="qty-btn" onclick="changeQty('${p.id}',1)">
+            <svg viewBox="0 0 24 24" fill="none"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          </div>
+        </div>
+        <button class="add-btn ${inCart ? 'added' : ''}" id="abtn-${p.id}" onclick="addToCart('${p.id}')">
+          <svg viewBox="0 0 24 24" fill="none">${inCart ? '<polyline points="20 6 9 17 4 12"/>' : '<line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>'}</svg>
+          ${inCart ? 'Added' : 'Add'}
+        </button>
+      </div>
+    </div>
+  `;
+}
+
+// ══ CART LOGIC ══
+function addToCart(id) {
+  const p = PRODUCTS.find(x => x.id === id);
+  if (!p) return;
+  const pQty = parseInt(document.getElementById('pqty-' + id)?.textContent) || 1;
+  cart[id] = pQty > 0 ? pQty : 1;
+  updateCartUI();
+  refreshCard(id);
+  showToast(`${p.name} added!`, 'green');
+}
+
+function changeQty(id, delta) {
+  const el = document.getElementById('pqty-' + id);
+  let v = parseInt(el.textContent) || 0;
+  v = Math.max(0, v + delta);
+  el.textContent = v;
+  if (cart[id] !== undefined) {
+    if (v === 0) delete cart[id]; else cart[id] = v;
+    updateCartUI(); refreshCard(id);
+  }
+}
+
+function refreshCard(id) {
+  const qty    = cart[id] || 0;
+  const inCart = qty > 0;
+  const card   = document.getElementById('card-' + id);
+  const btn    = document.getElementById('abtn-' + id);
+  const qNum   = document.getElementById('pqty-' + id);
+  if (!card || !btn || !qNum) return;
+  card.className = 'prod-card' + (inCart ? ' in-cart' : '');
+  btn.className  = 'add-btn' + (inCart ? ' added' : '');
+  btn.innerHTML  = `<svg viewBox="0 0 24 24" fill="none">${inCart ? '<polyline points="20 6 9 17 4 12"/>' : '<line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>'}</svg>${inCart ? 'Added' : 'Add'}`;
+  qNum.textContent = qty || '0';
+}
+
+function clearCart() {
+  cart = {};
+  updateCartUI();
+  renderProducts();
+  showToast('Order cleared', 'red');
+}
+
+function cartQty(id, delta) {
+  cart[id] = Math.max(0, (cart[id] || 0) + delta);
+  if (cart[id] === 0) delete cart[id];
+  updateCartUI(); refreshCard(id);
+}
+
+function removeFromCart(id) {
+  delete cart[id];
+  updateCartUI(); refreshCard(id);
+}
+
+function selectPay(el, method, context) {
+  payMethod = method;
+  const selector = context === 'desktop' ? '#desktopPaySelector' : '#sheetPaySelector';
+  document.querySelectorAll(selector + ' .pay-opt').forEach(o => o.classList.remove('selected'));
+  el.classList.add('selected');
+  // Sync the other selector
+  const otherSelector = context === 'desktop' ? '#sheetPaySelector' : '#desktopPaySelector';
+  const idx = [...el.parentElement.children].indexOf(el);
+  const otherOpts = document.querySelectorAll(otherSelector + ' .pay-opt');
+  otherOpts.forEach(o => o.classList.remove('selected'));
+  if (otherOpts[idx]) otherOpts[idx].classList.add('selected');
+}
+
+function quickReorder(id, qty) {
+  cart[id] = qty;
+  updateCartUI(); refreshCard(id);
+  showToast('Added to order!', 'green');
+}
+
+function updateCartUI() {
+  const ids   = Object.keys(cart).filter(id => cart[id] > 0);
+  const total = ids.reduce((s, id) => { const p = PRODUCTS.find(x => x.id === id); return s + (p ? p.price * cart[id] : 0); }, 0);
+  const cases = ids.reduce((s, id) => s + cart[id], 0);
+  const hasItems = ids.length > 0;
+
+  // Floating cart button
+  const fc = document.getElementById('floatingCart');
+  if (fc) {
+    fc.className = 'floating-cart' + (hasItems ? '' : ' hidden');
+    document.getElementById('fcCount').textContent = ids.length;
+    document.getElementById('fcItems').textContent = hasItems ? `${ids.length} product${ids.length !== 1 ? 's' : ''} · ${cases} cases` : 'No items yet';
+    document.getElementById('fcTotal').textContent = '₱' + total.toLocaleString();
+  }
+
+  // Pips
+  const pip = document.getElementById('ordersPip');
+  const pipMobile = document.getElementById('ordersPipMobile');
+  if (pip) pip.style.display = hasItems ? '' : 'none';
+  if (pipMobile) pipMobile.style.display = hasItems ? '' : 'none';
+
+  // Badge counts
+  ['sheetCartCount', 'desktopCartCount'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.textContent = ids.length;
+  });
+
+  const cartItemsHtml = hasItems ? ids.map(id => {
+    const p = PRODUCTS.find(x => x.id === id);
+    if (!p) return '';
+    return `
+      <div class="cart-item">
+        <div class="ci-emoji">${p.emoji}</div>
+        <div class="ci-info">
+          <div class="ci-name">${p.name}</div>
+          <div class="ci-price">₱${p.price.toLocaleString()} × ${cart[id]}</div>
+        </div>
+        <div class="ci-right">
+          <div class="ci-total">₱${(p.price * cart[id]).toLocaleString()}</div>
+          <div class="ci-ctrl">
+            <div class="ci-btn" onclick="cartQty('${id}',-1)"><svg viewBox="0 0 24 24" fill="none"><line x1="5" y1="12" x2="19" y2="12"/></svg></div>
+            <div class="ci-qty">${cart[id]}</div>
+            <div class="ci-btn" onclick="cartQty('${id}',1)"><svg viewBox="0 0 24 24" fill="none"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></div>
+            <button class="ci-remove" onclick="removeFromCart('${id}')"><svg viewBox="0 0 24 24" fill="none"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+          </div>
+        </div>
+      </div>
+    `;
+  }).join('') : `<div class="cart-empty">
+    <div class="cart-empty-ico">🛒</div>
+    <div class="cart-empty-txt">Your order is empty</div>
+    <div class="cart-empty-sub">Browse products and<br>add items to your order</div>
+  </div>`;
+
+  // Sheet
+  const sheetItems = document.getElementById('sheetCartItems');
+  const sheetFooter = document.getElementById('sheetCartFooter');
+  if (sheetItems) sheetItems.innerHTML = cartItemsHtml;
+  if (sheetFooter) {
+    sheetFooter.style.display = hasItems ? '' : 'none';
+    if (hasItems) {
+      document.getElementById('sf-items').textContent  = ids.length + ' product' + (ids.length !== 1 ? 's' : '');
+      document.getElementById('sf-cases').textContent  = cases + ' cases';
+      document.getElementById('sf-total').textContent  = '₱' + total.toLocaleString();
+    }
+  }
+
+  // Desktop panel
+  const deskItems = document.getElementById('desktopCartItems');
+  const deskFooter = document.getElementById('desktopCartFooter');
+  if (deskItems) deskItems.innerHTML = cartItemsHtml;
+  if (deskFooter) {
+    deskFooter.style.display = hasItems ? '' : 'none';
+    if (hasItems) {
+      document.getElementById('df-items').textContent = ids.length + ' product' + (ids.length !== 1 ? 's' : '');
+      document.getElementById('df-cases').textContent = cases + ' cases';
+      document.getElementById('df-total').textContent = '₱' + total.toLocaleString();
+    }
+  }
+}
+
+// ══ CART SHEET ══
+function openCartSheet() {
+  document.getElementById('sheetBg').classList.add('show');
+  document.getElementById('cartSheet').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function closeCartSheet() {
+  document.getElementById('sheetBg').classList.remove('show');
+  document.getElementById('cartSheet').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+// Swipe down to close
+let swipeStartY = 0;
+document.getElementById('cartSheet').addEventListener('touchstart', e => { swipeStartY = e.touches[0].clientY; }, { passive: true });
+document.getElementById('cartSheet').addEventListener('touchend', e => {
+  if (e.changedTouches[0].clientY - swipeStartY > 60) closeCartSheet();
+}, { passive: true });
+
+// ══ PLACE ORDER ══
+function placeOrder() {
+  const ids = Object.keys(cart).filter(id => cart[id] > 0);
+  if (!ids.length) return;
+  const total = ids.reduce((s, id) => { const p = PRODUCTS.find(x => x.id === id); return s + (p ? p.price * cart[id] : 0); }, 0);
+  const newId = 'GD-' + orderCounter++;
+  const items = ids.map(id => { const p = PRODUCTS.find(x => x.id === id); return `${p.name} ×${cart[id]}`; });
+
+  document.getElementById('m-oid').textContent = '#' + newId;
+  document.getElementById('m-rows').innerHTML = `
+    <div class="modal-row"><span class="mr-lbl">Account</span><span class="mr-val">Reyes General Store</span></div>
+    <div class="modal-row"><span class="mr-lbl">Items</span><span class="mr-val">${items.join('<br>')}</span></div>
+    <div class="modal-row"><span class="mr-lbl">Payment</span><span class="mr-val">${payMethod}</span></div>
+    <div class="modal-row"><span class="mr-lbl">Delivery</span><span class="mr-val">Poblacion, San Vicente</span></div>
+    <div class="modal-row"><span class="mr-lbl">Est. Delivery</span><span class="mr-val">Today / Tomorrow AM</span></div>
+  `;
+  document.getElementById('m-total').textContent = '₱' + total.toLocaleString();
+  PAST_ORDERS.unshift({ id: newId, date: 'Feb 27, 2026', items: items.join(' · '), amount: total, status: 'pending', pay: payMethod });
+
+  closeCartSheet();
+  document.getElementById('modalBg').classList.add('show');
+  document.body.style.overflow = 'hidden';
+  cart = {};
+  updateCartUI();
+  renderProducts();
+}
+
+function closeModal(e) {
+  if (e && e.target !== document.getElementById('modalBg') && e !== undefined && typeof e !== 'undefined' && e.target) return;
+  document.getElementById('modalBg').classList.remove('show');
+  document.body.style.overflow = '';
+}
+
+// ══ ORDERS VIEW ══
+function renderOrders(targetId) {
+  const statusBadge = s => ({
+    delivered: `<span class="badge b-delivered"><span class="bdot"></span>Delivered</span>`,
+    pending:   `<span class="badge b-pending"><span class="bdot"></span>Pending</span>`,
+    processing:`<span class="badge b-processing"><span class="bdot"></span>Processing</span>`,
+  }[s] || '');
+  const html = PAST_ORDERS.map((o, i) => `
+    <div class="order-card" style="animation-delay:${i*0.05}s" onclick="showToast('Viewing order #${o.id}','green')">
+      <div class="oc-top"><div class="oc-id">#${o.id}</div><div class="oc-date">${o.date}</div></div>
+      <div class="oc-items">${o.items}</div>
+      <div class="oc-foot"><div class="oc-amount">₱${o.amount.toLocaleString()}</div>${statusBadge(o.status)}</div>
+    </div>
+  `).join('');
+  const el = document.getElementById(targetId);
+  if (el) el.innerHTML = html;
+}
+
+// ══ VIEW SWITCHING ══
+function setMobileView(view) {
+  activeViewMobile = view;
+  document.getElementById('mobileOrderView').style.display  = view === 'order' ? '' : 'none';
+  document.getElementById('mobileOrdersView').style.display = view === 'orders' ? '' : 'none';
+  document.getElementById('mobileSearchWrap').style.display = view === 'order' ? '' : 'none';
+  document.getElementById('mobileHeaderTitle').textContent  = view === 'order' ? 'Order Products' : 'My Orders';
+  document.getElementById('bnOrder').className   = 'bn-item' + (view === 'order' ? ' active' : '');
+  document.getElementById('bnOrders').className  = 'bn-item' + (view === 'orders' ? ' active' : '');
+  if (view === 'orders') renderOrders('ordersTab');
+}
+
+function setDesktopView(view) {
+  activeViewDesktop = view;
+  document.getElementById('desktopProductsPanel').style.display = view === 'order' ? '' : 'none';
+  document.getElementById('desktopOrdersPanel').style.display   = view === 'orders' ? '' : 'none';
+  document.getElementById('desktopHeaderTitle').textContent     = view === 'order' ? 'Order Products' : 'My Orders';
+  document.getElementById('desktopHeaderSub').textContent       = view === 'order' ? 'Reyes General Store · San Vicente' : 'Track your delivery status';
+  document.querySelectorAll('.sidenav-desktop .sn-item').forEach((el, i) => {
+    el.classList.toggle('active', (i === 0 && view === 'order') || (i === 1 && view === 'orders'));
+  });
+  if (view === 'orders') renderOrders('ordersTabDesktop');
+}
+
+// ══ TOAST ══
+let tTimer;
+function showToast(msg, type = 'green') {
+  const el = document.getElementById('toastEl');
+  const ico = type === 'green' ? '<polyline points="20 6 9 17 4 12"/>' : '<line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>';
+  el.className = `toast ${type}`;
+  el.querySelector('svg').innerHTML = ico;
+  document.getElementById('toastMsg').textContent = msg;
+  el.classList.add('show');
+  clearTimeout(tTimer);
+  tTimer = setTimeout(() => el.classList.remove('show'), 2500);
+}
+
+// ══ INIT ══
+renderCats();
+renderProducts();
+updateCartUI();
+
+// Handle desktop/mobile modal close differently
+document.getElementById('modalBg').addEventListener('click', function(e) {
+  if (e.target === this) {
+    this.classList.remove('show');
+    document.body.style.overflow = '';
+  }
+});
+</script>
+</body>
+</html>

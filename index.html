@@ -4,559 +4,311 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>GD Coke Distributor — Login</title>
-<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Barlow:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,300;1,700&family=Barlow+Condensed:wght@500;600;700;800&display=swap" rel="stylesheet">
 <style>
 *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
 :root {
-  --red: #CC1B22;
-  --red-hover: #E02028;
-  --red-pale: rgba(204,27,34,0.07);
-  --red-border: rgba(204,27,34,0.18);
-  --white: #FFFFFF;
-  --dark: #111827;
-  --slate: #374151;
-  --gray: #6B7280;
-  --muted: #9CA3AF;
-  --light: #D1D5DB;
-  --lighter: #E5E7EB;
-  --surface: #F9FAFB;
-  --bg: #F3F4F6;
+  --red:        #CC1B22;
+  --red-deep:   #A8131A;
+  --red-light:  rgba(204,27,34,0.10);
+  --red-border: rgba(204,27,34,0.20);
+  --ink:        #111111;
+  --ink-60:     rgba(17,17,17,0.60);
+  --ink-30:     rgba(17,17,17,0.30);
+  --ink-10:     rgba(17,17,17,0.10);
+  --ink-05:     rgba(17,17,17,0.05);
+  --white:      #FFFFFF;
+  --cream:      #FAF9F7;
+  --rule:       rgba(17,17,17,0.09);
 }
 
 html, body {
   height: 100%;
-  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-family: 'Barlow', sans-serif;
   -webkit-font-smoothing: antialiased;
 }
 
-/* Full-page background with Coca-Cola image */
 body {
   min-height: 100vh;
   display: flex;
   align-items: center;
   justify-content: center;
   padding: 32px 20px;
-  position: relative;
-  overflow: auto;
+  background: #1A1A1A;
+  background-image:
+    radial-gradient(ellipse 80% 60% at 20% 50%, rgba(180,10,20,0.20) 0%, transparent 60%),
+    radial-gradient(ellipse 60% 80% at 85% 30%, rgba(120,5,10,0.14) 0%, transparent 55%);
 }
 
-.page-bg {
-  position: fixed; inset: 0; z-index: 0;
-}
-
-.page-bg img {
-  width: 100%; height: 100%;
-  object-fit: cover;
-  object-position: center;
-}
-
-/* dark + red gradient overlay on background */
-.page-bg::after {
+body::before {
   content: '';
-  position: absolute; inset: 0;
-  background: linear-gradient(135deg,
-    rgba(10,5,5,0.80) 0%,
-    rgba(140,10,14,0.55) 50%,
-    rgba(10,5,5,0.82) 100%
-  );
+  position: fixed;
+  inset: 0;
+  background-image: radial-gradient(circle, rgba(255,255,255,0.04) 1px, transparent 1px);
+  background-size: 28px 28px;
+  pointer-events: none;
+  z-index: 0;
 }
 
-/* ── CENTERED CARD ── */
+/* ── CARD ── */
 .card {
-  position: relative; z-index: 10;
-  display: flex;
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: 1fr 440px;
   width: 100%;
-  max-width: 900px;
-  min-height: 560px;
+  max-width: 960px;
+  min-height: 600px;
   border-radius: 24px;
   overflow: hidden;
   box-shadow:
-    0 40px 80px rgba(0,0,0,0.55),
-    0 0 0 1px rgba(255,255,255,0.06);
-  animation: cardIn 0.65s cubic-bezier(0.22,1,0.36,1) both;
+    0 0 0 1px rgba(255,255,255,0.07),
+    0 40px 100px rgba(0,0,0,0.60),
+    0 8px 32px rgba(0,0,0,0.40);
+  animation: cardIn 0.7s cubic-bezier(0.22,1,0.36,1) both;
 }
 
 @keyframes cardIn {
-  from { opacity: 0; transform: translateY(32px) scale(0.97); }
-  to   { opacity: 1; transform: translateY(0)   scale(1); }
+  from { opacity: 0; transform: translateY(30px) scale(0.97); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
 }
 
-/* ── LEFT SIDE OF CARD ── */
-.card-left {
-  flex: 1;
+/* ══ LEFT ══ */
+.left {
   position: relative;
+  display: flex;
+  flex-direction: column;
+  background: #0E0E0E;
   overflow: hidden;
-  display: flex;
-  flex-direction: column;
-  min-width: 0;
 }
 
-.card-left-img {
-  position: absolute; inset: 0;
-  width: 100%; height: 100%;
-  object-fit: cover;
-  object-position: center;
+.left-bg {
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(160deg, rgba(10,0,0,0.92) 0%, rgba(140,10,14,0.35) 50%, rgba(8,0,0,0.94) 100%),
+    url('https://images.unsplash.com/photo-1554866585-cd94860890b7?w=900&q=80') center/cover no-repeat;
+  z-index: 0;
 }
 
-.card-left-overlay {
-  position: absolute; inset: 0;
-  background: linear-gradient(160deg,
-    rgba(8,3,3,0.86) 0%,
-    rgba(160,15,18,0.48) 50%,
-    rgba(8,3,3,0.90) 100%
-  );
+.left-bg::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23g)' opacity='0.06'/%3E%3C/svg%3E");
+  pointer-events: none;
 }
 
-.card-left-content {
-  position: relative; z-index: 2;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  height: 100%;
-  padding: 40px 44px;
-}
-
-/* brand top */
-.brand-row {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-.brand-pill {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  background: rgba(255,255,255,0.1);
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(255,255,255,0.15);
-  border-radius: 100px;
-  padding: 8px 16px 8px 10px;
-}
-
-.brand-pill-dot {
-  width: 30px; height: 30px;
-  background: var(--red);
+.left-glow {
+  position: absolute;
+  bottom: -160px; right: -100px;
+  width: 480px; height: 480px;
   border-radius: 50%;
-  display: flex; align-items: center; justify-content: center;
+  background: radial-gradient(circle, rgba(204,27,34,0.22) 0%, transparent 65%);
+  z-index: 1;
+  pointer-events: none;
+}
+
+.left-inner {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  padding: 44px 52px;
+}
+
+/* brand bar */
+.brand-bar {
+  display: flex;
+  align-items: center;
+}
+
+.brand-coke img {
+  height: 28px;
+  object-fit: contain;
+  filter: brightness(0) invert(1);
+  opacity: 0.85;
+}
+
+.brand-sep {
+  width: 1px; height: 28px;
+  background: rgba(255,255,255,0.18);
+  margin: 0 18px;
   flex-shrink: 0;
-  box-shadow: 0 2px 10px rgba(204,27,34,0.5);
+}
+
+.brand-gd {
+  display: flex; align-items: center; gap: 9px;
+}
+
+.gd-logo-wrap {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%; /* makes it perfectly round */
+  background: transparent; /* removes red cover */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
   overflow: hidden;
 }
 
-.brand-pill-dot img {
-  width: 100%; height: 100%;
-  object-fit: contain;
-  padding: 5px;
-  filter: brightness(0) invert(1);
+.gd-logo-wrap img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover; /* fills circle properly */
 }
 
-.brand-pill-text {
-  font-family: 'Outfit', sans-serif;
-  font-size: 14px;
-  font-weight: 700;
-  color: rgba(255,255,255,0.92);
-  letter-spacing: -0.1px;
+.gd-text { line-height: 1.15; }
+
+.gd-name {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 15px; font-weight: 700;
+  color: rgba(255,255,255,0.90);
+  letter-spacing: 0.04em; text-transform: uppercase;
 }
 
-/* live indicator */
-.live-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 7px;
-  background: rgba(255,255,255,0.08);
-  backdrop-filter: blur(8px);
-  border: 1px solid rgba(255,255,255,0.12);
+.gd-sub {
+  font-size: 10px; font-weight: 500;
+  color: rgba(255,255,255,0.35);
+  letter-spacing: 0.08em; text-transform: uppercase;
+}
+
+/* hero */
+.left-hero {
+  flex: 1;
+  display: flex; flex-direction: column; justify-content: center;
+  padding: 52px 0 44px;
+}
+
+.status-pill {
+  display: inline-flex; align-items: center; gap: 8px;
+  margin-bottom: 30px;
+  padding: 5px 14px 5px 8px;
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.10);
   border-radius: 100px;
-  padding: 5px 14px 5px 9px;
   width: fit-content;
+}
+
+.status-dot {
+  width: 7px; height: 7px;
+  border-radius: 50%; background: #4ADE80;
+  animation: blink 2.2s ease-in-out infinite;
+}
+
+@keyframes blink {
+  0%,100% { box-shadow: 0 0 0 2px rgba(74,222,128,0.30); }
+  50%     { box-shadow: 0 0 0 7px rgba(74,222,128,0.06); }
+}
+
+.status-pill span {
+  font-size: 11px; font-weight: 600;
+  color: rgba(255,255,255,0.50);
+  letter-spacing: 0.10em; text-transform: uppercase;
+}
+
+.hero-title {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: clamp(46px, 5.5vw, 68px);
+  font-weight: 800;
+  line-height: 0.95;
+  letter-spacing: -0.5px;
+  color: var(--white);
+  text-transform: uppercase;
   margin-bottom: 22px;
 }
 
-.live-dot {
-  width: 7px; height: 7px;
-  background: #4ADE80;
-  border-radius: 50%;
-  animation: livePulse 2.2s ease-in-out infinite;
-}
+.hero-title .accent { color: var(--red); display: block; }
+.hero-title .dim { color: rgba(255,255,255,0.25); display: block; font-weight: 700; }
 
-@keyframes livePulse {
-  0%,100% { box-shadow: 0 0 0 2px rgba(74,222,128,0.25); }
-  50%      { box-shadow: 0 0 0 6px rgba(74,222,128,0.08); }
-}
-
-.live-badge span {
-  font-size: 11.5px;
-  font-weight: 600;
-  color: rgba(255,255,255,0.75);
-  letter-spacing: 0.02em;
-}
-
-/* hero text */
-.hero-body { flex: 1; display: flex; flex-direction: column; justify-content: center; }
-
-.hero-h1 {
-  font-family: 'Outfit', sans-serif;
-  font-size: 44px;
-  font-weight: 800;
-  line-height: 1.06;
-  color: #fff;
-  letter-spacing: -1.2px;
-  margin-bottom: 16px;
-}
-
-.hero-h1 em { font-style: normal; color: #FCA5A5; }
-
-.hero-p {
-  font-size: 14px;
-  line-height: 1.75;
-  color: rgba(255,255,255,0.52);
-  max-width: 300px;
-}
-
-/* stats */
-.stats {
-  display: grid;
-  grid-template-columns: repeat(3,1fr);
-  gap: 1px;
-  background: rgba(255,255,255,0.07);
-  border: 1px solid rgba(255,255,255,0.09);
-  border-radius: 14px;
-  overflow: hidden;
-  margin-top: 30px;
-}
-
-.stat {
-  background: rgba(10,5,5,0.4);
-  backdrop-filter: blur(8px);
-  padding: 16px 12px;
-  text-align: center;
-}
-
-.stat-n {
-  font-family: 'Outfit', sans-serif;
-  font-size: 24px;
-  font-weight: 800;
-  color: #fff;
-  letter-spacing: -0.4px;
-}
-
-.stat-l {
-  font-size: 10px;
+.hero-desc {
+  font-size: 13.5px; line-height: 1.85;
   color: rgba(255,255,255,0.38);
-  font-weight: 600;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  margin-top: 2px;
+  max-width: 310px; font-weight: 300; font-style: italic;
 }
 
-/* municipalities bottom */
-.munis {
-  border-top: 1px solid rgba(255,255,255,0.1);
-  padding-top: 22px;
+/* coverage */
+.left-foot {
+  border-top: 1px solid rgba(255,255,255,0.07);
+  padding-top: 24px;
 }
 
-.munis-label {
-  font-size: 9.5px;
-  font-weight: 700;
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
-  color: rgba(255,255,255,0.28);
-  margin-bottom: 10px;
+.cov-label {
+  font-size: 9.5px; font-weight: 700;
+  letter-spacing: 0.20em; text-transform: uppercase;
+  color: rgba(255,255,255,0.20); margin-bottom: 14px;
 }
 
-.muni-chips { display: flex; flex-wrap: wrap; gap: 7px; }
+.cov-chips { display: flex; flex-wrap: wrap; gap: 8px; }
 
-.muni-chip {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  background: rgba(255,255,255,0.07);
-  border: 1px solid rgba(255,255,255,0.1);
-  border-radius: 7px;
-  padding: 6px 12px;
-  font-size: 12px;
-  font-weight: 600;
-  color: rgba(255,255,255,0.72);
-  backdrop-filter: blur(6px);
+.cov-chip {
+  display: flex; align-items: center; gap: 6px;
+  padding: 5px 12px;
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.09);
+  border-radius: 6px;
+  font-size: 12px; font-weight: 500;
+  color: rgba(255,255,255,0.50);
   transition: background 0.15s;
 }
 
-.muni-chip:hover { background: rgba(255,255,255,0.12); }
+.cov-chip:hover { background: rgba(255,255,255,0.09); }
 
-.pin-ico { width: 10px; height: 10px; opacity: 0.5; }
-
-/* ── RIGHT SIDE (form) ── */
-.card-right {
-  width: 400px;
-  flex-shrink: 0;
-  background: var(--white);
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  padding: 44px 42px;
-  position: relative;
-  overflow: hidden;
+.cov-chip::before {
+  content: '';
+  width: 4px; height: 4px;
+  border-radius: 50%; background: var(--red); opacity: 0.7; flex-shrink: 0;
 }
 
-/* subtle accent circles */
-.card-right::before {
+/* ══ RIGHT ══ */
+.right {
+  background: var(--cream);
+  display: flex; flex-direction: column; justify-content: center;
+  padding: 52px 48px;
+  position: relative; overflow: hidden;
+}
+
+.right::before {
   content: '';
   position: absolute;
-  top: -70px; right: -70px;
+  top: -100px; right: -100px;
+  width: 280px; height: 280px;
+  border-radius: 50%;
+  border: 40px solid rgba(204,27,34,0.05);
+  pointer-events: none;
+}
+
+.right::after {
+  content: '';
+  position: absolute;
+  bottom: -80px; left: -60px;
   width: 220px; height: 220px;
   border-radius: 50%;
   background: radial-gradient(circle, rgba(204,27,34,0.06) 0%, transparent 70%);
   pointer-events: none;
 }
 
-.card-right::after {
-  content: '';
-  position: absolute;
-  bottom: -50px; left: -50px;
-  width: 180px; height: 180px;
-  border-radius: 50%;
-  background: radial-gradient(circle, rgba(204,27,34,0.04) 0%, transparent 70%);
-  pointer-events: none;
-}
-
-.form-inner {
-  position: relative; z-index: 1;
-}
-
-/* right top logo */
-.r-brand {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  margin-bottom: 36px;
-}
-
-.r-brand img {
-  height: 28px;
-  object-fit: contain;
-  filter: drop-shadow(0 1px 4px rgba(204,27,34,0.2));
-}
-
-.r-brand-txt {
-  font-family: 'Outfit', sans-serif;
-  font-size: 14px;
-  font-weight: 700;
-  color: var(--dark);
-  line-height: 1.1;
-}
-
-.r-brand-txt small {
-  display: block;
-  font-size: 9.5px;
-  font-weight: 500;
-  color: var(--muted);
-  letter-spacing: 0.09em;
-  text-transform: uppercase;
-  margin-top: 2px;
-}
-
-/* headings */
-.f-heading {
-  font-family: 'Outfit', sans-serif;
-  font-size: 26px;
-  font-weight: 800;
-  color: var(--dark);
-  letter-spacing: -0.6px;
-  margin-bottom: 5px;
-}
-
-.f-sub {
-  font-size: 13px;
-  color: var(--gray);
-  line-height: 1.6;
-  margin-bottom: 26px;
-}
-
-/* role tabs */
-.role-tabs {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 8px;
-  margin-bottom: 22px;
-}
-
-.role-tab {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 5px;
-  padding: 14px 10px;
-  background: var(--surface);
-  border: 2px solid transparent;
-  border-radius: 14px;
-  cursor: pointer;
-  transition: all 0.22s cubic-bezier(0.34,1.56,0.64,1);
-  font-family: 'Plus Jakarta Sans', sans-serif;
-}
-
-.role-tab:hover { background: var(--lighter); transform: translateY(-1px); }
-
-.role-tab.active {
-  background: var(--red-pale);
-  border-color: var(--red-border);
-  box-shadow: 0 0 0 4px rgba(204,27,34,0.05);
-}
-
-.tab-icon {
-  width: 38px; height: 38px;
-  border-radius: 10px;
-  background: var(--lighter);
-  display: flex; align-items: center; justify-content: center;
-  overflow: hidden;
-  transition: background 0.18s;
-}
-
-.role-tab.active .tab-icon { background: var(--red); }
-
-.tab-icon img { width: 20px; height: 20px; object-fit: contain; }
-.role-tab.active .tab-icon img { filter: brightness(0) invert(1); }
-
-.tab-name { font-size: 12.5px; font-weight: 700; color: var(--slate); }
-.role-tab.active .tab-name { color: var(--red); }
-.tab-desc { font-size: 10px; color: var(--muted); font-weight: 500; text-align: center; }
-
-/* divider */
-.divider { display: flex; align-items: center; gap: 10px; margin-bottom: 18px; }
-.divider-line { flex: 1; height: 1px; background: var(--lighter); }
-.divider-txt { font-size: 10px; font-weight: 700; color: var(--light); letter-spacing: 0.12em; text-transform: uppercase; }
-
-/* error */
-.err-box {
-  display: none;
-  align-items: center;
-  gap: 9px;
-  background: #FFF1F2;
-  border: 1.5px solid #FECDD3;
-  border-radius: 10px;
-  padding: 10px 13px;
-  margin-bottom: 14px;
-}
-.err-box.show { display: flex; }
-.err-box svg { width: 15px; height: 15px; stroke: var(--red); flex-shrink: 0; }
-.err-txt { font-size: 12.5px; color: #9F1239; font-weight: 500; }
-
-/* fields */
-.field { margin-bottom: 14px; }
-.field-label { display: block; font-size: 12px; font-weight: 700; color: var(--slate); margin-bottom: 6px; }
-.field-wrap { position: relative; }
-
-.f-ico {
-  position: absolute; left: 13px; top: 50%;
-  transform: translateY(-50%);
-  pointer-events: none; display: flex; align-items: center;
-}
-.f-ico svg { width: 15px; height: 15px; stroke: var(--light); transition: stroke 0.2s; }
-.field-wrap:focus-within .f-ico svg { stroke: var(--red); }
-
-.f-inp {
-  width: 100%;
-  padding: 12px 13px 12px 40px;
-  background: var(--surface);
-  border: 1.5px solid var(--lighter);
-  border-radius: 11px;
-  font-family: 'Plus Jakarta Sans', sans-serif;
-  font-size: 13.5px;
-  font-weight: 500;
-  color: var(--dark);
-  outline: none;
-  transition: border-color 0.2s, background 0.2s, box-shadow 0.2s;
-}
-.f-inp::placeholder { color: var(--light); font-weight: 400; }
-.f-inp:focus {
-  border-color: var(--red);
-  background: #fff;
-  box-shadow: 0 0 0 3px rgba(204,27,34,0.08);
-}
-.f-inp.rpad { padding-right: 42px; }
-
-.pw-toggle {
-  position: absolute; right: 12px; top: 50%;
-  transform: translateY(-50%);
-  cursor: pointer; padding: 4px; border-radius: 6px;
-  display: flex; align-items: center;
-  transition: background 0.15s;
-}
-.pw-toggle:hover { background: var(--surface); }
-.pw-toggle svg { width: 15px; height: 15px; stroke: var(--light); }
-.pw-toggle:hover svg { stroke: var(--slate); }
-
-/* forgot */
-.forgot-row { display: flex; justify-content: flex-end; margin-top: -2px; margin-bottom: 18px; }
-.forgot { font-size: 12px; font-weight: 700; color: var(--red); text-decoration: none; }
-.forgot:hover { opacity: 0.7; }
-
-/* button */
-.btn-login {
-  width: 100%;
-  padding: 14px;
-  background: var(--red);
-  border: none;
-  border-radius: 11px;
-  color: #fff;
-  font-family: 'Outfit', sans-serif;
-  font-size: 15.5px;
-  font-weight: 700;
-  letter-spacing: 0.02em;
-  cursor: pointer;
-  transition: all 0.2s;
-  position: relative;
-  overflow: hidden;
-  display: flex; align-items: center; justify-content: center; gap: 8px;
-}
-
-.btn-login:hover { background: var(--red-hover); transform: translateY(-1px); box-shadow: 0 8px 24px rgba(204,27,34,0.3); }
-.btn-login:active { transform: translateY(0); box-shadow: none; }
-.btn-login svg { width: 16px; height: 16px; stroke: #fff; stroke-width: 2.5; transition: transform 0.18s; }
-.btn-login:hover svg { transform: translateX(3px); }
-
-.btn-login.loading .btn-lbl,
-.btn-login.loading svg { opacity: 0; }
-.btn-login.loading::after {
-  content: '';
-  position: absolute;
-  width: 18px; height: 18px;
-  border: 2.5px solid rgba(255,255,255,0.3);
-  border-top-color: #fff;
-  border-radius: 50%;
-  animation: spin 0.7s linear infinite;
-}
-
-@keyframes spin { to { transform: rotate(360deg); } }
-
-/* footer */
-.f-foot { text-align: center; margin-top: 18px; font-size: 12.5px; color: var(--gray); }
-.f-foot a { font-weight: 700; color: var(--red); text-decoration: none; }
-.f-foot a:hover { text-decoration: underline; }
-
-/* version */
-.ver-tag { position: absolute; bottom: 18px; right: 22px; font-size: 10px; color: var(--light); font-weight: 600; letter-spacing: 0.07em; }
-
-/* ── SUCCESS OVERLAY ── */
+/* success overlay */
 .success-ov {
   display: none;
   position: absolute; inset: 0;
-  background: rgba(255,255,255,0.96);
-  backdrop-filter: blur(12px);
+  background: var(--cream);
+  z-index: 50;
   align-items: center; justify-content: center;
-  flex-direction: column; gap: 12px;
-  z-index: 50; padding: 40px;
-  border-radius: 0;
+  flex-direction: column; gap: 14px; padding: 48px;
 }
-.success-ov.show { display: flex; }
+
+.success-ov.show { display: flex; animation: fadeIn 0.3s ease both; }
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
 .s-ring {
-  width: 72px; height: 72px;
-  border-radius: 50%;
-  background: linear-gradient(135deg, var(--red) 0%, var(--red-hover) 100%);
+  width: 68px; height: 68px;
+  border-radius: 50%; background: var(--red);
   display: flex; align-items: center; justify-content: center;
-  box-shadow: 0 12px 32px rgba(204,27,34,0.35);
+  box-shadow: 0 10px 32px rgba(204,27,34,0.35);
   animation: popIn 0.45s cubic-bezier(0.34,1.56,0.64,1) both;
 }
 
@@ -565,198 +317,376 @@ body {
   to   { transform: scale(1) rotate(0); opacity: 1; }
 }
 
-.s-ring svg { width: 30px; height: 30px; stroke: #fff; stroke-width: 2.5; }
-.s-title { font-family: 'Outfit', sans-serif; font-size: 24px; font-weight: 800; color: var(--dark); letter-spacing: -0.4px; animation: fadeUp 0.4s 0.18s both; }
-.s-sub { font-size: 13px; color: var(--gray); animation: fadeUp 0.4s 0.28s both; }
+.s-ring svg { width: 26px; height: 26px; stroke: white; stroke-width: 2.5; fill: none; }
+.s-title { font-family: 'Barlow Condensed', sans-serif; font-size: 30px; font-weight: 800; color: var(--ink); text-transform: uppercase; letter-spacing: 0.02em; animation: riseUp 0.4s 0.14s both ease; }
+.s-sub { font-size: 13px; color: var(--ink-60); font-style: italic; animation: riseUp 0.4s 0.22s both ease; }
 .s-badge {
-  display: flex; align-items: center; gap: 7px;
-  background: var(--red-pale); border: 1.5px solid var(--red-border);
-  border-radius: 100px; padding: 7px 18px;
-  font-size: 12.5px; font-weight: 700; color: var(--red);
-  animation: fadeUp 0.4s 0.36s both;
+  display: inline-flex; align-items: center; gap: 8px;
+  background: var(--red-light); border: 1.5px solid var(--red-border);
+  border-radius: 8px; padding: 8px 20px;
+  font-size: 12px; font-weight: 700; color: var(--red);
+  letter-spacing: 0.05em; text-transform: uppercase;
+  animation: riseUp 0.4s 0.30s both ease;
 }
-.s-badge svg { width: 13px; height: 13px; stroke: var(--red); stroke-width: 2.5; }
 
-@keyframes fadeUp {
-  from { opacity: 0; transform: translateY(10px); }
+@keyframes riseUp {
+  from { opacity: 0; transform: translateY(14px); }
   to   { opacity: 1; transform: translateY(0); }
 }
 
+/* form */
+.form-inner {
+  position: relative; z-index: 1;
+  max-width: 340px; width: 100%;
+}
+
+/* mini logo row */
+.form-brand {
+  display: flex; align-items: center; gap: 10px;
+  margin-bottom: 36px;
+}
+
+.form-brand-coke img {
+  height: 20px; object-fit: contain;
+}
+
+.form-brand-sep {
+  width: 1px; height: 20px;
+  background: var(--rule); margin: 0 4px;
+}
+
+.form-brand-gd {
+  display: flex; align-items: center; gap: 7px;
+}
+
+.form-gd-dot {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%; /* perfect circle */
+  background: transparent; /* remove red */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  overflow: hidden;
+}
+
+.form-gd-dot img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover; /* fills circle nicely */
+}
+
+.form-gd-lbl {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 13px; font-weight: 700;
+  color: var(--ink-60);
+  text-transform: uppercase; letter-spacing: 0.06em;
+}
+
+.f-title {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 36px; font-weight: 800;
+  color: var(--ink); text-transform: uppercase;
+  letter-spacing: -0.2px; line-height: 1.0;
+  margin-bottom: 6px;
+}
+
+.f-subtitle {
+  font-size: 13px; color: var(--ink-60);
+  font-weight: 300; font-style: italic;
+  margin-bottom: 28px;
+}
+
+/* role segmented */
+.role-seg {
+  display: flex;
+  background: rgba(17,17,17,0.06);
+  border-radius: 10px; padding: 3px;
+  margin-bottom: 24px; gap: 3px;
+}
+
+.role-seg-btn {
+  flex: 1; padding: 9px 10px;
+  border: none; background: transparent;
+  border-radius: 8px;
+  font-family: 'Barlow', sans-serif;
+  font-size: 13px; font-weight: 600;
+  color: var(--ink-30); cursor: pointer;
+  transition: all 0.2s;
+  display: flex; align-items: center; justify-content: center; gap: 7px;
+  letter-spacing: 0.01em;
+}
+
+.role-seg-btn svg { width: 13px; height: 13px; stroke: currentColor; stroke-width: 2; fill: none; }
+.role-seg-btn.active { background: var(--white); color: var(--ink); box-shadow: 0 1px 4px rgba(0,0,0,0.12), 0 0 0 1px rgba(0,0,0,0.06); }
+
+/* error */
+.err-box {
+  display: none; align-items: center; gap: 9px;
+  background: #FFF1F2; border: 1px solid #FECDD3;
+  border-radius: 8px; padding: 10px 13px;
+  margin-bottom: 14px;
+  font-size: 12.5px; color: #9F1239; font-weight: 500;
+}
+.err-box.show { display: flex; }
+.err-box svg { width: 14px; height: 14px; stroke: var(--red); stroke-width: 2; fill: none; flex-shrink: 0; }
+
+/* fields */
+.field { margin-bottom: 14px; }
+
+.field-lbl {
+  display: block;
+  font-size: 10.5px; font-weight: 700;
+  color: var(--ink-60);
+  letter-spacing: 0.12em; text-transform: uppercase;
+  margin-bottom: 7px;
+}
+
+.field-wrap { position: relative; }
+
+.f-inp {
+  width: 100%;
+  padding: 12px 14px;
+  background: var(--white);
+  border: 1.5px solid var(--rule);
+  border-radius: 10px;
+  font-family: 'Barlow', sans-serif;
+  font-size: 14px; font-weight: 400;
+  color: var(--ink); outline: none;
+  transition: border-color 0.18s, box-shadow 0.18s;
+}
+
+.f-inp.pw-pad { padding-right: 44px; }
+.f-inp::placeholder { color: var(--ink-30); }
+.f-inp:focus { border-color: var(--red); box-shadow: 0 0 0 3px rgba(204,27,34,0.08); }
+
+.pw-btn {
+  position: absolute; right: 12px; top: 50%;
+  transform: translateY(-50%);
+  cursor: pointer; padding: 4px;
+  display: flex; border-radius: 5px;
+  transition: background 0.15s;
+}
+
+.pw-btn:hover { background: var(--ink-05); }
+.pw-btn svg { width: 15px; height: 15px; stroke: var(--ink-30); stroke-width: 1.8; fill: none; transition: stroke 0.15s; }
+.pw-btn:hover svg { stroke: var(--ink-60); }
+
+.forgot-row { display: flex; justify-content: flex-end; margin-top: -2px; margin-bottom: 20px; }
+
+.forgot {
+  font-size: 12px; font-weight: 600;
+  color: var(--red); text-decoration: none;
+  opacity: 0.75; transition: opacity 0.15s;
+}
+.forgot:hover { opacity: 1; }
+
+/* button */
+.btn-submit {
+  width: 100%;
+  padding: 14px 20px;
+  background: var(--red);
+  border: none; border-radius: 10px;
+  color: var(--white);
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 17px; font-weight: 700;
+  letter-spacing: 0.08em; text-transform: uppercase;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center; gap: 10px;
+  transition: all 0.2s ease;
+  position: relative; overflow: hidden;
+}
+
+.btn-submit::before {
+  content: '';
+  position: absolute; inset: 0;
+  background: linear-gradient(180deg, rgba(255,255,255,0.10) 0%, transparent 100%);
+  pointer-events: none;
+}
+
+.btn-submit svg { width: 16px; height: 16px; stroke: rgba(255,255,255,0.70); stroke-width: 2.5; fill: none; transition: transform 0.18s, stroke 0.18s; }
+.btn-submit:hover { background: var(--red-deep); transform: translateY(-1px); box-shadow: 0 10px 28px rgba(204,27,34,0.35); }
+.btn-submit:hover svg { transform: translateX(4px); stroke: white; }
+.btn-submit:active { transform: none; box-shadow: none; }
+
+.btn-submit.loading .btn-lbl,
+.btn-submit.loading svg { opacity: 0; }
+
+.btn-submit.loading::after {
+  content: '';
+  position: absolute;
+  width: 18px; height: 18px;
+  border: 2.5px solid rgba(255,255,255,0.30);
+  border-top-color: white;
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+}
+
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* footer */
+.form-foot {
+  margin-top: 24px; padding-top: 20px;
+  border-top: 1px solid var(--rule);
+  display: flex; align-items: center; justify-content: space-between;
+}
+
+.foot-txt { font-size: 12px; color: var(--ink-30); }
+.foot-txt a { font-weight: 600; color: var(--ink-60); text-decoration: none; }
+.foot-txt a:hover { color: var(--red); }
+.foot-ver { font-size: 10.5px; color: var(--ink-30); font-weight: 500; letter-spacing: 0.05em; }
+
 /* ── RESPONSIVE ── */
-@media (max-width: 760px) {
-  .card { flex-direction: column; max-width: 420px; min-height: auto; }
-  .card-left { min-height: 220px; }
-  .card-right { width: 100%; padding: 36px 28px; }
-  .hero-h1 { font-size: 32px; }
-  .stats { margin-top: 20px; }
+@media (max-width: 820px) {
+  .card { grid-template-columns: 1fr; max-width: 480px; min-height: auto; }
+  .left { min-height: 260px; }
+  .left-inner { padding: 36px 32px; }
+  .hero-title { font-size: 40px; }
+  .left-foot, .hero-desc { display: none; }
+  .left-hero { padding: 28px 0 0; }
+  .right { padding: 44px 36px; }
+  .form-inner { max-width: 100%; }
 }
 </style>
 </head>
 <body>
 
-<!-- Full-page background -->
-<div class="page-bg">
-  <!-- Coca-Cola red crate with bottles by billow926 on Unsplash -->
-  <img
-    src=""
-    alt="background"
-    onerror="this.src=''"
-  >
-</div>
-
-<!-- Centered card -->
 <div class="card">
 
-  <!-- LEFT PANEL -->
-  <div class="card-left">
-    <!-- Coca-Cola crate image — billow926 Unsplash (EbO_Xe9GcZc) -->
-    <img
-      class="card-left-img"
-      src=""
-      alt="Coca-Cola bottles"
-      onerror="this.src=''"
-    >
-    <div class="card-left-overlay"></div>
+  <!-- ══ LEFT ══ -->
+  <div class="left">
+    <div class="left-bg"></div>
+    <div class="left-glow"></div>
 
-    <div class="card-left-content">
+    <div class="left-inner">
 
-      <div class="brand-row">
-        <div class="brand-pill">
-          <div class="brand-pill-dot">
+      <div class="brand-bar">
+        <!-- Coca-Cola logo — white via Wikipedia SVG -->
+        <div class="brand-coke">
+          <img
+            src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/ce/Coca-Cola_logo.svg/600px-Coca-Cola_logo.svg.png"
+            alt="Coca-Cola"
+            onerror="this.style.display='none'"
+          >
+        </div>
+
+        <div class="brand-sep"></div>
+
+        <!-- GD Logistics — replace src with your actual logo file -->
+        <div class="brand-gd">
+          <div class="gd-logo-wrap">
             <img
-              src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/ce/Coca-Cola_logo.svg/512px-Coca-Cola_logo.svg.png"
-              alt="Coke logo"
+              src="assets/gd.jpg"
+              alt="GD Logistics"
+              onerror="this.style.display='none'"
             >
           </div>
-          <div class="brand-pill-text">GD Coke Distributor</div>
+          <div class="gd-text">
+            <div class="gd-name">GD Logistics</div>
+            <div class="gd-sub">Authorized Distributor</div>
+          </div>
         </div>
       </div>
 
-      <div class="hero-body">
-        <div class="live-badge">
-          <div class="live-dot"></div>
-          <span>System Online &amp; Active</span>
+      <div class="left-hero">
+        <div class="status-pill">
+          <div class="status-dot"></div>
+          <span>System Online</span>
         </div>
 
-        <h1 class="hero-h1">
-          Smarter<br>Distribution,<br><em>Faster Orders.</em>
+        <h1 class="hero-title">
+          <span>Smarter</span>
+          <span class="accent">Distribution</span>
+          <span class="dim">Faster Orders</span>
         </h1>
-        <p class="hero-p">
-          Manage orders across all four municipalities of Camarines Norte — from wholesalers to sari-sari stores — in one unified platform.
+
+        <p class="hero-desc">
+          Manage orders across Camarines Norte — from wholesalers to sari-sari stores — in one unified platform.
         </p>
-        
       </div>
 
-      <div class="munis">
-        <div class="munis-label">Coverage — Camarines Norte</div>
-        <div class="muni-chips">
-          <div class="muni-chip">
-            <svg class="pin-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/><circle cx="12" cy="9" r="2.5"/></svg>
-            San Vicente
-          </div>
-          <div class="muni-chip">
-            <svg class="pin-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/><circle cx="12" cy="9" r="2.5"/></svg>
-            Mercedes
-          </div>
-          <div class="muni-chip">
-            <svg class="pin-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/><circle cx="12" cy="9" r="2.5"/></svg>
-            San Lorenzo
-          </div>
-          <div class="muni-chip">
-            <svg class="pin-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/><circle cx="12" cy="9" r="2.5"/></svg>
-            Basud
-          </div>
+      <div class="left-foot">
+        <div class="cov-label">Coverage — Camarines Norte</div>
+        <div class="cov-chips">
+          <div class="cov-chip">San Vicente</div>
+          <div class="cov-chip">Mercedes</div>
+          <div class="cov-chip">San Lorenzo</div>
+          <div class="cov-chip">Basud</div>
         </div>
       </div>
 
     </div>
   </div>
 
-  <!-- RIGHT PANEL (form) -->
-  <div class="card-right">
+  <!-- ══ RIGHT ══ -->
+  <div class="right">
 
-    <!-- Success overlay -->
     <div class="success-ov" id="successOv">
       <div class="s-ring">
-        <svg viewBox="0 0 24 24" fill="none"><polyline points="20 6 9 17 4 12"/></svg>
+        <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
       </div>
       <div class="s-title">Access Granted</div>
       <div class="s-sub">Redirecting to your dashboard…</div>
-      <div class="s-badge" id="sBadge">
-        <svg viewBox="0 0 24 24" fill="none"><polyline points="20 6 9 17 4 12"/></svg>
-        Admin Dashboard
-      </div>
+      <div class="s-badge" id="sBadge">Admin Dashboard</div>
     </div>
 
     <div class="form-inner">
 
-      <!-- Right branding -->
-      <div class="r-brand">
-        <img
-          src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/ce/Coca-Cola_logo.svg/512px-Coca-Cola_logo.svg.png"
-          alt="Coca-Cola"
-          onerror="this.style.display='none'"
-        >
-        <div class="r-brand-txt">
-          GD Distributor Portal
-          <small>Distribution Management System</small>
+      <!-- mini brand row -->
+      <div class="form-brand">
+        <div class="form-brand-coke">
+          <img
+            src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/ce/Coca-Cola_logo.svg/600px-Coca-Cola_logo.svg.png"
+            alt="Coca-Cola"
+            onerror="this.style.display='none'"
+          >
+        </div>
+        <div class="form-brand-sep"></div>
+        <div class="form-brand-gd">
+          <div class="form-gd-dot">
+            <img
+              src="/assets/gd.jpg"
+              alt="GD"
+              onerror="this.style.display='none'"
+            >
+          </div>
+          <div class="form-gd-lbl">GD Logistics</div>
         </div>
       </div>
 
-      <h2 class="f-heading">Welcome back</h2>
-      <p class="f-sub">Sign in to access your dashboard and manage orders.</p>
+      <div class="f-title">Sign In</div>
+      <div class="f-subtitle">Access your distribution portal</div>
 
-      <!-- Role tabs -->
-      <div class="role-tabs">
-        <button class="role-tab active" id="tabAdmin" onclick="setRole('admin')">
-          <div class="tab-icon">
-            <img src="https://cdn-icons-png.flaticon.com/512/1077/1077114.png" alt="Admin" onerror="this.parentElement.innerHTML='⚙️'">
-          </div>
-          <div class="tab-name">Admin</div>
-          <div class="tab-desc">Full system access</div>
+      <div class="role-seg">
+        <button class="role-seg-btn active" id="tabAdmin" onclick="setRole('admin')">
+          <svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M6 20v-1a6 6 0 0 1 12 0v1"/></svg>
+          Admin
         </button>
-        <button class="role-tab" id="tabConsumer" onclick="setRole('consumer')">
-          <div class="tab-icon">
-            <img src="https://cdn-icons-png.flaticon.com/512/1077/1077063.png" alt="Consumer" onerror="this.parentElement.innerHTML='🛒'">
-          </div>
-          <div class="tab-name">Consumer</div>
-          <div class="tab-desc">Place &amp; track orders</div>
+        <button class="role-seg-btn" id="tabConsumer" onclick="setRole('consumer')">
+          <svg viewBox="0 0 24 24"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+          Consumer
         </button>
       </div>
 
-      <div class="divider">
-        <div class="divider-line"></div>
-        <div class="divider-txt">Credentials</div>
-        <div class="divider-line"></div>
-      </div>
-
-      <!-- Error -->
       <div class="err-box" id="errBox">
-        <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-        <div class="err-txt" id="errTxt">Incorrect credentials. Please try again.</div>
+        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        <span id="errTxt">Incorrect username or password.</span>
       </div>
 
-      <!-- Username -->
       <div class="field">
-        <label class="field-label" for="uname">Username</label>
+        <label class="field-lbl" for="uname">Username</label>
         <div class="field-wrap">
-          <div class="f-ico">
-            <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-          </div>
           <input type="text" id="uname" class="f-inp" placeholder="Enter your username" autocomplete="username">
         </div>
       </div>
 
-      <!-- Password -->
       <div class="field">
-        <label class="field-label" for="upass">Password</label>
+        <label class="field-lbl" for="upass">Password</label>
         <div class="field-wrap">
-          <div class="f-ico">
-            <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
-          </div>
-          <input type="password" id="upass" class="f-inp rpad" placeholder="Enter your password" autocomplete="current-password">
-          <div class="pw-toggle" onclick="togglePw()">
-            <svg id="eyeIco" viewBox="0 0 24 24" fill="none" stroke-width="2">
+          <input type="password" id="upass" class="f-inp pw-pad" placeholder="Enter your password" autocomplete="current-password">
+          <div class="pw-btn" onclick="togglePw()">
+            <svg id="eyeIco" viewBox="0 0 24 24">
               <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>
             </svg>
           </div>
@@ -767,18 +697,17 @@ body {
         <a class="forgot" href="#">Forgot password?</a>
       </div>
 
-      <button class="btn-login" id="btnLogin" onclick="doLogin()">
+      <button class="btn-submit" id="btnLogin" onclick="doLogin()">
         <span class="btn-lbl">Sign In to Account</span>
-        <svg viewBox="0 0 24 24" fill="none"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+        <svg viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
       </button>
 
-      <div class="f-foot">
-        Need access? <a href="#">Contact Administrator</a>
+      <div class="form-foot">
+        <div class="foot-txt">Need access? <a href="#">Contact admin</a></div>
+        <div class="foot-ver">v2.0.0 · GD System</div>
       </div>
 
     </div>
-
-    <div class="ver-tag">v2.0.0 · GD System</div>
   </div>
 
 </div>
@@ -821,58 +750,38 @@ body {
     document.getElementById('errBox').classList.remove('show');
   }
 
-function doLogin() {
-  const btn = document.getElementById('btnLogin');
-  const u = document.getElementById('uname').value.trim();
-  const p = document.getElementById('upass').value;
-  clearErr();
+  function doLogin() {
+    const btn = document.getElementById('btnLogin');
+    const u = document.getElementById('uname').value.trim();
+    const p = document.getElementById('upass').value;
+    clearErr();
 
-  if (!u || !p) { 
-    showErr('Please fill in all fields to continue.'); 
-    return; 
+    if (!u || !p) { showErr('Please fill in all fields to continue.'); return; }
+
+    btn.classList.add('loading');
+    btn.disabled = true;
+
+    setTimeout(() => {
+      btn.classList.remove('loading');
+      btn.disabled = false;
+
+      const c = CREDS[role];
+      if (u === c.u && p === c.p) {
+        document.getElementById('sBadge').textContent = role === 'admin' ? 'Admin Dashboard' : 'Consumer Portal';
+        document.getElementById('successOv').classList.add('show');
+        setTimeout(() => {
+          window.location.href = role === 'admin'
+            ? 'pages/admin/admin_dashboard.html'
+            : 'pages/consumer/consumer_dashboard.html';
+        }, 2200);
+      } else {
+        showErr('Incorrect username or password. Please try again.');
+        document.getElementById('upass').value = '';
+        document.getElementById('upass').focus();
+      }
+    }, 1300);
   }
 
-  btn.classList.add('loading');
-  btn.disabled = true;
-
-  setTimeout(() => {
-    btn.classList.remove('loading');
-    btn.disabled = false;
-
-    const c = CREDS[role];
-
-    if (u === c.u && p === c.p) {
-
-      const ov = document.getElementById('successOv');
-      const badge = document.getElementById('sBadge');
-
-      badge.innerHTML = `
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="13" height="13">
-          <polyline points="20 6 9 17 4 12"/>
-        </svg>
-        ${role === 'admin' ? 'Admin Dashboard' : 'Consumer Portal'}
-      `;
-
-      ov.classList.add('show');
-
-      setTimeout(() => {
-
-        if (role === 'admin') {
-          window.location.href = "pages/admin/admin_dashboard.html";
-        } else {
-          window.location.href = "pages/consumer/consumer_dashboard.html";
-        }
-
-      }, 2300);
-
-    } else {
-      showErr('Incorrect username or password. Please try again.');
-      document.getElementById('upass').value = '';
-      document.getElementById('upass').focus();
-    }
-
-  }, 1400);
-}
   document.addEventListener('keydown', e => { if (e.key === 'Enter') doLogin(); });
 </script>
 </body>
