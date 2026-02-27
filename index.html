@@ -1,0 +1,879 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GD Coke Distributor — Login</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --red: #CC1B22;
+  --red-hover: #E02028;
+  --red-pale: rgba(204,27,34,0.07);
+  --red-border: rgba(204,27,34,0.18);
+  --white: #FFFFFF;
+  --dark: #111827;
+  --slate: #374151;
+  --gray: #6B7280;
+  --muted: #9CA3AF;
+  --light: #D1D5DB;
+  --lighter: #E5E7EB;
+  --surface: #F9FAFB;
+  --bg: #F3F4F6;
+}
+
+html, body {
+  height: 100%;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Full-page background with Coca-Cola image */
+body {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 32px 20px;
+  position: relative;
+  overflow: auto;
+}
+
+.page-bg {
+  position: fixed; inset: 0; z-index: 0;
+}
+
+.page-bg img {
+  width: 100%; height: 100%;
+  object-fit: cover;
+  object-position: center;
+}
+
+/* dark + red gradient overlay on background */
+.page-bg::after {
+  content: '';
+  position: absolute; inset: 0;
+  background: linear-gradient(135deg,
+    rgba(10,5,5,0.80) 0%,
+    rgba(140,10,14,0.55) 50%,
+    rgba(10,5,5,0.82) 100%
+  );
+}
+
+/* ── CENTERED CARD ── */
+.card {
+  position: relative; z-index: 10;
+  display: flex;
+  width: 100%;
+  max-width: 900px;
+  min-height: 560px;
+  border-radius: 24px;
+  overflow: hidden;
+  box-shadow:
+    0 40px 80px rgba(0,0,0,0.55),
+    0 0 0 1px rgba(255,255,255,0.06);
+  animation: cardIn 0.65s cubic-bezier(0.22,1,0.36,1) both;
+}
+
+@keyframes cardIn {
+  from { opacity: 0; transform: translateY(32px) scale(0.97); }
+  to   { opacity: 1; transform: translateY(0)   scale(1); }
+}
+
+/* ── LEFT SIDE OF CARD ── */
+.card-left {
+  flex: 1;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.card-left-img {
+  position: absolute; inset: 0;
+  width: 100%; height: 100%;
+  object-fit: cover;
+  object-position: center;
+}
+
+.card-left-overlay {
+  position: absolute; inset: 0;
+  background: linear-gradient(160deg,
+    rgba(8,3,3,0.86) 0%,
+    rgba(160,15,18,0.48) 50%,
+    rgba(8,3,3,0.90) 100%
+  );
+}
+
+.card-left-content {
+  position: relative; z-index: 2;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 100%;
+  padding: 40px 44px;
+}
+
+/* brand top */
+.brand-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.brand-pill {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: rgba(255,255,255,0.1);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255,255,255,0.15);
+  border-radius: 100px;
+  padding: 8px 16px 8px 10px;
+}
+
+.brand-pill-dot {
+  width: 30px; height: 30px;
+  background: var(--red);
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+  box-shadow: 0 2px 10px rgba(204,27,34,0.5);
+  overflow: hidden;
+}
+
+.brand-pill-dot img {
+  width: 100%; height: 100%;
+  object-fit: contain;
+  padding: 5px;
+  filter: brightness(0) invert(1);
+}
+
+.brand-pill-text {
+  font-family: 'Outfit', sans-serif;
+  font-size: 14px;
+  font-weight: 700;
+  color: rgba(255,255,255,0.92);
+  letter-spacing: -0.1px;
+}
+
+/* live indicator */
+.live-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  background: rgba(255,255,255,0.08);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255,255,255,0.12);
+  border-radius: 100px;
+  padding: 5px 14px 5px 9px;
+  width: fit-content;
+  margin-bottom: 22px;
+}
+
+.live-dot {
+  width: 7px; height: 7px;
+  background: #4ADE80;
+  border-radius: 50%;
+  animation: livePulse 2.2s ease-in-out infinite;
+}
+
+@keyframes livePulse {
+  0%,100% { box-shadow: 0 0 0 2px rgba(74,222,128,0.25); }
+  50%      { box-shadow: 0 0 0 6px rgba(74,222,128,0.08); }
+}
+
+.live-badge span {
+  font-size: 11.5px;
+  font-weight: 600;
+  color: rgba(255,255,255,0.75);
+  letter-spacing: 0.02em;
+}
+
+/* hero text */
+.hero-body { flex: 1; display: flex; flex-direction: column; justify-content: center; }
+
+.hero-h1 {
+  font-family: 'Outfit', sans-serif;
+  font-size: 44px;
+  font-weight: 800;
+  line-height: 1.06;
+  color: #fff;
+  letter-spacing: -1.2px;
+  margin-bottom: 16px;
+}
+
+.hero-h1 em { font-style: normal; color: #FCA5A5; }
+
+.hero-p {
+  font-size: 14px;
+  line-height: 1.75;
+  color: rgba(255,255,255,0.52);
+  max-width: 300px;
+}
+
+/* stats */
+.stats {
+  display: grid;
+  grid-template-columns: repeat(3,1fr);
+  gap: 1px;
+  background: rgba(255,255,255,0.07);
+  border: 1px solid rgba(255,255,255,0.09);
+  border-radius: 14px;
+  overflow: hidden;
+  margin-top: 30px;
+}
+
+.stat {
+  background: rgba(10,5,5,0.4);
+  backdrop-filter: blur(8px);
+  padding: 16px 12px;
+  text-align: center;
+}
+
+.stat-n {
+  font-family: 'Outfit', sans-serif;
+  font-size: 24px;
+  font-weight: 800;
+  color: #fff;
+  letter-spacing: -0.4px;
+}
+
+.stat-l {
+  font-size: 10px;
+  color: rgba(255,255,255,0.38);
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin-top: 2px;
+}
+
+/* municipalities bottom */
+.munis {
+  border-top: 1px solid rgba(255,255,255,0.1);
+  padding-top: 22px;
+}
+
+.munis-label {
+  font-size: 9.5px;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.28);
+  margin-bottom: 10px;
+}
+
+.muni-chips { display: flex; flex-wrap: wrap; gap: 7px; }
+
+.muni-chip {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(255,255,255,0.07);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 7px;
+  padding: 6px 12px;
+  font-size: 12px;
+  font-weight: 600;
+  color: rgba(255,255,255,0.72);
+  backdrop-filter: blur(6px);
+  transition: background 0.15s;
+}
+
+.muni-chip:hover { background: rgba(255,255,255,0.12); }
+
+.pin-ico { width: 10px; height: 10px; opacity: 0.5; }
+
+/* ── RIGHT SIDE (form) ── */
+.card-right {
+  width: 400px;
+  flex-shrink: 0;
+  background: var(--white);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 44px 42px;
+  position: relative;
+  overflow: hidden;
+}
+
+/* subtle accent circles */
+.card-right::before {
+  content: '';
+  position: absolute;
+  top: -70px; right: -70px;
+  width: 220px; height: 220px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(204,27,34,0.06) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.card-right::after {
+  content: '';
+  position: absolute;
+  bottom: -50px; left: -50px;
+  width: 180px; height: 180px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(204,27,34,0.04) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.form-inner {
+  position: relative; z-index: 1;
+}
+
+/* right top logo */
+.r-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 36px;
+}
+
+.r-brand img {
+  height: 28px;
+  object-fit: contain;
+  filter: drop-shadow(0 1px 4px rgba(204,27,34,0.2));
+}
+
+.r-brand-txt {
+  font-family: 'Outfit', sans-serif;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--dark);
+  line-height: 1.1;
+}
+
+.r-brand-txt small {
+  display: block;
+  font-size: 9.5px;
+  font-weight: 500;
+  color: var(--muted);
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  margin-top: 2px;
+}
+
+/* headings */
+.f-heading {
+  font-family: 'Outfit', sans-serif;
+  font-size: 26px;
+  font-weight: 800;
+  color: var(--dark);
+  letter-spacing: -0.6px;
+  margin-bottom: 5px;
+}
+
+.f-sub {
+  font-size: 13px;
+  color: var(--gray);
+  line-height: 1.6;
+  margin-bottom: 26px;
+}
+
+/* role tabs */
+.role-tabs {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-bottom: 22px;
+}
+
+.role-tab {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+  padding: 14px 10px;
+  background: var(--surface);
+  border: 2px solid transparent;
+  border-radius: 14px;
+  cursor: pointer;
+  transition: all 0.22s cubic-bezier(0.34,1.56,0.64,1);
+  font-family: 'Plus Jakarta Sans', sans-serif;
+}
+
+.role-tab:hover { background: var(--lighter); transform: translateY(-1px); }
+
+.role-tab.active {
+  background: var(--red-pale);
+  border-color: var(--red-border);
+  box-shadow: 0 0 0 4px rgba(204,27,34,0.05);
+}
+
+.tab-icon {
+  width: 38px; height: 38px;
+  border-radius: 10px;
+  background: var(--lighter);
+  display: flex; align-items: center; justify-content: center;
+  overflow: hidden;
+  transition: background 0.18s;
+}
+
+.role-tab.active .tab-icon { background: var(--red); }
+
+.tab-icon img { width: 20px; height: 20px; object-fit: contain; }
+.role-tab.active .tab-icon img { filter: brightness(0) invert(1); }
+
+.tab-name { font-size: 12.5px; font-weight: 700; color: var(--slate); }
+.role-tab.active .tab-name { color: var(--red); }
+.tab-desc { font-size: 10px; color: var(--muted); font-weight: 500; text-align: center; }
+
+/* divider */
+.divider { display: flex; align-items: center; gap: 10px; margin-bottom: 18px; }
+.divider-line { flex: 1; height: 1px; background: var(--lighter); }
+.divider-txt { font-size: 10px; font-weight: 700; color: var(--light); letter-spacing: 0.12em; text-transform: uppercase; }
+
+/* error */
+.err-box {
+  display: none;
+  align-items: center;
+  gap: 9px;
+  background: #FFF1F2;
+  border: 1.5px solid #FECDD3;
+  border-radius: 10px;
+  padding: 10px 13px;
+  margin-bottom: 14px;
+}
+.err-box.show { display: flex; }
+.err-box svg { width: 15px; height: 15px; stroke: var(--red); flex-shrink: 0; }
+.err-txt { font-size: 12.5px; color: #9F1239; font-weight: 500; }
+
+/* fields */
+.field { margin-bottom: 14px; }
+.field-label { display: block; font-size: 12px; font-weight: 700; color: var(--slate); margin-bottom: 6px; }
+.field-wrap { position: relative; }
+
+.f-ico {
+  position: absolute; left: 13px; top: 50%;
+  transform: translateY(-50%);
+  pointer-events: none; display: flex; align-items: center;
+}
+.f-ico svg { width: 15px; height: 15px; stroke: var(--light); transition: stroke 0.2s; }
+.field-wrap:focus-within .f-ico svg { stroke: var(--red); }
+
+.f-inp {
+  width: 100%;
+  padding: 12px 13px 12px 40px;
+  background: var(--surface);
+  border: 1.5px solid var(--lighter);
+  border-radius: 11px;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 13.5px;
+  font-weight: 500;
+  color: var(--dark);
+  outline: none;
+  transition: border-color 0.2s, background 0.2s, box-shadow 0.2s;
+}
+.f-inp::placeholder { color: var(--light); font-weight: 400; }
+.f-inp:focus {
+  border-color: var(--red);
+  background: #fff;
+  box-shadow: 0 0 0 3px rgba(204,27,34,0.08);
+}
+.f-inp.rpad { padding-right: 42px; }
+
+.pw-toggle {
+  position: absolute; right: 12px; top: 50%;
+  transform: translateY(-50%);
+  cursor: pointer; padding: 4px; border-radius: 6px;
+  display: flex; align-items: center;
+  transition: background 0.15s;
+}
+.pw-toggle:hover { background: var(--surface); }
+.pw-toggle svg { width: 15px; height: 15px; stroke: var(--light); }
+.pw-toggle:hover svg { stroke: var(--slate); }
+
+/* forgot */
+.forgot-row { display: flex; justify-content: flex-end; margin-top: -2px; margin-bottom: 18px; }
+.forgot { font-size: 12px; font-weight: 700; color: var(--red); text-decoration: none; }
+.forgot:hover { opacity: 0.7; }
+
+/* button */
+.btn-login {
+  width: 100%;
+  padding: 14px;
+  background: var(--red);
+  border: none;
+  border-radius: 11px;
+  color: #fff;
+  font-family: 'Outfit', sans-serif;
+  font-size: 15.5px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  cursor: pointer;
+  transition: all 0.2s;
+  position: relative;
+  overflow: hidden;
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+}
+
+.btn-login:hover { background: var(--red-hover); transform: translateY(-1px); box-shadow: 0 8px 24px rgba(204,27,34,0.3); }
+.btn-login:active { transform: translateY(0); box-shadow: none; }
+.btn-login svg { width: 16px; height: 16px; stroke: #fff; stroke-width: 2.5; transition: transform 0.18s; }
+.btn-login:hover svg { transform: translateX(3px); }
+
+.btn-login.loading .btn-lbl,
+.btn-login.loading svg { opacity: 0; }
+.btn-login.loading::after {
+  content: '';
+  position: absolute;
+  width: 18px; height: 18px;
+  border: 2.5px solid rgba(255,255,255,0.3);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+}
+
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* footer */
+.f-foot { text-align: center; margin-top: 18px; font-size: 12.5px; color: var(--gray); }
+.f-foot a { font-weight: 700; color: var(--red); text-decoration: none; }
+.f-foot a:hover { text-decoration: underline; }
+
+/* version */
+.ver-tag { position: absolute; bottom: 18px; right: 22px; font-size: 10px; color: var(--light); font-weight: 600; letter-spacing: 0.07em; }
+
+/* ── SUCCESS OVERLAY ── */
+.success-ov {
+  display: none;
+  position: absolute; inset: 0;
+  background: rgba(255,255,255,0.96);
+  backdrop-filter: blur(12px);
+  align-items: center; justify-content: center;
+  flex-direction: column; gap: 12px;
+  z-index: 50; padding: 40px;
+  border-radius: 0;
+}
+.success-ov.show { display: flex; }
+
+.s-ring {
+  width: 72px; height: 72px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--red) 0%, var(--red-hover) 100%);
+  display: flex; align-items: center; justify-content: center;
+  box-shadow: 0 12px 32px rgba(204,27,34,0.35);
+  animation: popIn 0.45s cubic-bezier(0.34,1.56,0.64,1) both;
+}
+
+@keyframes popIn {
+  from { transform: scale(0) rotate(-15deg); opacity: 0; }
+  to   { transform: scale(1) rotate(0); opacity: 1; }
+}
+
+.s-ring svg { width: 30px; height: 30px; stroke: #fff; stroke-width: 2.5; }
+.s-title { font-family: 'Outfit', sans-serif; font-size: 24px; font-weight: 800; color: var(--dark); letter-spacing: -0.4px; animation: fadeUp 0.4s 0.18s both; }
+.s-sub { font-size: 13px; color: var(--gray); animation: fadeUp 0.4s 0.28s both; }
+.s-badge {
+  display: flex; align-items: center; gap: 7px;
+  background: var(--red-pale); border: 1.5px solid var(--red-border);
+  border-radius: 100px; padding: 7px 18px;
+  font-size: 12.5px; font-weight: 700; color: var(--red);
+  animation: fadeUp 0.4s 0.36s both;
+}
+.s-badge svg { width: 13px; height: 13px; stroke: var(--red); stroke-width: 2.5; }
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ── RESPONSIVE ── */
+@media (max-width: 760px) {
+  .card { flex-direction: column; max-width: 420px; min-height: auto; }
+  .card-left { min-height: 220px; }
+  .card-right { width: 100%; padding: 36px 28px; }
+  .hero-h1 { font-size: 32px; }
+  .stats { margin-top: 20px; }
+}
+</style>
+</head>
+<body>
+
+<!-- Full-page background -->
+<div class="page-bg">
+  <!-- Coca-Cola red crate with bottles by billow926 on Unsplash -->
+  <img
+    src=""
+    alt="background"
+    onerror="this.src=''"
+  >
+</div>
+
+<!-- Centered card -->
+<div class="card">
+
+  <!-- LEFT PANEL -->
+  <div class="card-left">
+    <!-- Coca-Cola crate image — billow926 Unsplash (EbO_Xe9GcZc) -->
+    <img
+      class="card-left-img"
+      src=""
+      alt="Coca-Cola bottles"
+      onerror="this.src=''"
+    >
+    <div class="card-left-overlay"></div>
+
+    <div class="card-left-content">
+
+      <div class="brand-row">
+        <div class="brand-pill">
+          <div class="brand-pill-dot">
+            <img
+              src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/ce/Coca-Cola_logo.svg/512px-Coca-Cola_logo.svg.png"
+              alt="Coke logo"
+            >
+          </div>
+          <div class="brand-pill-text">GD Coke Distributor</div>
+        </div>
+      </div>
+
+      <div class="hero-body">
+        <div class="live-badge">
+          <div class="live-dot"></div>
+          <span>System Online &amp; Active</span>
+        </div>
+
+        <h1 class="hero-h1">
+          Smarter<br>Distribution,<br><em>Faster Orders.</em>
+        </h1>
+        <p class="hero-p">
+          Manage orders across all four municipalities of Camarines Norte — from wholesalers to sari-sari stores — in one unified platform.
+        </p>
+        
+      </div>
+
+      <div class="munis">
+        <div class="munis-label">Coverage — Camarines Norte</div>
+        <div class="muni-chips">
+          <div class="muni-chip">
+            <svg class="pin-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/><circle cx="12" cy="9" r="2.5"/></svg>
+            San Vicente
+          </div>
+          <div class="muni-chip">
+            <svg class="pin-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/><circle cx="12" cy="9" r="2.5"/></svg>
+            Mercedes
+          </div>
+          <div class="muni-chip">
+            <svg class="pin-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/><circle cx="12" cy="9" r="2.5"/></svg>
+            San Lorenzo
+          </div>
+          <div class="muni-chip">
+            <svg class="pin-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/><circle cx="12" cy="9" r="2.5"/></svg>
+            Basud
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- RIGHT PANEL (form) -->
+  <div class="card-right">
+
+    <!-- Success overlay -->
+    <div class="success-ov" id="successOv">
+      <div class="s-ring">
+        <svg viewBox="0 0 24 24" fill="none"><polyline points="20 6 9 17 4 12"/></svg>
+      </div>
+      <div class="s-title">Access Granted</div>
+      <div class="s-sub">Redirecting to your dashboard…</div>
+      <div class="s-badge" id="sBadge">
+        <svg viewBox="0 0 24 24" fill="none"><polyline points="20 6 9 17 4 12"/></svg>
+        Admin Dashboard
+      </div>
+    </div>
+
+    <div class="form-inner">
+
+      <!-- Right branding -->
+      <div class="r-brand">
+        <img
+          src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/ce/Coca-Cola_logo.svg/512px-Coca-Cola_logo.svg.png"
+          alt="Coca-Cola"
+          onerror="this.style.display='none'"
+        >
+        <div class="r-brand-txt">
+          GD Distributor Portal
+          <small>Distribution Management System</small>
+        </div>
+      </div>
+
+      <h2 class="f-heading">Welcome back</h2>
+      <p class="f-sub">Sign in to access your dashboard and manage orders.</p>
+
+      <!-- Role tabs -->
+      <div class="role-tabs">
+        <button class="role-tab active" id="tabAdmin" onclick="setRole('admin')">
+          <div class="tab-icon">
+            <img src="https://cdn-icons-png.flaticon.com/512/1077/1077114.png" alt="Admin" onerror="this.parentElement.innerHTML='⚙️'">
+          </div>
+          <div class="tab-name">Admin</div>
+          <div class="tab-desc">Full system access</div>
+        </button>
+        <button class="role-tab" id="tabConsumer" onclick="setRole('consumer')">
+          <div class="tab-icon">
+            <img src="https://cdn-icons-png.flaticon.com/512/1077/1077063.png" alt="Consumer" onerror="this.parentElement.innerHTML='🛒'">
+          </div>
+          <div class="tab-name">Consumer</div>
+          <div class="tab-desc">Place &amp; track orders</div>
+        </button>
+      </div>
+
+      <div class="divider">
+        <div class="divider-line"></div>
+        <div class="divider-txt">Credentials</div>
+        <div class="divider-line"></div>
+      </div>
+
+      <!-- Error -->
+      <div class="err-box" id="errBox">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        <div class="err-txt" id="errTxt">Incorrect credentials. Please try again.</div>
+      </div>
+
+      <!-- Username -->
+      <div class="field">
+        <label class="field-label" for="uname">Username</label>
+        <div class="field-wrap">
+          <div class="f-ico">
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+          </div>
+          <input type="text" id="uname" class="f-inp" placeholder="Enter your username" autocomplete="username">
+        </div>
+      </div>
+
+      <!-- Password -->
+      <div class="field">
+        <label class="field-label" for="upass">Password</label>
+        <div class="field-wrap">
+          <div class="f-ico">
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+          </div>
+          <input type="password" id="upass" class="f-inp rpad" placeholder="Enter your password" autocomplete="current-password">
+          <div class="pw-toggle" onclick="togglePw()">
+            <svg id="eyeIco" viewBox="0 0 24 24" fill="none" stroke-width="2">
+              <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>
+            </svg>
+          </div>
+        </div>
+      </div>
+
+      <div class="forgot-row">
+        <a class="forgot" href="#">Forgot password?</a>
+      </div>
+
+      <button class="btn-login" id="btnLogin" onclick="doLogin()">
+        <span class="btn-lbl">Sign In to Account</span>
+        <svg viewBox="0 0 24 24" fill="none"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+      </button>
+
+      <div class="f-foot">
+        Need access? <a href="#">Contact Administrator</a>
+      </div>
+
+    </div>
+
+    <div class="ver-tag">v2.0.0 · GD System</div>
+  </div>
+
+</div>
+
+<script>
+  let role = 'admin';
+  const CREDS = {
+    admin:    { u: 'admin',    p: 'admin123' },
+    consumer: { u: 'consumer', p: 'coke123'  }
+  };
+
+  function setRole(r) {
+    role = r;
+    document.getElementById('tabAdmin').classList.toggle('active', r === 'admin');
+    document.getElementById('tabConsumer').classList.toggle('active', r === 'consumer');
+    clearErr();
+    document.getElementById('uname').value = '';
+    document.getElementById('upass').value = '';
+    document.getElementById('uname').focus();
+  }
+
+  function togglePw() {
+    const pw = document.getElementById('upass');
+    const ico = document.getElementById('eyeIco');
+    if (pw.type === 'password') {
+      pw.type = 'text';
+      ico.innerHTML = '<path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/>';
+    } else {
+      pw.type = 'password';
+      ico.innerHTML = '<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>';
+    }
+  }
+
+  function showErr(msg) {
+    document.getElementById('errTxt').textContent = msg;
+    document.getElementById('errBox').classList.add('show');
+  }
+
+  function clearErr() {
+    document.getElementById('errBox').classList.remove('show');
+  }
+
+function doLogin() {
+  const btn = document.getElementById('btnLogin');
+  const u = document.getElementById('uname').value.trim();
+  const p = document.getElementById('upass').value;
+  clearErr();
+
+  if (!u || !p) { 
+    showErr('Please fill in all fields to continue.'); 
+    return; 
+  }
+
+  btn.classList.add('loading');
+  btn.disabled = true;
+
+  setTimeout(() => {
+    btn.classList.remove('loading');
+    btn.disabled = false;
+
+    const c = CREDS[role];
+
+    if (u === c.u && p === c.p) {
+
+      const ov = document.getElementById('successOv');
+      const badge = document.getElementById('sBadge');
+
+      badge.innerHTML = `
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="13" height="13">
+          <polyline points="20 6 9 17 4 12"/>
+        </svg>
+        ${role === 'admin' ? 'Admin Dashboard' : 'Consumer Portal'}
+      `;
+
+      ov.classList.add('show');
+
+      setTimeout(() => {
+
+        if (role === 'admin') {
+          window.location.href = "pages/admin/admin_dashboard.html";
+        } else {
+          window.location.href = "pages/consumer/consumer_dashboard.html";
+        }
+
+      }, 2300);
+
+    } else {
+      showErr('Incorrect username or password. Please try again.');
+      document.getElementById('upass').value = '';
+      document.getElementById('upass').focus();
+    }
+
+  }, 1400);
+}
+  document.addEventListener('keydown', e => { if (e.key === 'Enter') doLogin(); });
+</script>
+</body>
+</html>

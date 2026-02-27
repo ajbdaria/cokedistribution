@@ -1,0 +1,1575 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GD Coke Distributor — Orders</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --red: #CC1B22;
+  --red-h: #E02028;
+  --red-pale: rgba(204,27,34,0.08);
+  --red-border: rgba(204,27,34,0.2);
+  --sidebar-bg: #0D1117;
+  --bg: #F0F2F7;
+  --white: #FFFFFF;
+  --dark: #111827;
+  --slate: #374151;
+  --gray: #6B7280;
+  --muted: #9CA3AF;
+  --light: #D1D5DB;
+  --lighter: #E5E7EB;
+  --surface: #F9FAFB;
+  --green: #10B981;
+  --green-pale: rgba(16,185,129,0.1);
+  --amber: #F59E0B;
+  --amber-pale: rgba(245,158,11,0.1);
+  --blue: #3B82F6;
+  --blue-pale: rgba(59,130,246,0.1);
+}
+
+html, body {
+  height: 100%; font-family: 'Plus Jakarta Sans', sans-serif;
+  background: var(--bg); color: var(--dark);
+  -webkit-font-smoothing: antialiased; overflow: hidden;
+}
+
+.app { display: flex; height: 100vh; overflow: hidden; }
+
+/* ═══════════════════════════
+   SIDEBAR
+═══════════════════════════ */
+.sidebar {
+  width: 248px; flex-shrink: 0;
+  background: var(--sidebar-bg);
+  display: flex; flex-direction: column;
+  overflow: hidden; position: relative; z-index: 100;
+}
+
+.sidebar::before {
+  content: ''; position: absolute; top: -40px; left: -40px;
+  width: 180px; height: 180px; border-radius: 50%;
+  background: radial-gradient(circle, rgba(204,27,34,0.18) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.sidebar::after {
+  content: ''; position: absolute; bottom: 40px; right: -60px;
+  width: 140px; height: 140px; border-radius: 50%;
+  background: radial-gradient(circle, rgba(204,27,34,0.07) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.sb-logo {
+  padding: 20px 18px 16px;
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+  display: flex; align-items: center; gap: 11px; flex-shrink: 0;
+}
+.sb-logo-icon {
+  width: 38px; height: 38px; border-radius: 10px; background: var(--red);
+  display: flex; align-items: center; justify-content: center;
+  box-shadow: 0 4px 16px rgba(204,27,34,0.45); flex-shrink: 0; overflow: hidden;
+}
+.sb-logo-icon img { width: 100%; height: 100%; object-fit: contain; padding: 7px; filter: brightness(0) invert(1); }
+.sb-logo-txt { font-family: 'Outfit', sans-serif; font-size: 14.5px; font-weight: 700; color: #fff; line-height: 1.1; }
+.sb-logo-txt small { display: block; font-size: 10px; font-weight: 500; color: rgba(255,255,255,0.32); letter-spacing: 0.12em; text-transform: uppercase; margin-top: 2px; }
+
+.sb-nav { flex: 1; overflow-y: auto; padding: 12px 10px; scrollbar-width: none; }
+.sb-nav::-webkit-scrollbar { display: none; }
+
+.sb-section-lbl {
+  font-size: 9.5px; font-weight: 700; letter-spacing: 0.16em;
+  text-transform: uppercase; color: rgba(255,255,255,0.2);
+  padding: 8px 8px 4px; margin-top: 6px;
+}
+
+.sb-item {
+  display: flex; align-items: center; gap: 10px;
+  padding: 9px 10px; border-radius: 9px; cursor: pointer;
+  transition: all 0.17s; margin-bottom: 1px;
+  position: relative; border: 1px solid transparent;
+}
+.sb-item:hover { background: rgba(255,255,255,0.05); }
+.sb-item.active { background: rgba(204,27,34,0.14); border-color: rgba(204,27,34,0.22); }
+.sb-item.active::before {
+  content: ''; position: absolute; left: -10px; top: 50%; transform: translateY(-50%);
+  width: 3px; height: 18px; background: var(--red); border-radius: 0 3px 3px 0;
+}
+.sb-ico {
+  width: 30px; height: 30px; border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  background: rgba(255,255,255,0.06); flex-shrink: 0; transition: background 0.17s;
+}
+.sb-item.active .sb-ico { background: var(--red); }
+.sb-item:hover:not(.active) .sb-ico { background: rgba(255,255,255,0.09); }
+.sb-ico svg { width: 14px; height: 14px; stroke: rgba(255,255,255,0.45); stroke-width: 2; }
+.sb-item.active .sb-ico svg { stroke: #fff; }
+.sb-lbl { font-size: 12.5px; font-weight: 600; color: rgba(255,255,255,0.45); transition: color 0.17s; }
+.sb-item.active .sb-lbl, .sb-item:hover .sb-lbl { color: rgba(255,255,255,0.88); }
+.sb-badge { margin-left: auto; background: var(--red); color: #fff; font-size: 10px; font-weight: 700; padding: 2px 7px; border-radius: 100px; }
+.sb-badge-dot { margin-left: auto; width: 7px; height: 7px; border-radius: 50%; background: var(--amber); flex-shrink: 0; }
+
+.sb-user {
+  padding: 12px 14px; border-top: 1px solid rgba(255,255,255,0.05);
+  display: flex; align-items: center; gap: 10px; flex-shrink: 0;
+}
+.sb-avatar {
+  width: 34px; height: 34px; border-radius: 50%;
+  background: linear-gradient(135deg, var(--red) 0%, #FF4B51 100%);
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'Outfit', sans-serif; font-size: 13px; font-weight: 800;
+  color: #fff; flex-shrink: 0;
+}
+.sb-user-info { flex: 1; min-width: 0; }
+.sb-user-name { font-size: 12.5px; font-weight: 700; color: rgba(255,255,255,0.82); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.sb-user-role { font-size: 10px; color: rgba(255,255,255,0.3); font-weight: 500; }
+.sb-logout {
+  width: 28px; height: 28px; border-radius: 7px;
+  background: rgba(255,255,255,0.05); border: none;
+  display: flex; align-items: center; justify-content: center; cursor: pointer; transition: background 0.15s;
+}
+.sb-logout:hover { background: rgba(255,255,255,0.1); }
+.sb-logout svg { width: 13px; height: 13px; stroke: rgba(255,255,255,0.35); stroke-width: 2; }
+
+/* ═══════════════════════════
+   MAIN
+═══════════════════════════ */
+.main { flex: 1; display: flex; flex-direction: column; overflow: hidden; min-width: 0; }
+
+.topbar {
+  background: var(--white); border-bottom: 1px solid var(--lighter);
+  padding: 0 26px; height: 60px;
+  display: flex; align-items: center; justify-content: space-between;
+  flex-shrink: 0; gap: 14px;
+}
+.topbar-left { display: flex; align-items: center; gap: 14px; }
+.back-btn {
+  display: flex; align-items: center; gap: 6px;
+  padding: 7px 12px; border-radius: 9px;
+  background: var(--surface); border: 1.5px solid var(--lighter);
+  font-size: 12.5px; font-weight: 700; color: var(--gray); cursor: pointer;
+  transition: all 0.15s; font-family: 'Plus Jakarta Sans', sans-serif;
+}
+.back-btn svg { width: 13px; height: 13px; stroke: currentColor; stroke-width: 2.5; }
+.back-btn:hover { border-color: var(--red); color: var(--red); background: var(--red-pale); }
+
+.tb-divider { width: 1px; height: 22px; background: var(--lighter); }
+
+.page-title { font-family: 'Outfit', sans-serif; font-size: 18px; font-weight: 800; color: var(--dark); letter-spacing: -0.3px; }
+.page-sub { font-size: 12px; color: var(--muted); font-weight: 500; margin-top: 1px; }
+
+.topbar-right { display: flex; align-items: center; gap: 10px; }
+
+.tb-search {
+  display: flex; align-items: center; gap: 8px;
+  background: var(--surface); border: 1.5px solid var(--lighter);
+  border-radius: 10px; padding: 8px 13px; width: 220px; transition: border-color 0.2s;
+}
+.tb-search:focus-within { border-color: var(--red); }
+.tb-search svg { width: 13px; height: 13px; stroke: var(--muted); flex-shrink: 0; }
+.tb-search input { background: none; border: none; outline: none; font-family: 'Plus Jakarta Sans', sans-serif; font-size: 12.5px; color: var(--dark); width: 100%; }
+.tb-search input::placeholder { color: var(--light); }
+
+.btn-primary {
+  display: flex; align-items: center; gap: 7px;
+  padding: 9px 18px; background: var(--red); border: none;
+  border-radius: 10px; color: #fff; font-family: 'Outfit', sans-serif;
+  font-size: 14px; font-weight: 700; cursor: pointer; transition: all 0.18s;
+}
+.btn-primary:hover { background: var(--red-h); transform: translateY(-1px); box-shadow: 0 6px 18px rgba(204,27,34,0.28); }
+.btn-primary svg { width: 14px; height: 14px; stroke: #fff; stroke-width: 2.5; }
+
+/* ═══════════════════════════
+   CONTENT
+═══════════════════════════ */
+.content {
+  flex: 1; overflow-y: auto; padding: 22px 26px 32px;
+  scrollbar-width: thin; scrollbar-color: var(--lighter) transparent;
+}
+.content::-webkit-scrollbar { width: 5px; }
+.content::-webkit-scrollbar-thumb { background: var(--lighter); border-radius: 10px; }
+
+/* ── STATS ROW ── */
+.stats-row {
+  display: grid; grid-template-columns: repeat(5, 1fr);
+  gap: 12px; margin-bottom: 20px;
+}
+
+.mini-stat {
+  background: var(--white); border-radius: 14px;
+  border: 1px solid var(--lighter); padding: 16px 18px;
+  display: flex; align-items: center; gap: 12px;
+  cursor: pointer; transition: all 0.18s;
+  animation: fadeUp 0.4s ease both;
+}
+.mini-stat:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(15,25,35,0.08); }
+.mini-stat.selected { border-color: var(--red-border); background: var(--red-pale); box-shadow: 0 0 0 3px rgba(204,27,34,0.06); }
+
+.ms-icon { width: 38px; height: 38px; border-radius: 10px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.ms-icon svg { width: 17px; height: 17px; stroke-width: 2; }
+
+.ms-body { min-width: 0; }
+.ms-val { font-family: 'Outfit', sans-serif; font-size: 22px; font-weight: 900; color: var(--dark); letter-spacing: -0.5px; line-height: 1; }
+.ms-lbl { font-size: 11px; color: var(--gray); font-weight: 600; margin-top: 2px; }
+
+.mini-stat:nth-child(1) { animation-delay: .04s; }
+.mini-stat:nth-child(2) { animation-delay: .08s; }
+.mini-stat:nth-child(3) { animation-delay: .12s; }
+.mini-stat:nth-child(4) { animation-delay: .16s; }
+.mini-stat:nth-child(5) { animation-delay: .20s; }
+
+/* ── FILTER BAR ── */
+.filter-bar {
+  background: var(--white); border: 1px solid var(--lighter);
+  border-radius: 14px; padding: 14px 18px;
+  display: flex; align-items: center; gap: 10px;
+  flex-wrap: wrap; margin-bottom: 16px;
+  animation: fadeUp 0.4s ease 0.1s both;
+}
+
+.filter-group { display: flex; align-items: center; gap: 8px; }
+.filter-lbl { font-size: 11px; font-weight: 700; color: var(--muted); letter-spacing: 0.08em; text-transform: uppercase; white-space: nowrap; }
+
+.chip {
+  display: flex; align-items: center; gap: 6px;
+  padding: 7px 14px; background: var(--surface);
+  border: 1.5px solid var(--lighter); border-radius: 9px;
+  font-size: 12.5px; font-weight: 600; color: var(--gray);
+  cursor: pointer; transition: all 0.17s; white-space: nowrap;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+}
+.chip:hover { border-color: var(--red); color: var(--red); background: var(--red-pale); }
+.chip.active { background: var(--red-pale); border-color: var(--red-border); color: var(--red); }
+.chip-dot { width: 7px; height: 7px; border-radius: 50%; }
+
+.filter-sep { width: 1px; height: 28px; background: var(--lighter); flex-shrink: 0; }
+
+.sel {
+  padding: 8px 12px; background: var(--surface);
+  border: 1.5px solid var(--lighter); border-radius: 9px;
+  font-family: 'Plus Jakarta Sans', sans-serif; font-size: 12.5px;
+  font-weight: 600; color: var(--slate); outline: none; cursor: pointer;
+  transition: border-color 0.2s;
+}
+.sel:focus { border-color: var(--red); }
+
+.filter-ml { margin-left: auto; }
+
+/* ── TABLE CARD ── */
+.table-card {
+  background: var(--white); border-radius: 16px;
+  border: 1px solid var(--lighter); overflow: hidden;
+  animation: fadeUp 0.4s ease 0.15s both;
+}
+
+.table-head-row {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 16px 20px; border-bottom: 1px solid var(--lighter);
+}
+.table-title { font-family: 'Outfit', sans-serif; font-size: 15px; font-weight: 700; color: var(--dark); }
+.table-count { font-size: 12px; color: var(--muted); font-weight: 500; margin-top: 1px; }
+
+.table-actions { display: flex; align-items: center; gap: 8px; }
+.icon-btn {
+  width: 34px; height: 34px; border-radius: 8px;
+  background: var(--surface); border: 1.5px solid var(--lighter);
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; transition: all 0.15s;
+}
+.icon-btn:hover { border-color: var(--red); background: var(--red-pale); }
+.icon-btn svg { width: 14px; height: 14px; stroke: var(--gray); stroke-width: 2; }
+.icon-btn:hover svg { stroke: var(--red); }
+
+.tbl-wrap { overflow-x: auto; }
+
+table { width: 100%; border-collapse: collapse; }
+
+thead th {
+  padding: 10px 16px; text-align: left;
+  font-size: 10.5px; font-weight: 700; letter-spacing: 0.09em;
+  text-transform: uppercase; color: var(--muted);
+  background: var(--surface); border-bottom: 1px solid var(--lighter);
+  white-space: nowrap; position: sticky; top: 0; z-index: 1;
+}
+thead th:first-child { border-radius: 0; }
+
+.th-sort { display: flex; align-items: center; gap: 5px; cursor: pointer; user-select: none; }
+.th-sort:hover { color: var(--dark); }
+.th-sort svg { width: 11px; height: 11px; stroke: currentColor; stroke-width: 2.5; opacity: 0.5; }
+
+tbody tr {
+  border-bottom: 1px solid var(--lighter);
+  transition: background 0.12s; cursor: pointer;
+}
+tbody tr:hover { background: #FAFBFF; }
+tbody tr:last-child { border: none; }
+tbody tr.row-selected { background: var(--red-pale); }
+
+tbody td { padding: 13px 16px; font-size: 13px; color: var(--slate); font-weight: 500; white-space: nowrap; }
+
+.td-check { width: 40px; }
+.td-check input[type=checkbox] { width: 15px; height: 15px; cursor: pointer; accent-color: var(--red); }
+
+.order-id { font-weight: 800; color: var(--dark); font-family: 'Outfit', sans-serif; font-size: 13.5px; }
+
+.client-cell { display: flex; align-items: center; gap: 9px; }
+.client-avatar {
+  width: 30px; height: 30px; border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'Outfit', sans-serif; font-size: 11px; font-weight: 800;
+  color: #fff; flex-shrink: 0;
+}
+.client-name { font-weight: 700; color: var(--dark); font-size: 13px; }
+.client-owner { font-size: 11px; color: var(--muted); }
+
+/* badges */
+.badge { display: inline-flex; align-items: center; gap: 5px; padding: 4px 10px; border-radius: 100px; font-size: 11px; font-weight: 700; white-space: nowrap; }
+.bdot { width: 5px; height: 5px; border-radius: 50%; flex-shrink: 0; }
+.b-pending   { background: var(--amber-pale); color: #92400E; }
+.b-pending .bdot { background: var(--amber); }
+.b-proc      { background: var(--blue-pale);  color: #1E40AF; }
+.b-proc .bdot { background: var(--blue); }
+.b-done      { background: var(--green-pale); color: #065F46; }
+.b-done .bdot { background: var(--green); }
+.b-cancel    { background: var(--red-pale);   color: #7F1D1D; }
+.b-cancel .bdot { background: var(--red); }
+
+.biz-tag { display: inline-block; padding: 3px 9px; border-radius: 6px; font-size: 10.5px; font-weight: 700; border: 1px solid; }
+.biz-w { background: rgba(59,130,246,0.08); color: #1E40AF; border-color: rgba(59,130,246,0.2); }
+.biz-r { background: rgba(245,158,11,0.08); color: #92400E; border-color: rgba(245,158,11,0.2); }
+.biz-m { background: rgba(16,185,129,0.08); color: #065F46; border-color: rgba(16,185,129,0.2); }
+
+.muni-pill {
+  display: inline-flex; align-items: center; gap: 5px;
+  font-size: 12px; font-weight: 600; color: var(--slate);
+}
+.muni-pill-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
+
+.amount-cell { font-family: 'Outfit', sans-serif; font-weight: 800; color: var(--dark); font-size: 14px; }
+
+.action-btns { display: flex; align-items: center; gap: 6px; }
+.act-btn {
+  padding: 5px 12px; border-radius: 7px; font-size: 11.5px; font-weight: 700;
+  cursor: pointer; border: 1.5px solid; transition: all 0.15s;
+  font-family: 'Plus Jakarta Sans', sans-serif; white-space: nowrap;
+}
+.act-btn-view { background: var(--surface); border-color: var(--lighter); color: var(--gray); }
+.act-btn-view:hover { border-color: var(--blue); color: var(--blue); background: var(--blue-pale); }
+.act-btn-update { background: var(--red-pale); border-color: var(--red-border); color: var(--red); }
+.act-btn-update:hover { background: var(--red); color: #fff; }
+
+/* table footer */
+.table-footer {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 14px 20px; border-top: 1px solid var(--lighter);
+  flex-wrap: wrap; gap: 10px;
+}
+.tf-info { font-size: 12.5px; color: var(--muted); font-weight: 500; }
+.tf-info strong { color: var(--dark); }
+
+.pagination { display: flex; align-items: center; gap: 4px; }
+.page-btn {
+  width: 32px; height: 32px; border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 12.5px; font-weight: 700; cursor: pointer;
+  border: 1.5px solid var(--lighter); background: var(--white);
+  color: var(--gray); transition: all 0.15s; font-family: 'Plus Jakarta Sans', sans-serif;
+}
+.page-btn:hover { border-color: var(--red); color: var(--red); background: var(--red-pale); }
+.page-btn.active { background: var(--red); border-color: var(--red); color: #fff; }
+.page-btn svg { width: 12px; height: 12px; stroke: currentColor; stroke-width: 2.5; }
+
+/* bulk bar */
+.bulk-bar {
+  position: fixed; bottom: 28px; left: 50%; transform: translateX(-50%) translateY(80px);
+  background: var(--dark); border-radius: 14px; padding: 12px 20px;
+  display: flex; align-items: center; gap: 14px;
+  box-shadow: 0 12px 40px rgba(0,0,0,0.25);
+  transition: transform 0.35s cubic-bezier(0.34,1.56,0.64,1);
+  z-index: 300; white-space: nowrap;
+}
+.bulk-bar.show { transform: translateX(-50%) translateY(0); }
+.bulk-txt { font-size: 13px; font-weight: 600; color: rgba(255,255,255,0.75); }
+.bulk-txt strong { color: #fff; }
+.bulk-actions { display: flex; align-items: center; gap: 8px; }
+.bulk-btn {
+  padding: 7px 14px; border-radius: 8px; font-size: 12.5px; font-weight: 700;
+  cursor: pointer; border: none; font-family: 'Plus Jakarta Sans', sans-serif;
+  transition: all 0.15s;
+}
+.bulk-btn-done    { background: var(--green); color: #fff; }
+.bulk-btn-done:hover { background: #059669; }
+.bulk-btn-proc    { background: var(--blue);  color: #fff; }
+.bulk-btn-proc:hover { background: #2563EB; }
+.bulk-btn-cancel  { background: rgba(255,255,255,0.1); color: rgba(255,255,255,0.75); }
+.bulk-btn-cancel:hover { background: rgba(255,255,255,0.18); }
+.bulk-sep { width: 1px; height: 20px; background: rgba(255,255,255,0.12); }
+.bulk-close { background: none; border: none; color: rgba(255,255,255,0.35); cursor: pointer; font-size: 18px; line-height: 1; padding: 0 2px; }
+.bulk-close:hover { color: rgba(255,255,255,0.7); }
+
+/* ═══════════════════════════
+   NEW ORDER MODAL
+═══════════════════════════ */
+.modal-backdrop {
+  position: fixed; inset: 0;
+  background: rgba(10,12,18,0.55);
+  backdrop-filter: blur(5px);
+  z-index: 500; display: none;
+  align-items: center; justify-content: center; padding: 20px;
+}
+.modal-backdrop.show { display: flex; }
+
+.modal {
+  background: var(--white); border-radius: 20px;
+  width: 100%; max-width: 620px;
+  max-height: 92vh; overflow-y: auto;
+  box-shadow: 0 30px 80px rgba(0,0,0,0.3);
+  animation: modalIn 0.4s cubic-bezier(0.34,1.56,0.64,1) both;
+  scrollbar-width: thin;
+}
+.modal::-webkit-scrollbar { width: 4px; }
+.modal::-webkit-scrollbar-thumb { background: var(--lighter); border-radius: 10px; }
+
+@keyframes modalIn {
+  from { opacity: 0; transform: scale(0.92) translateY(20px); }
+  to   { opacity: 1; transform: scale(1)    translateY(0); }
+}
+
+.modal-header {
+  padding: 22px 24px 0;
+  display: flex; align-items: flex-start; justify-content: space-between;
+  margin-bottom: 20px;
+}
+.modal-title { font-family: 'Outfit', sans-serif; font-size: 20px; font-weight: 800; color: var(--dark); letter-spacing: -0.4px; }
+.modal-sub { font-size: 13px; color: var(--muted); margin-top: 3px; }
+.modal-close {
+  width: 32px; height: 32px; border-radius: 9px;
+  background: var(--surface); border: 1.5px solid var(--lighter);
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; flex-shrink: 0; transition: all 0.15s; margin-top: -2px;
+}
+.modal-close:hover { background: var(--red-pale); border-color: var(--red-border); }
+.modal-close svg { width: 14px; height: 14px; stroke: var(--gray); stroke-width: 2.5; }
+.modal-close:hover svg { stroke: var(--red); }
+
+.modal-body { padding: 0 24px 24px; }
+
+.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 14px; }
+.form-row.one { grid-template-columns: 1fr; }
+.form-row.three { grid-template-columns: 1fr 1fr 1fr; }
+
+.form-field { display: flex; flex-direction: column; gap: 6px; }
+.form-label { font-size: 12px; font-weight: 700; color: var(--slate); }
+.form-label span { color: var(--red); }
+
+.form-input, .form-select {
+  padding: 11px 13px;
+  background: var(--surface); border: 1.5px solid var(--lighter);
+  border-radius: 10px; font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 13px; font-weight: 500; color: var(--dark); outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  width: 100%;
+}
+.form-input:focus, .form-select:focus {
+  border-color: var(--red); background: #fff;
+  box-shadow: 0 0 0 3px rgba(204,27,34,0.07);
+}
+.form-input::placeholder { color: var(--light); font-weight: 400; }
+
+/* products section */
+.products-section { margin-top: 6px; }
+.products-lbl {
+  font-size: 12px; font-weight: 700; color: var(--slate);
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 10px;
+}
+.add-product-btn {
+  font-size: 11.5px; font-weight: 700; color: var(--red); background: none;
+  border: none; cursor: pointer; display: flex; align-items: center; gap: 4px; padding: 0;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+}
+.add-product-btn svg { width: 12px; height: 12px; stroke: currentColor; stroke-width: 2.5; }
+.add-product-btn:hover { opacity: 0.75; }
+
+.product-item {
+  display: grid; grid-template-columns: 1fr 100px 80px 28px;
+  gap: 8px; align-items: center; margin-bottom: 8px;
+}
+.product-item .form-input,
+.product-item .form-select { margin: 0; }
+
+.remove-product {
+  width: 28px; height: 28px; border-radius: 7px;
+  background: var(--red-pale); border: 1.5px solid var(--red-border);
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; transition: all 0.15s; flex-shrink: 0;
+}
+.remove-product:hover { background: var(--red); }
+.remove-product svg { width: 12px; height: 12px; stroke: var(--red); stroke-width: 2.5; }
+.remove-product:hover svg { stroke: #fff; }
+
+.order-summary {
+  background: var(--surface); border: 1px solid var(--lighter);
+  border-radius: 12px; padding: 14px 16px; margin-top: 14px;
+}
+.os-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; font-size: 13px; }
+.os-row:last-child { margin-bottom: 0; padding-top: 8px; border-top: 1px solid var(--lighter); }
+.os-lbl { color: var(--gray); font-weight: 500; }
+.os-val { font-weight: 700; color: var(--dark); font-family: 'Outfit', sans-serif; }
+.os-total .os-lbl { font-size: 14px; font-weight: 700; color: var(--dark); }
+.os-total .os-val { font-size: 18px; color: var(--red); letter-spacing: -0.3px; }
+
+.modal-footer {
+  padding: 0 24px 24px;
+  display: flex; align-items: center; justify-content: flex-end;
+  gap: 10px;
+}
+.btn-cancel-modal {
+  padding: 11px 20px; background: var(--surface);
+  border: 1.5px solid var(--lighter); border-radius: 10px;
+  font-family: 'Outfit', sans-serif; font-size: 14px; font-weight: 700;
+  color: var(--gray); cursor: pointer; transition: all 0.15s;
+}
+.btn-cancel-modal:hover { border-color: var(--light); color: var(--slate); }
+
+.btn-submit-order {
+  padding: 11px 24px; background: var(--red);
+  border: none; border-radius: 10px; color: #fff;
+  font-family: 'Outfit', sans-serif; font-size: 14px; font-weight: 700;
+  cursor: pointer; transition: all 0.18s;
+  display: flex; align-items: center; gap: 8px;
+}
+.btn-submit-order:hover { background: var(--red-h); transform: translateY(-1px); box-shadow: 0 6px 18px rgba(204,27,34,0.3); }
+.btn-submit-order svg { width: 15px; height: 15px; stroke: #fff; stroke-width: 2.5; }
+
+/* view order drawer */
+.drawer-backdrop {
+  position: fixed; inset: 0;
+  background: rgba(10,12,18,0.4);
+  backdrop-filter: blur(3px);
+  z-index: 400; display: none;
+}
+.drawer-backdrop.show { display: block; }
+
+.drawer {
+  position: fixed; top: 0; right: -480px; width: 460px; height: 100vh;
+  background: var(--white); z-index: 450;
+  box-shadow: -8px 0 40px rgba(0,0,0,0.15);
+  transition: right 0.35s cubic-bezier(0.22,1,0.36,1);
+  display: flex; flex-direction: column; overflow: hidden;
+}
+.drawer.open { right: 0; }
+
+.drawer-header {
+  padding: 22px 22px 18px;
+  border-bottom: 1px solid var(--lighter);
+  display: flex; align-items: flex-start; justify-content: space-between;
+  flex-shrink: 0;
+}
+.drawer-title { font-family: 'Outfit', sans-serif; font-size: 18px; font-weight: 800; color: var(--dark); letter-spacing: -0.3px; }
+.drawer-id { font-size: 12px; color: var(--muted); margin-top: 2px; }
+
+.drawer-close {
+  width: 32px; height: 32px; border-radius: 9px;
+  background: var(--surface); border: 1.5px solid var(--lighter);
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; transition: all 0.15s; flex-shrink: 0;
+}
+.drawer-close:hover { background: var(--red-pale); border-color: var(--red-border); }
+.drawer-close svg { width: 14px; height: 14px; stroke: var(--gray); stroke-width: 2.5; }
+.drawer-close:hover svg { stroke: var(--red); }
+
+.drawer-body { flex: 1; overflow-y: auto; padding: 20px 22px; scrollbar-width: thin; }
+.drawer-body::-webkit-scrollbar { width: 4px; }
+.drawer-body::-webkit-scrollbar-thumb { background: var(--lighter); border-radius: 8px; }
+
+.drawer-section { margin-bottom: 20px; }
+.drawer-section-lbl {
+  font-size: 10px; font-weight: 700; letter-spacing: 0.15em;
+  text-transform: uppercase; color: var(--muted); margin-bottom: 10px;
+}
+
+.info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.info-cell { background: var(--surface); border: 1px solid var(--lighter); border-radius: 10px; padding: 10px 13px; }
+.info-cell-lbl { font-size: 10.5px; font-weight: 700; color: var(--muted); margin-bottom: 3px; letter-spacing: 0.04em; }
+.info-cell-val { font-size: 13px; font-weight: 700; color: var(--dark); }
+
+.drawer-items { display: flex; flex-direction: column; gap: 8px; }
+.drawer-item {
+  display: flex; align-items: center; gap: 12px;
+  background: var(--surface); border: 1px solid var(--lighter);
+  border-radius: 11px; padding: 11px 14px;
+}
+.di-img {
+  width: 38px; height: 38px; border-radius: 8px;
+  background: var(--white); border: 1px solid var(--lighter);
+  object-fit: contain; padding: 4px; flex-shrink: 0;
+}
+.di-name { font-size: 13px; font-weight: 700; color: var(--dark); }
+.di-sku  { font-size: 11px; color: var(--muted); }
+.di-qty  { margin-left: auto; font-family: 'Outfit', sans-serif; font-size: 14px; font-weight: 800; color: var(--dark); text-align: right; flex-shrink: 0; }
+.di-price { font-size: 11px; color: var(--muted); text-align: right; }
+
+.drawer-total-row {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 14px 16px; background: var(--dark); border-radius: 12px; margin-top: 6px;
+}
+.dtr-lbl { font-size: 13px; font-weight: 600; color: rgba(255,255,255,0.6); }
+.dtr-val { font-family: 'Outfit', sans-serif; font-size: 22px; font-weight: 900; color: #fff; letter-spacing: -0.5px; }
+
+/* timeline */
+.timeline { display: flex; flex-direction: column; gap: 0; }
+.tl-item { display: flex; gap: 14px; }
+.tl-left { display: flex; flex-direction: column; align-items: center; flex-shrink: 0; }
+.tl-dot { width: 12px; height: 12px; border-radius: 50%; flex-shrink: 0; margin-top: 3px; }
+.tl-line { width: 2px; flex: 1; background: var(--lighter); margin: 4px 0; min-height: 20px; }
+.tl-item:last-child .tl-line { display: none; }
+.tl-body { padding-bottom: 14px; }
+.tl-event { font-size: 13px; font-weight: 700; color: var(--dark); }
+.tl-time { font-size: 11px; color: var(--muted); margin-top: 2px; }
+
+.drawer-footer {
+  padding: 16px 22px;
+  border-top: 1px solid var(--lighter);
+  display: flex; gap: 10px; flex-shrink: 0;
+}
+.drawer-status-sel {
+  flex: 1; padding: 11px 13px;
+  background: var(--surface); border: 1.5px solid var(--lighter);
+  border-radius: 10px; font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 13px; font-weight: 600; color: var(--slate); outline: none;
+  transition: border-color 0.2s; cursor: pointer;
+}
+.drawer-status-sel:focus { border-color: var(--red); }
+.drawer-save {
+  padding: 11px 20px; background: var(--red); border: none; border-radius: 10px;
+  color: #fff; font-family: 'Outfit', sans-serif; font-size: 14px; font-weight: 700;
+  cursor: pointer; transition: all 0.18s; white-space: nowrap;
+}
+.drawer-save:hover { background: var(--red-h); box-shadow: 0 4px 14px rgba(204,27,34,0.28); }
+
+/* ── TOAST ── */
+.toast {
+  position: fixed; bottom: 22px; right: 22px;
+  background: var(--dark); color: #fff;
+  padding: 11px 18px; border-radius: 11px;
+  font-size: 13px; font-weight: 600;
+  display: flex; align-items: center; gap: 9px;
+  box-shadow: 0 8px 28px rgba(0,0,0,0.22); z-index: 9999;
+  transform: translateY(70px); opacity: 0;
+  transition: all 0.3s cubic-bezier(0.34,1.56,0.64,1);
+}
+.toast.show { transform: translateY(0); opacity: 1; }
+.toast svg { width: 15px; height: 15px; stroke: #4ADE80; stroke-width: 2.5; }
+
+/* animations */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+::-webkit-scrollbar { width: 4px; height: 4px; }
+::-webkit-scrollbar-thumb { background: var(--lighter); border-radius: 10px; }
+</style>
+</head>
+<body>
+<div class="app">
+
+<!-- ══════════════ SIDEBAR ══════════════ -->
+<aside class="sidebar">
+  <div class="sb-logo">
+    <div class="sb-logo-icon">
+      <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/ce/Coca-Cola_logo.svg/512px-Coca-Cola_logo.svg.png" alt="Coke">
+    </div>
+    <div class="sb-logo-txt">GD Distributor <small>Admin Portal</small></div>
+  </div>
+
+  <nav class="sb-nav">
+    <div class="sb-section-lbl">Main</div>
+
+    <div class="sb-item" onclick="toast('Go to Dashboard')">
+      <div class="sb-ico"><svg viewBox="0 0 24 24" fill="none"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg></div>
+      <span class="sb-lbl">Dashboard</span>
+    </div>
+
+    <div class="sb-item active">
+      <div class="sb-ico"><svg viewBox="0 0 24 24" fill="none"><path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="1"/><line x1="9" y1="12" x2="15" y2="12"/><line x1="9" y1="16" x2="13" y2="16"/></svg></div>
+      <span class="sb-lbl">Orders</span>
+      <span class="sb-badge" id="pendingBadge">12</span>
+    </div>
+
+    <div class="sb-item" onclick="toast('Distribution page coming soon')">
+      <div class="sb-ico"><svg viewBox="0 0 24 24" fill="none"><path d="M1 3h15v13H1z"/><path d="M16 8h4l3 3v5h-7V8z"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg></div>
+      <span class="sb-lbl">Distribution</span>
+      <span class="sb-badge-dot"></span>
+    </div>
+
+    <div class="sb-item" onclick="toast('Inventory page coming soon')">
+      <div class="sb-ico"><svg viewBox="0 0 24 24" fill="none"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg></div>
+      <span class="sb-lbl">Inventory</span>
+    </div>
+
+    <div class="sb-section-lbl">Municipalities</div>
+
+    <div class="sb-item" onclick="filterByMuni('San Vicente')">
+      <div class="sb-ico"><svg viewBox="0 0 24 24" fill="none"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/><circle cx="12" cy="9" r="2.5"/></svg></div>
+      <span class="sb-lbl">San Vicente</span>
+    </div>
+    <div class="sb-item" onclick="filterByMuni('Mercedes')">
+      <div class="sb-ico"><svg viewBox="0 0 24 24" fill="none"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/><circle cx="12" cy="9" r="2.5"/></svg></div>
+      <span class="sb-lbl">Mercedes</span>
+    </div>
+    <div class="sb-item" onclick="filterByMuni('San Lorenzo')">
+      <div class="sb-ico"><svg viewBox="0 0 24 24" fill="none"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/><circle cx="12" cy="9" r="2.5"/></svg></div>
+      <span class="sb-lbl">San Lorenzo</span>
+    </div>
+    <div class="sb-item" onclick="filterByMuni('Basud')">
+      <div class="sb-ico"><svg viewBox="0 0 24 24" fill="none"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/><circle cx="12" cy="9" r="2.5"/></svg></div>
+      <span class="sb-lbl">Basud</span>
+    </div>
+
+    <div class="sb-section-lbl">System</div>
+    <div class="sb-item" onclick="toast('Consumers page coming soon')">
+      <div class="sb-ico"><svg viewBox="0 0 24 24" fill="none"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg></div>
+      <span class="sb-lbl">Consumers</span>
+    </div>
+    <div class="sb-item" onclick="toast('Reports coming soon')">
+      <div class="sb-ico"><svg viewBox="0 0 24 24" fill="none"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg></div>
+      <span class="sb-lbl">Reports</span>
+    </div>
+    <div class="sb-item" onclick="toast('Settings coming soon')">
+      <div class="sb-ico"><svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></div>
+      <span class="sb-lbl">Settings</span>
+    </div>
+  </nav>
+
+  <div class="sb-user">
+    <div class="sb-avatar">AD</div>
+    <div class="sb-user-info">
+      <div class="sb-user-name">GD Admin</div>
+      <div class="sb-user-role">System Administrator</div>
+    </div>
+    <button class="sb-logout" onclick="toast('Logged out')">
+      <svg viewBox="0 0 24 24" fill="none"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+    </button>
+  </div>
+</aside>
+
+<!-- ══════════════ MAIN ══════════════ -->
+<div class="main">
+
+  <!-- TOPBAR -->
+  <div class="topbar">
+    <div class="topbar-left">
+      <button class="back-btn" onclick="toast('Back to Dashboard')">
+        <svg viewBox="0 0 24 24" fill="none"><polyline points="15 18 9 12 15 6"/></svg>
+        Dashboard
+      </button>
+      <div class="tb-divider"></div>
+      <div>
+        <div class="page-title">Order Management</div>
+        <div class="page-sub">Process, filter &amp; track all orders</div>
+      </div>
+    </div>
+    <div class="topbar-right">
+      <div class="tb-search">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <input type="text" id="searchInput" placeholder="Search by name, ID, municipality…" oninput="applyFilters()">
+      </div>
+      <div class="icon-btn" onclick="toast('Export to CSV — coming soon')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+      </div>
+      <button class="btn-primary" onclick="openModal()">
+        <svg viewBox="0 0 24 24" fill="none"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        New Order
+      </button>
+    </div>
+  </div>
+
+  <!-- CONTENT -->
+  <div class="content">
+
+    <!-- Stat cards -->
+    <div class="stats-row">
+      <div class="mini-stat selected" id="stat-all" onclick="filterByStatus('all', this)">
+        <div class="ms-icon" style="background:var(--red-pale);">
+          <svg viewBox="0 0 24 24" fill="none" stroke="var(--red)" stroke-width="2"><path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="1"/></svg>
+        </div>
+        <div class="ms-body"><div class="ms-val" id="cnt-all">0</div><div class="ms-lbl">All Orders</div></div>
+      </div>
+      <div class="mini-stat" id="stat-pending" onclick="filterByStatus('pending', this)">
+        <div class="ms-icon" style="background:var(--amber-pale);">
+          <svg viewBox="0 0 24 24" fill="none" stroke="var(--amber)" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+        </div>
+        <div class="ms-body"><div class="ms-val" id="cnt-pending">0</div><div class="ms-lbl">Pending</div></div>
+      </div>
+      <div class="mini-stat" id="stat-processing" onclick="filterByStatus('processing', this)">
+        <div class="ms-icon" style="background:var(--blue-pale);">
+          <svg viewBox="0 0 24 24" fill="none" stroke="var(--blue)" stroke-width="2"><path d="M1 3h15v13H1z"/><path d="M16 8h4l3 3v5h-7V8z"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
+        </div>
+        <div class="ms-body"><div class="ms-val" id="cnt-processing">0</div><div class="ms-lbl">Processing</div></div>
+      </div>
+      <div class="mini-stat" id="stat-delivered" onclick="filterByStatus('delivered', this)">
+        <div class="ms-icon" style="background:var(--green-pale);">
+          <svg viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+        </div>
+        <div class="ms-body"><div class="ms-val" id="cnt-delivered">0</div><div class="ms-lbl">Delivered</div></div>
+      </div>
+      <div class="mini-stat" id="stat-cancelled" onclick="filterByStatus('cancelled', this)">
+        <div class="ms-icon" style="background:var(--red-pale);">
+          <svg viewBox="0 0 24 24" fill="none" stroke="var(--red)" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </div>
+        <div class="ms-body"><div class="ms-val" id="cnt-cancelled">0</div><div class="ms-lbl">Cancelled</div></div>
+      </div>
+    </div>
+
+    <!-- Filter bar -->
+    <div class="filter-bar">
+      <div class="filter-group">
+        <div class="filter-lbl">Municipality</div>
+        <div class="chip active" id="chip-muni-all" onclick="filterByMuni('', this)">All</div>
+        <div class="chip" id="chip-muni-sv" onclick="filterByMuni('San Vicente', this)">
+          <span class="chip-dot" style="background:#CC1B22;"></span>San Vicente
+        </div>
+        <div class="chip" id="chip-muni-me" onclick="filterByMuni('Mercedes', this)">
+          <span class="chip-dot" style="background:#3B82F6;"></span>Mercedes
+        </div>
+        <div class="chip" id="chip-muni-sl" onclick="filterByMuni('San Lorenzo', this)">
+          <span class="chip-dot" style="background:#10B981;"></span>San Lorenzo
+        </div>
+        <div class="chip" id="chip-muni-ba" onclick="filterByMuni('Basud', this)">
+          <span class="chip-dot" style="background:#F59E0B;"></span>Basud
+        </div>
+      </div>
+
+      <div class="filter-sep"></div>
+
+      <div class="filter-group">
+        <div class="filter-lbl">Type</div>
+        <select class="sel" id="bizFilter" onchange="applyFilters()">
+          <option value="">All Types</option>
+          <option value="Wholesaler">Wholesaler</option>
+          <option value="Restaurant">Restaurant</option>
+          <option value="Sari-sari">Sari-sari / Micro</option>
+        </select>
+      </div>
+
+      <div class="filter-sep"></div>
+
+      <div class="filter-group">
+        <div class="filter-lbl">Sort by</div>
+        <select class="sel" id="sortFilter" onchange="applyFilters()">
+          <option value="newest">Newest First</option>
+          <option value="oldest">Oldest First</option>
+          <option value="amount-hi">Amount: High–Low</option>
+          <option value="amount-lo">Amount: Low–High</option>
+        </select>
+      </div>
+
+      <div class="filter-ml">
+        <div class="chip" onclick="clearFilters()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="11" height="11"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+          Clear Filters
+        </div>
+      </div>
+    </div>
+
+    <!-- Table -->
+    <div class="table-card">
+      <div class="table-head-row">
+        <div>
+          <div class="table-title">Orders</div>
+          <div class="table-count" id="tableCount">Showing all orders</div>
+        </div>
+        <div class="table-actions">
+          <div class="icon-btn" onclick="toast('Print view — coming soon')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+          </div>
+          <div class="icon-btn" onclick="toast('Column settings — coming soon')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+          </div>
+        </div>
+      </div>
+
+      <div class="tbl-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th class="td-check"><input type="checkbox" id="selectAll" onchange="toggleSelectAll(this)"></th>
+              <th><div class="th-sort" onclick="toggleSort('id')">Order ID <svg viewBox="0 0 24 24" fill="none"><polyline points="6 9 12 15 18 9"/></svg></div></th>
+              <th>Client</th>
+              <th><div class="th-sort" onclick="toggleSort('muni')">Municipality <svg viewBox="0 0 24 24" fill="none"><polyline points="6 9 12 15 18 9"/></svg></div></th>
+              <th>Business Type</th>
+              <th>Items</th>
+              <th><div class="th-sort" onclick="toggleSort('amount')">Amount <svg viewBox="0 0 24 24" fill="none"><polyline points="6 9 12 15 18 9"/></svg></div></th>
+              <th>Status</th>
+              <th><div class="th-sort" onclick="toggleSort('date')">Date <svg viewBox="0 0 24 24" fill="none"><polyline points="6 9 12 15 18 9"/></svg></div></th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="ordersBody"></tbody>
+        </table>
+      </div>
+
+      <div class="table-footer">
+        <div class="tf-info" id="tfInfo">Showing <strong>0</strong> of <strong>0</strong> orders</div>
+        <div class="pagination" id="pagination"></div>
+      </div>
+    </div>
+
+  </div><!-- /content -->
+</div><!-- /main -->
+</div><!-- /app -->
+
+<!-- BULK ACTION BAR -->
+<div class="bulk-bar" id="bulkBar">
+  <div class="bulk-txt"><strong id="bulkCount">0</strong> orders selected</div>
+  <div class="bulk-sep"></div>
+  <div class="bulk-actions">
+    <button class="bulk-btn bulk-btn-done"   onclick="bulkUpdate('delivered')">✓ Mark Delivered</button>
+    <button class="bulk-btn bulk-btn-proc"   onclick="bulkUpdate('processing')">⟳ Mark Processing</button>
+    <button class="bulk-btn bulk-btn-cancel" onclick="bulkUpdate('cancelled')">✕ Cancel Orders</button>
+  </div>
+  <div class="bulk-sep"></div>
+  <button class="bulk-close" onclick="clearSelection()">✕</button>
+</div>
+
+<!-- NEW ORDER MODAL -->
+<div class="modal-backdrop" id="modalBackdrop" onclick="closeModalIfBg(event)">
+  <div class="modal" id="modal">
+    <div class="modal-header">
+      <div>
+        <div class="modal-title">Create New Order</div>
+        <div class="modal-sub">Fill in client and product details below</div>
+      </div>
+      <div class="modal-close" onclick="closeModal()">
+        <svg viewBox="0 0 24 24" fill="none"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </div>
+    </div>
+    <div class="modal-body">
+
+      <div class="form-row">
+        <div class="form-field">
+          <label class="form-label">Municipality <span>*</span></label>
+          <select class="form-select" id="m-muni" onchange="updateSummary()">
+            <option value="">— Select Municipality —</option>
+            <option>San Vicente</option>
+            <option>Mercedes</option>
+            <option>San Lorenzo</option>
+            <option>Basud</option>
+          </select>
+        </div>
+        <div class="form-field">
+          <label class="form-label">Business Type <span>*</span></label>
+          <select class="form-select" id="m-biz" onchange="updateSummary()">
+            <option value="">— Select Type —</option>
+            <option value="Wholesaler">Wholesaler</option>
+            <option value="Restaurant">Restaurant</option>
+            <option value="Sari-sari">Sari-sari / Micro</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-field">
+          <label class="form-label">Business / Client Name <span>*</span></label>
+          <input class="form-input" id="m-client" type="text" placeholder="e.g. Reyes General Store" oninput="updateSummary()">
+        </div>
+        <div class="form-field">
+          <label class="form-label">Owner Name</label>
+          <input class="form-input" id="m-owner" type="text" placeholder="e.g. Danilo Reyes">
+        </div>
+      </div>
+
+      <div class="form-row one">
+        <div class="form-field">
+          <label class="form-label">Delivery Address</label>
+          <input class="form-input" id="m-address" type="text" placeholder="Barangay & Street, Municipality">
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-field">
+          <label class="form-label">Preferred Delivery Date</label>
+          <input class="form-input" id="m-date" type="date">
+        </div>
+        <div class="form-field">
+          <label class="form-label">Payment Method</label>
+          <select class="form-select" id="m-pay">
+            <option>Cash on Delivery</option>
+            <option>Bank Transfer</option>
+            <option>GCash</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="products-section">
+        <div class="products-lbl">
+          Products <span style="color:var(--red)">*</span>
+          <button class="add-product-btn" onclick="addProductRow()">
+            <svg viewBox="0 0 24 24" fill="none"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            Add Product
+          </button>
+        </div>
+        <div style="display:grid; grid-template-columns:1fr 100px 80px 28px; gap:8px; margin-bottom:6px;">
+          <div style="font-size:10.5px; font-weight:700; color:var(--muted); padding-left:2px;">Product</div>
+          <div style="font-size:10.5px; font-weight:700; color:var(--muted);">Cases</div>
+          <div style="font-size:10.5px; font-weight:700; color:var(--muted);">Price/case</div>
+          <div></div>
+        </div>
+        <div id="productRows"></div>
+      </div>
+
+      <div class="order-summary" id="orderSummary">
+        <div class="os-row"><span class="os-lbl">Total Cases</span><span class="os-val" id="s-cases">0 cases</span></div>
+        <div class="os-row"><span class="os-lbl">Subtotal</span><span class="os-val" id="s-sub">₱0.00</span></div>
+        <div class="os-row os-total"><span class="os-lbl">Total Amount</span><span class="os-val" id="s-total">₱0.00</span></div>
+      </div>
+
+    </div>
+    <div class="modal-footer">
+      <button class="btn-cancel-modal" onclick="closeModal()">Cancel</button>
+      <button class="btn-submit-order" onclick="submitOrder()">
+        <svg viewBox="0 0 24 24" fill="none"><polyline points="20 6 9 17 4 12"/></svg>
+        Place Order
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- VIEW ORDER DRAWER -->
+<div class="drawer-backdrop" id="drawerBg" onclick="closeDrawer()"></div>
+<div class="drawer" id="drawer">
+  <div class="drawer-header">
+    <div>
+      <div class="drawer-title" id="d-title">Order Details</div>
+      <div class="drawer-id" id="d-id">#GD-0000</div>
+    </div>
+    <div class="drawer-close" onclick="closeDrawer()">
+      <svg viewBox="0 0 24 24" fill="none"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </div>
+  </div>
+  <div class="drawer-body" id="drawerBody"></div>
+  <div class="drawer-footer">
+    <select class="drawer-status-sel" id="drawerStatusSel">
+      <option value="pending">Pending</option>
+      <option value="processing">Processing</option>
+      <option value="delivered">Delivered</option>
+      <option value="cancelled">Cancelled</option>
+    </select>
+    <button class="drawer-save" onclick="saveDrawerStatus()">Save Changes</button>
+  </div>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toastEl">
+  <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+  <span id="toastMsg">Done!</span>
+</div>
+
+<script>
+// ══════════════════════════════
+//  DATA
+// ══════════════════════════════
+const PRODUCTS = [
+  { name: 'Coca-Cola 350ml',    sku: 'CK-350', price: 120 },
+  { name: 'Coca-Cola 1L',       sku: 'CK-1L',  price: 240 },
+  { name: 'Coca-Cola 1.5L',     sku: 'CK-15L', price: 360 },
+  { name: 'Sprite 350ml',       sku: 'SP-350', price: 110 },
+  { name: 'Royal Tru-Orange',   sku: 'RO-350', price: 110 },
+  { name: 'Coke Zero 350ml',    sku: 'CZ-350', price: 130 },
+];
+
+const MUNI_COLORS = {
+  'San Vicente': '#CC1B22',
+  'Mercedes':    '#3B82F6',
+  'San Lorenzo': '#10B981',
+  'Basud':       '#F59E0B',
+};
+
+const CLIENT_COLORS = ['#CC1B22','#3B82F6','#10B981','#F59E0B','#8B5CF6','#EC4899'];
+
+let nextId = 1053;
+let orders = [
+  { id:'GD-1052', client:'Reyes General Store',    owner:'Danilo Reyes',   muni:'San Vicente',  biz:'Wholesaler',  items:[{name:'Coca-Cola 350ml',qty:40,price:120},{name:'Coke Zero 350ml',qty:10,price:130}], status:'processing', date:'2025-02-27', time:'09:12 AM', address:'Brgy. 1, San Vicente', pay:'Cash on Delivery' },
+  { id:'GD-1051', client:"Lola Rosa's Eatery",     owner:'Rosa Magtibay',  muni:'Mercedes',     biz:'Restaurant',  items:[{name:'Coca-Cola 1L',qty:10,price:240}], status:'pending',    date:'2025-02-27', time:'08:55 AM', address:'Brgy. Centro, Mercedes', pay:'GCash' },
+  { id:'GD-1050', client:'Nano Sari-sari Store',   owner:'Nano Gonzales',  muni:'San Lorenzo',  biz:'Sari-sari',   items:[{name:'Coca-Cola 350ml',qty:4,price:120}], status:'delivered',  date:'2025-02-27', time:'08:40 AM', address:'Brgy. 3, San Lorenzo', pay:'Cash on Delivery' },
+  { id:'GD-1049', client:'Basud Food Hub',          owner:'Elena Cruz',     muni:'Basud',        biz:'Restaurant',  items:[{name:'Coca-Cola 1.5L',qty:18,price:360}], status:'delivered',  date:'2025-02-27', time:'08:20 AM', address:'Poblacion, Basud', pay:'Bank Transfer' },
+  { id:'GD-1048', client:'Cruz Mini Mart',          owner:'Bong Cruz',      muni:'San Vicente',  biz:'Sari-sari',   items:[{name:'Coca-Cola 1L',qty:6,price:240}], status:'pending',    date:'2025-02-27', time:'08:05 AM', address:'Brgy. 5, San Vicente', pay:'Cash on Delivery' },
+  { id:'GD-1047', client:'Mercado Wholesale',       owner:'Rodel Mercado',  muni:'Mercedes',     biz:'Wholesaler',  items:[{name:'Coke Zero 350ml',qty:60,price:130}], status:'delivered',  date:'2025-02-26', time:'03:45 PM', address:'Brgy. 2, Mercedes', pay:'Bank Transfer' },
+  { id:'GD-1046', client:'SL Canteen',              owner:'Tina Buenaflor', muni:'San Lorenzo',  biz:'Restaurant',  items:[{name:'Royal Tru-Orange',qty:8,price:110}], status:'cancelled',  date:'2025-02-26', time:'02:10 PM', address:'Brgy. 4, San Lorenzo', pay:'Cash on Delivery' },
+  { id:'GD-1045', client:'Basud Corner Store',      owner:'Jun Bautista',   muni:'Basud',        biz:'Sari-sari',   items:[{name:'Coca-Cola 350ml',qty:3,price:120}], status:'delivered',  date:'2025-02-26', time:'01:30 PM', address:'Brgy. 1, Basud', pay:'GCash' },
+  { id:'GD-1044', client:'Mercedes Canteen',        owner:'Luisa Tan',      muni:'Mercedes',     biz:'Restaurant',  items:[{name:'Coca-Cola 1.5L',qty:12,price:360}], status:'processing', date:'2025-02-26', time:'10:00 AM', address:'Brgy. Centro, Mercedes', pay:'Cash on Delivery' },
+  { id:'GD-1043', client:'San Vicente Superstore',  owner:'Mario Villafuerte', muni:'San Vicente', biz:'Wholesaler', items:[{name:'Coca-Cola 350ml',qty:80,price:120},{name:'Sprite 350ml',qty:20,price:110}], status:'delivered', date:'2025-02-25', time:'09:00 AM', address:'Poblacion, San Vicente', pay:'Bank Transfer' },
+  { id:'GD-1042', client:'Nena\'s Store',           owner:'Nena Labrador',  muni:'Basud',        biz:'Sari-sari',   items:[{name:'Coca-Cola 350ml',qty:2,price:120}], status:'pending',    date:'2025-02-25', time:'02:00 PM', address:'Brgy. 2, Basud', pay:'Cash on Delivery' },
+  { id:'GD-1041', client:'Flores Restaurant',       owner:'Jun Flores',     muni:'San Lorenzo',  biz:'Restaurant',  items:[{name:'Coca-Cola 1L',qty:15,price:240},{name:'Coke Zero 350ml',qty:5,price:130}], status:'delivered', date:'2025-02-25', time:'11:30 AM', address:'Brgy. 1, San Lorenzo', pay:'GCash' },
+];
+
+// ══════════════════════════════
+//  STATE
+// ══════════════════════════════
+let statusFilter = 'all';
+let muniFilter   = '';
+let selectedRows = new Set();
+let currentPage  = 1;
+const PER_PAGE   = 8;
+let activeDrawerOrder = null;
+
+// ══════════════════════════════
+//  RENDER
+// ══════════════════════════════
+function getFilteredOrders() {
+  const q   = document.getElementById('searchInput').value.toLowerCase();
+  const biz = document.getElementById('bizFilter').value;
+  const srt = document.getElementById('sortFilter').value;
+
+  let result = orders.filter(o => {
+    if (statusFilter !== 'all' && o.status !== statusFilter) return false;
+    if (muniFilter && o.muni !== muniFilter) return false;
+    if (biz && !o.biz.toLowerCase().includes(biz.toLowerCase())) return false;
+    if (q && !o.client.toLowerCase().includes(q) && !o.id.toLowerCase().includes(q) && !o.muni.toLowerCase().includes(q)) return false;
+    return true;
+  });
+
+  result.sort((a, b) => {
+    if (srt === 'oldest') return a.id.localeCompare(b.id);
+    if (srt === 'amount-hi') return orderTotal(b) - orderTotal(a);
+    if (srt === 'amount-lo') return orderTotal(a) - orderTotal(b);
+    return b.id.localeCompare(a.id); // newest
+  });
+
+  return result;
+}
+
+function orderTotal(o) {
+  return o.items.reduce((s, i) => s + i.qty * i.price, 0);
+}
+
+function formatTotal(o) {
+  return '₱' + orderTotal(o).toLocaleString();
+}
+
+function renderTable() {
+  const filtered = getFilteredOrders();
+  const totalPages = Math.max(1, Math.ceil(filtered.length / PER_PAGE));
+  if (currentPage > totalPages) currentPage = 1;
+  const page = filtered.slice((currentPage - 1) * PER_PAGE, currentPage * PER_PAGE);
+
+  // counts
+  document.getElementById('cnt-all').textContent       = orders.length;
+  document.getElementById('cnt-pending').textContent    = orders.filter(o=>o.status==='pending').length;
+  document.getElementById('cnt-processing').textContent = orders.filter(o=>o.status==='processing').length;
+  document.getElementById('cnt-delivered').textContent  = orders.filter(o=>o.status==='delivered').length;
+  document.getElementById('cnt-cancelled').textContent  = orders.filter(o=>o.status==='cancelled').length;
+
+  document.getElementById('pendingBadge').textContent = orders.filter(o=>o.status==='pending').length;
+  document.getElementById('tableCount').textContent = filtered.length === orders.length
+    ? `Showing all ${orders.length} orders`
+    : `Filtered: ${filtered.length} of ${orders.length} orders`;
+  document.getElementById('tfInfo').innerHTML = `Showing <strong>${page.length}</strong> of <strong>${filtered.length}</strong> orders`;
+
+  // tbody
+  const tbody = document.getElementById('ordersBody');
+  tbody.innerHTML = page.map(o => {
+    const total   = orderTotal(o);
+    const initials = o.client.split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase();
+    const colIdx  = o.client.charCodeAt(0) % CLIENT_COLORS.length;
+    const color   = CLIENT_COLORS[colIdx];
+    const mColor  = MUNI_COLORS[o.muni] || '#9CA3AF';
+    const itemSummary = o.items.map(i=>`${i.qty}cs ${i.name.split(' ')[1]||i.name.split(' ')[0]}`).join(', ');
+    const isSelected = selectedRows.has(o.id);
+
+    const statusBadge = {
+      pending:    '<span class="badge b-pending"><span class="bdot"></span>Pending</span>',
+      processing: '<span class="badge b-proc"><span class="bdot"></span>Processing</span>',
+      delivered:  '<span class="badge b-done"><span class="bdot"></span>Delivered</span>',
+      cancelled:  '<span class="badge b-cancel"><span class="bdot"></span>Cancelled</span>',
+    }[o.status];
+
+    const bizClass = {Wholesaler:'biz-w', Restaurant:'biz-r', 'Sari-sari':'biz-m'}[o.biz] || '';
+
+    return `
+      <tr class="${isSelected?'row-selected':''}" data-id="${o.id}">
+        <td class="td-check"><input type="checkbox" ${isSelected?'checked':''} onchange="toggleRow('${o.id}',this)" onclick="event.stopPropagation()"></td>
+        <td><span class="order-id">#${o.id}</span></td>
+        <td>
+          <div class="client-cell">
+            <div class="client-avatar" style="background:${color};">${initials}</div>
+            <div>
+              <div class="client-name">${o.client}</div>
+              <div class="client-owner">${o.owner}</div>
+            </div>
+          </div>
+        </td>
+        <td><div class="muni-pill"><div class="muni-pill-dot" style="background:${mColor};"></div>${o.muni}</div></td>
+        <td><span class="biz-tag ${bizClass}">${o.biz}</span></td>
+        <td style="max-width:160px;overflow:hidden;text-overflow:ellipsis;font-size:12px;">${itemSummary}</td>
+        <td><span class="amount-cell">${formatTotal(o)}</span></td>
+        <td>${statusBadge}</td>
+        <td style="font-size:12px;color:var(--muted);">${o.date}<br><span style="font-size:11px;">${o.time}</span></td>
+        <td>
+          <div class="action-btns">
+            <button class="act-btn act-btn-view"   onclick="event.stopPropagation();openDrawer('${o.id}')">View</button>
+            <button class="act-btn act-btn-update" onclick="event.stopPropagation();cycleStatus('${o.id}')">Update</button>
+          </div>
+        </td>
+      </tr>`;
+  }).join('');
+
+  // row click → open drawer
+  tbody.querySelectorAll('tr').forEach(tr => {
+    tr.addEventListener('click', () => openDrawer(tr.dataset.id));
+  });
+
+  renderPagination(totalPages);
+}
+
+function renderPagination(total) {
+  const pg = document.getElementById('pagination');
+  if (total <= 1) { pg.innerHTML = ''; return; }
+  let html = `<div class="page-btn" onclick="goPage(${currentPage-1})"><svg viewBox="0 0 24 24" fill="none"><polyline points="15 18 9 12 15 6"/></svg></div>`;
+  for (let i = 1; i <= total; i++) {
+    html += `<div class="page-btn ${i===currentPage?'active':''}" onclick="goPage(${i})">${i}</div>`;
+  }
+  html += `<div class="page-btn" onclick="goPage(${currentPage+1})"><svg viewBox="0 0 24 24" fill="none"><polyline points="9 18 15 12 9 6"/></svg></div>`;
+  pg.innerHTML = html;
+}
+
+function goPage(p) {
+  const total = Math.ceil(getFilteredOrders().length / PER_PAGE);
+  currentPage = Math.max(1, Math.min(p, total));
+  renderTable();
+}
+
+// ══════════════════════════════
+//  FILTERS
+// ══════════════════════════════
+function filterByStatus(s, el) {
+  statusFilter = s;
+  document.querySelectorAll('.mini-stat').forEach(c => c.classList.remove('selected'));
+  el.classList.add('selected');
+  currentPage = 1;
+  renderTable();
+}
+
+function filterByMuni(muni, el) {
+  muniFilter = muni;
+  document.querySelectorAll('[id^="chip-muni-"]').forEach(c => c.classList.remove('active'));
+  if (el) el.classList.add('active');
+  else document.getElementById('chip-muni-all').classList.add('active');
+  currentPage = 1;
+  renderTable();
+  if (muni) toast('Showing orders for ' + muni);
+}
+
+function applyFilters() { currentPage = 1; renderTable(); }
+
+function clearFilters() {
+  muniFilter = ''; statusFilter = 'all';
+  document.getElementById('searchInput').value = '';
+  document.getElementById('bizFilter').value = '';
+  document.getElementById('sortFilter').value = 'newest';
+  document.querySelectorAll('[id^="chip-muni-"]').forEach(c => c.classList.remove('active'));
+  document.getElementById('chip-muni-all').classList.add('active');
+  document.querySelectorAll('.mini-stat').forEach(c => c.classList.remove('selected'));
+  document.getElementById('stat-all').classList.add('selected');
+  currentPage = 1;
+  renderTable();
+  toast('Filters cleared');
+}
+
+// ══════════════════════════════
+//  SELECTION
+// ══════════════════════════════
+function toggleRow(id, cb) {
+  if (cb.checked) selectedRows.add(id);
+  else selectedRows.delete(id);
+  updateBulkBar();
+  renderTable();
+}
+
+function toggleSelectAll(cb) {
+  const filtered = getFilteredOrders();
+  const page = filtered.slice((currentPage-1)*PER_PAGE, currentPage*PER_PAGE);
+  page.forEach(o => cb.checked ? selectedRows.add(o.id) : selectedRows.delete(o.id));
+  updateBulkBar();
+  renderTable();
+}
+
+function updateBulkBar() {
+  const bar = document.getElementById('bulkBar');
+  document.getElementById('bulkCount').textContent = selectedRows.size;
+  bar.classList.toggle('show', selectedRows.size > 0);
+}
+
+function clearSelection() {
+  selectedRows.clear();
+  updateBulkBar();
+  renderTable();
+}
+
+function bulkUpdate(status) {
+  selectedRows.forEach(id => {
+    const o = orders.find(x => x.id === id);
+    if (o) o.status = status;
+  });
+  toast(`${selectedRows.size} orders marked as ${status}`);
+  clearSelection();
+}
+
+// ══════════════════════════════
+//  STATUS CYCLE
+// ══════════════════════════════
+function cycleStatus(id) {
+  const o = orders.find(x => x.id === id);
+  if (!o) return;
+  const cycle = ['pending','processing','delivered'];
+  const idx = cycle.indexOf(o.status);
+  o.status = cycle[(idx+1) % cycle.length];
+  renderTable();
+  toast(`#${o.id} → ${o.status}`);
+}
+
+// ══════════════════════════════
+//  VIEW ORDER DRAWER
+// ══════════════════════════════
+function openDrawer(id) {
+  const o = orders.find(x => x.id === id);
+  if (!o) return;
+  activeDrawerOrder = o;
+
+  document.getElementById('d-title').textContent = o.client;
+  document.getElementById('d-id').textContent    = '#' + o.id;
+  document.getElementById('drawerStatusSel').value = o.status;
+
+  const mColor = MUNI_COLORS[o.muni] || '#9CA3AF';
+  const total  = orderTotal(o);
+
+  const statusLabel = {
+    pending: '<span class="badge b-pending"><span class="bdot"></span>Pending</span>',
+    processing: '<span class="badge b-proc"><span class="bdot"></span>Processing</span>',
+    delivered: '<span class="badge b-done"><span class="bdot"></span>Delivered</span>',
+    cancelled: '<span class="badge b-cancel"><span class="bdot"></span>Cancelled</span>',
+  }[o.status];
+
+  const bizClass = {Wholesaler:'biz-w', Restaurant:'biz-r', 'Sari-sari':'biz-m'}[o.biz]||'';
+
+  document.getElementById('drawerBody').innerHTML = `
+    <div class="drawer-section">
+      <div class="drawer-section-lbl">Order Info</div>
+      <div class="info-grid">
+        <div class="info-cell"><div class="info-cell-lbl">Status</div><div class="info-cell-val">${statusLabel}</div></div>
+        <div class="info-cell"><div class="info-cell-lbl">Business Type</div><div class="info-cell-val"><span class="biz-tag ${bizClass}">${o.biz}</span></div></div>
+        <div class="info-cell"><div class="info-cell-lbl">Municipality</div><div class="info-cell-val"><div class="muni-pill"><div class="muni-pill-dot" style="background:${mColor};"></div>${o.muni}</div></div></div>
+        <div class="info-cell"><div class="info-cell-lbl">Date & Time</div><div class="info-cell-val">${o.date} · ${o.time}</div></div>
+        <div class="info-cell"><div class="info-cell-lbl">Owner</div><div class="info-cell-val">${o.owner}</div></div>
+        <div class="info-cell"><div class="info-cell-lbl">Payment</div><div class="info-cell-val">${o.pay}</div></div>
+      </div>
+      ${o.address ? `<div class="info-cell" style="margin-top:10px;"><div class="info-cell-lbl">Delivery Address</div><div class="info-cell-val">${o.address}</div></div>` : ''}
+    </div>
+
+    <div class="drawer-section">
+      <div class="drawer-section-lbl">Products Ordered</div>
+      <div class="drawer-items">
+        ${o.items.map(i=>`
+          <div class="drawer-item">
+            <img class="di-img" src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/ce/Coca-Cola_logo.svg/512px-Coca-Cola_logo.svg.png" alt="${i.name}">
+            <div>
+              <div class="di-name">${i.name}</div>
+              <div class="di-sku">₱${i.price}/case</div>
+            </div>
+            <div class="di-qty">
+              ${i.qty} cases
+              <div class="di-price">₱${(i.qty*i.price).toLocaleString()}</div>
+            </div>
+          </div>
+        `).join('')}
+      </div>
+      <div class="drawer-total-row">
+        <span class="dtr-lbl">Total Amount</span>
+        <span class="dtr-val">₱${total.toLocaleString()}</span>
+      </div>
+    </div>
+
+    <div class="drawer-section">
+      <div class="drawer-section-lbl">Order Timeline</div>
+      <div class="timeline">
+        <div class="tl-item">
+          <div class="tl-left"><div class="tl-dot" style="background:var(--green);"></div><div class="tl-line"></div></div>
+          <div class="tl-body"><div class="tl-event">Order Placed</div><div class="tl-time">${o.date} · ${o.time}</div></div>
+        </div>
+        ${o.status !== 'pending' ? `
+        <div class="tl-item">
+          <div class="tl-left"><div class="tl-dot" style="background:var(--blue);"></div><div class="tl-line"></div></div>
+          <div class="tl-body"><div class="tl-event">Processing Started</div><div class="tl-time">${o.date} · Approx. 30 min later</div></div>
+        </div>` : ''}
+        ${o.status === 'delivered' ? `
+        <div class="tl-item">
+          <div class="tl-left"><div class="tl-dot" style="background:var(--green);"></div></div>
+          <div class="tl-body"><div class="tl-event">Delivered Successfully</div><div class="tl-time">${o.date} · Confirmed</div></div>
+        </div>` : ''}
+        ${o.status === 'cancelled' ? `
+        <div class="tl-item">
+          <div class="tl-left"><div class="tl-dot" style="background:var(--red);"></div></div>
+          <div class="tl-body"><div class="tl-event">Order Cancelled</div><div class="tl-time">${o.date}</div></div>
+        </div>` : ''}
+      </div>
+    </div>
+  `;
+
+  document.getElementById('drawerBg').classList.add('show');
+  document.getElementById('drawer').classList.add('open');
+}
+
+function closeDrawer() {
+  document.getElementById('drawerBg').classList.remove('show');
+  document.getElementById('drawer').classList.remove('open');
+  activeDrawerOrder = null;
+}
+
+function saveDrawerStatus() {
+  if (!activeDrawerOrder) return;
+  const newStatus = document.getElementById('drawerStatusSel').value;
+  activeDrawerOrder.status = newStatus;
+  renderTable();
+  toast(`#${activeDrawerOrder.id} updated to ${newStatus}`);
+  closeDrawer();
+}
+
+// ══════════════════════════════
+//  NEW ORDER MODAL
+// ══════════════════════════════
+let productRowCount = 0;
+
+function openModal() {
+  productRowCount = 0;
+  document.getElementById('productRows').innerHTML = '';
+  document.getElementById('m-muni').value = '';
+  document.getElementById('m-biz').value = '';
+  document.getElementById('m-client').value = '';
+  document.getElementById('m-owner').value = '';
+  document.getElementById('m-address').value = '';
+  document.getElementById('m-pay').value = 'Cash on Delivery';
+  const today = new Date().toISOString().split('T')[0];
+  document.getElementById('m-date').value = today;
+  addProductRow();
+  updateSummary();
+  document.getElementById('modalBackdrop').classList.add('show');
+}
+
+function closeModal() { document.getElementById('modalBackdrop').classList.remove('show'); }
+function closeModalIfBg(e) { if (e.target === document.getElementById('modalBackdrop')) closeModal(); }
+
+function addProductRow() {
+  productRowCount++;
+  const id = 'pr-' + productRowCount;
+  const options = PRODUCTS.map(p => `<option value="${p.name}" data-price="${p.price}">${p.name} (₱${p.price}/case)</option>`).join('');
+  const row = document.createElement('div');
+  row.className = 'product-item';
+  row.id = id;
+  row.innerHTML = `
+    <select class="form-select product-sel" onchange="updateSummary()" data-row="${id}">
+      ${options}
+    </select>
+    <input class="form-input product-qty" type="number" min="1" value="1" placeholder="Cases" oninput="updateSummary()">
+    <input class="form-input product-price" type="number" value="${PRODUCTS[0].price}" placeholder="Price" oninput="updateSummary()">
+    <div class="remove-product" onclick="removeRow('${id}')">
+      <svg viewBox="0 0 24 24" fill="none"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </div>
+  `;
+  // auto-fill price when product changes
+  row.querySelector('.product-sel').addEventListener('change', function() {
+    const p = PRODUCTS.find(x => x.name === this.value);
+    if (p) row.querySelector('.product-price').value = p.price;
+    updateSummary();
+  });
+  document.getElementById('productRows').appendChild(row);
+  updateSummary();
+}
+
+function removeRow(id) {
+  const el = document.getElementById(id);
+  if (el) el.remove();
+  updateSummary();
+}
+
+function updateSummary() {
+  let totalCases = 0, totalAmt = 0;
+  document.querySelectorAll('.product-item').forEach(row => {
+    const qty = parseInt(row.querySelector('.product-qty').value) || 0;
+    const price = parseInt(row.querySelector('.product-price').value) || 0;
+    totalCases += qty;
+    totalAmt   += qty * price;
+  });
+  document.getElementById('s-cases').textContent = totalCases + ' cases';
+  document.getElementById('s-sub').textContent   = '₱' + totalAmt.toLocaleString();
+  document.getElementById('s-total').textContent = '₱' + totalAmt.toLocaleString();
+}
+
+function submitOrder() {
+  const muni   = document.getElementById('m-muni').value;
+  const biz    = document.getElementById('m-biz').value;
+  const client = document.getElementById('m-client').value.trim();
+  if (!muni || !biz || !client) { toast('Please fill in required fields ★'); return; }
+
+  const items = [];
+  document.querySelectorAll('.product-item').forEach(row => {
+    const name  = row.querySelector('.product-sel').value;
+    const qty   = parseInt(row.querySelector('.product-qty').value) || 0;
+    const price = parseInt(row.querySelector('.product-price').value) || 0;
+    if (qty > 0) items.push({ name, qty, price });
+  });
+  if (!items.length) { toast('Add at least one product'); return; }
+
+  const now = new Date();
+  const newOrder = {
+    id:      'GD-' + nextId++,
+    client,
+    owner:   document.getElementById('m-owner').value || '—',
+    muni,
+    biz,
+    items,
+    status:  'pending',
+    date:    now.toISOString().split('T')[0],
+    time:    now.toLocaleTimeString('en-PH', {hour:'2-digit', minute:'2-digit'}),
+    address: document.getElementById('m-address').value,
+    pay:     document.getElementById('m-pay').value,
+  };
+
+  orders.unshift(newOrder);
+  closeModal();
+  renderTable();
+  toast('✅ Order #' + newOrder.id + ' placed successfully!');
+}
+
+// ══════════════════════════════
+//  SORT
+// ══════════════════════════════
+function toggleSort(col) {
+  const sel = document.getElementById('sortFilter');
+  if (col === 'amount') sel.value = sel.value === 'amount-hi' ? 'amount-lo' : 'amount-hi';
+  applyFilters();
+}
+
+// ══════════════════════════════
+//  TOAST
+// ══════════════════════════════
+let tTimer;
+function toast(msg) {
+  const el = document.getElementById('toastEl');
+  document.getElementById('toastMsg').textContent = msg;
+  el.classList.add('show');
+  clearTimeout(tTimer);
+  tTimer = setTimeout(() => el.classList.remove('show'), 2700);
+}
+
+// ══════════════════════════════
+//  INIT
+// ══════════════════════════════
+renderTable();
+</script>
+</body>
+</html>
